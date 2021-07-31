@@ -2,6 +2,8 @@ package UI;
 
 import Engine.Evolutionary;
 import Engine.models.Solution;
+import UI.models.Lesson;
+import UI.models.TimeTableDataSet;
 import schema.models.ETTDescriptor;
 
 import javax.xml.bind.JAXBContext;
@@ -23,8 +25,10 @@ public class Main {
             Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
             ETTDescriptor descriptor = (ETTDescriptor) jaxbUnmarshaller.unmarshal(file);
 
-            Evolutionary evolutionary = new Evolutionary(descriptor);
-            List<Solution> population = evolutionary.generatePopulation();
+            TimeTableDataSet timeTable = new TimeTableDataSet(descriptor.getETTTimeTable());
+            Evolutionary evolutionary = new Evolutionary();
+
+            List<Solution<Lesson>> population = evolutionary.generatePopulation(descriptor.getETTEvolutionEngine().getETTInitialPopulation().getSize(),timeTable);
 
             boolean a = true;
         } catch (JAXBException e) {

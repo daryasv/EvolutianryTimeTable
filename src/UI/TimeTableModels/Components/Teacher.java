@@ -1,4 +1,4 @@
-package UI.TimeTable.Components;
+package UI.TimeTableModels.Components;
 
 import java.util.Set;
 

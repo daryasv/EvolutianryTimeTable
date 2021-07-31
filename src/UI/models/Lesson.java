@@ -1,4 +1,4 @@
-package Engine.models;
+package UI.models;
 
 public class Lesson {
     private int classId;

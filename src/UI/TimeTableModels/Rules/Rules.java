@@ -1,4 +1,4 @@
-package UI.TimeTable.Rules;
+package UI.TimeTableModels.Rules;
 
 public class Rules{
 

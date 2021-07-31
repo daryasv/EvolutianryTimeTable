@@ -1,4 +1,4 @@
-package UI.TimeTable.Components;
+package UI.TimeTableModels.Components;
 
 public class Subject extends Component{
 

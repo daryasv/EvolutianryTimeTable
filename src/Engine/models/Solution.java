@@ -3,44 +3,24 @@ package Engine.models;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Solution {
+public class Solution<T> {
 
-    private int days;
-    private int hours;
-    private List<Lesson> lessons;
+    private List<T> list;
 
-    public Solution(int days, int hours) {
-        this.days = days;
-        this.hours = hours;
-        this.lessons = new ArrayList<>();
+    public Solution() {
+        this.list = new ArrayList<>();
     }
 
-    public int getDays() {
-        return days;
+    public List<T> getList() {
+        return list;
     }
 
-    public void setDays(int days) {
-        this.days = days;
+    public void setList(List<T> list) {
+        this.list = list;
     }
 
-    public int getHours() {
-        return hours;
-    }
-
-    public void setHours(int hours) {
-        this.hours = hours;
-    }
-
-    public List<Lesson> getLessons() {
-        return lessons;
-    }
-
-    public void setLessons(List<Lesson> lessons) {
-        this.lessons = lessons;
-    }
-
-    public void addLesson(Lesson lesson)
+    public void addLesson(T item)
     {
-        this.lessons.add(lesson);
+        this.list.add(item);
     }
 }

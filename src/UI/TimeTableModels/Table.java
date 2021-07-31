@@ -1,7 +1,7 @@
-package UI.TimeTable;
+package UI.TimeTableModels;
 
-import UI.TimeTable.Components.Grade;
-import UI.TimeTable.Rules.Rules;
+import UI.TimeTableModels.Components.Grade;
+import UI.TimeTableModels.Rules.Rules;
 
 import java.util.Set;
 

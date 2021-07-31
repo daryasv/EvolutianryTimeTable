@@ -13,30 +13,30 @@ import java.util.stream.Collectors;
 public class TimeTableDataSet implements EvolutionDataSet
 {
 
-    private final ETTTimeTable timeTable;
+    private final ETTTimeTable timeTableMembers;
 
     public TimeTableDataSet(ETTTimeTable timeTable) {
-        this.timeTable = timeTable;
+        this.timeTableMembers = timeTable;
     }
 
     @Override
     public Solution<Lesson> getRandomSolution() {
 
-        int days = timeTable.getDays();
-        int hours = timeTable.getHours();
+        int days = timeTableMembers.getDays();
+        int hours = timeTableMembers.getHours();
 
         Solution<Lesson> solution = new Solution<>();
 
-        List<Integer> teachers = timeTable.getETTTeachers().getETTTeacher()
+        List<Integer> teachers = timeTableMembers.getETTTeachers().getETTTeacher()
                 .stream().map(ETTTeacher::getId).collect(Collectors.toList());
 
-        List<Integer> subjects = timeTable.getETTSubjects().getETTSubject()
+        List<Integer> subjects = timeTableMembers.getETTSubjects().getETTSubject()
                 .stream().map(ETTSubject::getId).collect(Collectors.toList());
         subjects.add(-1);
 
         Random rand = new Random();
 
-        timeTable.getETTClasses().getETTClass().forEach(ettClass -> {
+        timeTableMembers.getETTClasses().getETTClass().forEach(ettClass -> {
             for (int day = 0; day < days; day++)
             {
                 for (int hour = 0; hour < hours; hour++)

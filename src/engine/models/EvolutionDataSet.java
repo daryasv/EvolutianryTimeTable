@@ -1,6 +1,7 @@
-package Engine.models;
+package engine.models;
 
 public interface EvolutionDataSet {
 
     <T> Solution<T> getRandomSolution();
+
 }

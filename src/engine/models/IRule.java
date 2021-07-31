@@ -1,4 +1,4 @@
-package Engine.models;
+package engine.models;
 
 public interface IRule<T> {
 

@@ -1,7 +1,15 @@
-package UI.TimeTableModels.Rules;
+package UI.timeTable.models;
 
-public class Rules{
+import schema.models.ETTRule;
 
+public class Rule extends Component{
+
+    //TODO: with set (set methods will do the validation, Example in "Teacher" class)
+    public Rule(ETTRule ettRule)
+    {
+
+    }
+    /*
     public enum hardRules
     {
         TEACHER_IS_HUMAN, SINGULARITY, KNOWLEDGEABLE, SATISFACTORY;
@@ -15,6 +23,8 @@ public class Rules{
     private void Singularity() {}
     private void Knowledgeable() {}
     private void Satisfactory() {}
+
+     */
 
 }
 

@@ -1,4 +1,4 @@
-package UI.models;
+package UI.timeTable.models;
 
 public class Lesson {
     private int classId;

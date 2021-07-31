@@ -1,5 +1,6 @@
 package UI;
 
+import UI.evolutionEngine.models.EvolutionEngineDataSet;
 import engine.Evolutionary;
 import engine.models.Solution;
 import UI.timeTable.models.Lesson;
@@ -30,16 +31,15 @@ public class Main {
 
             //create population test demo
             TimeTableDataSet timeTable = new TimeTableDataSet(descriptor.getETTTimeTable());
-            Evolutionary evolutionary = new Evolutionary();
-            List<Solution<Lesson>> population = evolutionary.generatePopulation(descriptor.getETTEvolutionEngine().getETTInitialPopulation().getSize(),timeTable);
+            Evolutionary evolutionary = evolutionary = new Evolutionary();
+            EvolutionEngineDataSet evolutionEngineDataSet = new EvolutionEngineDataSet(descriptor.getETTEvolutionEngine());
+            List<Solution<Lesson>> population = evolutionary.generatePopulation(evolutionEngineDataSet.getInitialPopulation(), timeTable);
 
             //demo for the best solution
             Solution<Lesson> solution = population.get(0);
             List<Lesson> lessons = solution.getList().stream().filter(l->l.getTeacherId() == 1).collect(Collectors.toList());
             boolean a = true;
-        } catch (JAXBException e ) {
-            e.printStackTrace();
-        } catch (ValidationException e) {
+        } catch (JAXBException | ValidationException e ) {
             e.printStackTrace();
         }
     }

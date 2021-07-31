@@ -12,7 +12,7 @@ public class Evolutionary<T> {
 
     public List<Solution<T>> generatePopulation(int size,EvolutionDataSet dataSet){
         List<Solution<T>> solutions = new ArrayList<>();
-        for (int i = 0; i < size; i++)
+        for (int i = 1; i <= size; i++)
         {
             Solution<T> solution = dataSet.getRandomSolution();
             solutions.add(solution);

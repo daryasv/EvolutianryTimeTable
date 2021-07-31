@@ -51,6 +51,6 @@ public class Mutation
     //TODO : validation
     //very hardcoded
     public void setComponent(ETTMutation ettMutation) {
-        this.component = ettMutation.getConfiguration().charAt(ettMutation.getConfiguration().length());
+        this.component = ettMutation.getConfiguration().charAt(ettMutation.getConfiguration().length()-1);
     }
 }

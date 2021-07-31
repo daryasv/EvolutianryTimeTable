@@ -11,7 +11,6 @@ public class Crossover
     public Crossover(ETTCrossover ettCrossover) {
         setName(ettCrossover);
         setCuttingPoints(ettCrossover);
-
     }
 
     public String getName() {

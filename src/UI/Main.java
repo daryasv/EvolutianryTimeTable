@@ -30,7 +30,7 @@ public class Main {
 
             List<Solution<Lesson>> population = evolutionary.generatePopulation(descriptor.getETTEvolutionEngine().getETTInitialPopulation().getSize(),timeTable);
 
-            boolean a = false;
+            boolean a = true;
         } catch (JAXBException e) {
             e.printStackTrace();
         }

@@ -1,9 +1,7 @@
 package UI;
 
-import UI.timeTable.models.Lesson;
+import UI.models.Lesson;
 import engine.models.Solution;
-
-import javax.swing.*;
 
 
 public class ProgramManager {

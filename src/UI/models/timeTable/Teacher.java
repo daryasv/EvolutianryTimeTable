@@ -1,5 +1,6 @@
-package UI.timeTable.models;
+package UI.models.timeTable;
 
+import UI.ValidationException;
 import schema.models.ETTTeacher;
 import schema.models.ETTTeaches;
 

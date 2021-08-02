@@ -2,6 +2,7 @@ package engine.models;
 
 public interface IRule<T> {
 
-    public boolean isHard();
-    public int getFitness(Solution <T> solution);
+    boolean isHard();
+    int getFitness(Solution <T> solution);
+
 }

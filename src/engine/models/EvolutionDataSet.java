@@ -1,10 +1,21 @@
 package engine.models;
 
-public interface EvolutionDataSet {
+import java.util.List;
 
-    <T> Solution<T> getRandomSolution();
+public interface EvolutionDataSet<T> {
 
-    //TODO - dar
-    //<T> Solution<T> mutation();
+    int getPopulationSize();
+
+    int getGenerations();
+
+    Solution<T> getRandomSolution();
+
+    Solution<T> mutation(Solution<T> solution);
+
+    int getHardRulesWeight();
+
+    List<IRule<T>> getRules();
+
+    List<Solution<T>> crossover(Solution<T> a, Solution<T> b);
 
 }

@@ -7,12 +7,11 @@ import java.io.File;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import UI.evolutionEngine.models.EvolutionEngineDataSet;
+import UI.models.evolution.EvolutionConfig;
 import engine.Evolutionary;
 import engine.models.Solution;
-import UI.timeTable.models.Lesson;
-import UI.timeTable.models.TimeTableDataSet;
-import UI.timeTable.models.ValidationException;
+import UI.models.Lesson;
+import UI.models.timeTable.TimeTableMembers;
 import schema.models.ETTDescriptor;
 
 public class Main {
@@ -30,9 +29,9 @@ public class Main {
             ETTDescriptor descriptor = (ETTDescriptor) jaxbUnmarshaller.unmarshal(file);
 
             //create population test demo
-            TimeTableDataSet timeTable = new TimeTableDataSet(descriptor.getETTTimeTable());
+            TimeTableMembers timeTable = new TimeTableMembers(descriptor.getETTTimeTable());
             Evolutionary evolutionary = evolutionary = new Evolutionary();
-            EvolutionEngineDataSet evolutionEngineDataSet = new EvolutionEngineDataSet(descriptor.getETTEvolutionEngine());
+            EvolutionConfig evolutionEngineDataSet = new EvolutionConfig(descriptor.getETTEvolutionEngine());
             List<Solution<Lesson>> population = evolutionary.generatePopulation(evolutionEngineDataSet.getInitialPopulation(), timeTable);
 
             //demo for the best solution

@@ -29,7 +29,10 @@ public class UserMenu
             return this.commandVal;
         }
     }
-    final String openingMsg= "Welcome!\nplease enter your command:";
+    private final String openingMsg= "Welcome!\nplease enter your command:";
+    public static final int PRINT_RAW=1;
+    public static final int PRINT_PER_TEACHER=2;
+    public static final int PRINT_PER_CLASS=3;
 
     private void printMenu(Boolean isFileLoaded)
     {

@@ -1,7 +1,7 @@
 package UI;
 
-import Engine.models.Solution;
-import UI.models.Lesson;
+import UI.timeTable.models.Lesson;
+import engine.models.Solution;
 
 import javax.swing.*;
 

@@ -1,7 +1,7 @@
-package UI.timeTable.models;
+package UI.models.timeTable;
 
-import UI.evolutionEngine.models.EvolutionEngineDataSet;
-import engine.models.EvolutionDataSet;
+import UI.ValidationException;
+import UI.models.Lesson;
 import engine.models.Solution;
 import schema.models.*;
 
@@ -10,22 +10,38 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-public class TimeTableDataSet implements EvolutionDataSet
+public class TimeTableMembers
 {
-    private final int days;
-    private final int hours;
+    private int days;
+    private int hours;
     private List<Teacher> teachers;
     private List<Subject> subjects;
     private List<Grade> grades;
     private List<Rule> rules;
 
-    public TimeTableDataSet(ETTTimeTable timeTableMembers) throws ValidationException {
-        days = timeTableMembers.getDays();
-        hours = timeTableMembers.getHours();
+    public TimeTableMembers(ETTTimeTable timeTableMembers) throws ValidationException {
+        setDays(timeTableMembers.getDays());
+        setHours(timeTableMembers.getHours());
         setTeachers(timeTableMembers.getETTTeachers().getETTTeacher());
         setGrades(timeTableMembers.getETTClasses().getETTClass());
         setSubjects(timeTableMembers.getETTSubjects().getETTSubject());
         setRules(timeTableMembers.getETTRules().getETTRule());
+    }
+
+    public int getDays() {
+        return days;
+    }
+
+    public void setDays(int days) {
+        this.days = days;
+    }
+
+    public int getHours() {
+        return hours;
+    }
+
+    public void setHours(int hours) {
+        this.hours = hours;
     }
 
     public List<Teacher> getTeachers() {
@@ -84,8 +100,7 @@ public class TimeTableDataSet implements EvolutionDataSet
     }
 
     //TODO : add validation on "Rules" class constructor (in the set function) - Example in "Teacher" class
-        private void setRules(List<ETTRule> ettRules)
-        {
+        private void setRules(List<ETTRule> ettRules) throws ValidationException {
             this.rules = new ArrayList<Rule>();
             for (ETTRule ettRule : ettRules) {
                 //try {
@@ -98,7 +113,6 @@ public class TimeTableDataSet implements EvolutionDataSet
             }
         }
 
-    @Override
     public Solution<Lesson> getRandomSolution() {
 
         Solution<Lesson> solution = new Solution<>();

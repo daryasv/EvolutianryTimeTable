@@ -1,4 +1,4 @@
-package UI.timeTable.models;
+package UI.models.timeTable;
 
 import schema.models.ETTSubject;
 

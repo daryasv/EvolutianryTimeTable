@@ -1,5 +1,6 @@
-package UI.timeTable.models;
+package UI.models.timeTable;
 
+import UI.ValidationException;
 import schema.models.ETTClass;
 
 import java.util.Map;

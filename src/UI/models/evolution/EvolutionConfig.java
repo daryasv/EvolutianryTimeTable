@@ -1,18 +1,18 @@
-package UI.evolutionEngine.models;
+package UI.models.evolution;
 
 import schema.models.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class EvolutionEngineDataSet
+public class EvolutionConfig
 {
     private int initialPopulation;
     private Selection selection;
     private Crossover crossover;
     private List<Mutation> mutations;
 
-    public EvolutionEngineDataSet(ETTEvolutionEngine ettEvolutionEngine) {
+    public EvolutionConfig(ETTEvolutionEngine ettEvolutionEngine) {
         setInitialPopulation(ettEvolutionEngine.getETTInitialPopulation());
         setCrossover(ettEvolutionEngine.getETTCrossover());
         setSelection(ettEvolutionEngine.getETTSelection());

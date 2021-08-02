@@ -1,4 +1,6 @@
-package UI.timeTable.models;
+package UI.models.timeTable;
+
+import UI.ValidationException;
 
 public class Component {
    private int id;

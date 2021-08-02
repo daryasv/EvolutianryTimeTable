@@ -10,27 +10,21 @@ import java.util.List;
 
 public class Evolutionary<T> {
 
-    private int evolutionGenerationNumber;
-
-    public int getEvolutionGenerationNumber() {
-        return evolutionGenerationNumber;
-    }
-
-    public void setEvolutionGenerationNumber(int evolutionGenerationNumber) {
-        this.evolutionGenerationNumber = evolutionGenerationNumber;
-    }
-
-    //TODO
-    public void run(int generations,int populationSize, EvolutionDataSet dataSet, List<IRule<T>> rules,int hardRulesWeight)
+    public void run(EvolutionDataSet<T> dataSet)
     {
+        int populationSize = dataSet.getPopulationSize();
+        List<IRule<T>> rules = dataSet.getRules();
+        int hardRulesWeight = dataSet.getHardRulesWeight();
+        int generations = dataSet.getGenerations();
+
         int genCounter=0;
-        evolutionGenerationNumber = generations;
         List<Solution<T>> populationList = generatePopulation(populationSize, dataSet);
 
-        while(!isEndOfEvolution(genCounter))
+        while(!isEndOfEvolution(genCounter,generations))
         {
             HashMap<Solution<T>, Integer> solutionsFitnessMap = fitnessEvaluation(populationList,rules,hardRulesWeight);
-            //solution - returns list of best parents
+
+            //selection - returns list of best parents
             //make new generation
             //{ while (children <= population size)
             //  1. pick two parents
@@ -55,16 +49,32 @@ public class Evolutionary<T> {
 
     public HashMap<Solution<T>, Integer> fitnessEvaluation(List<Solution<T>> solutions, List<IRule<T>> rules, int hardRulesWeight)
     {
-        return null;
+        HashMap<Solution<T>, Integer> solutionFitness = new HashMap<>();
+        for (Solution<T> solution: solutions)
+        {
+            int softFitness = 0;
+            int hardFitness = 0;
+            for (IRule<T> rule: rules)
+            {
+                int fit = rule.getFitness(solution);
+                if(rule.isHard())
+                {
+                    hardFitness+= fit;
+                }
+                else
+                {
+                    softFitness+=fit;
+                }
+            }
+            int finalFitness = hardFitness*(hardRulesWeight/100)+softFitness*((100-hardRulesWeight)/100);
+            solutionFitness.put(solution, finalFitness);
+        }
+        return solutionFitness;
     }
 
-    public boolean isEndOfEvolution(int generationCounter)
+    public boolean isEndOfEvolution(int generationCounter,int evolutionGenerationNumber)
     {
-        if(generationCounter >= evolutionGenerationNumber)
-        {
-            return true;
-        }
-        return false;
+        return generationCounter >= evolutionGenerationNumber;
     }
 
 

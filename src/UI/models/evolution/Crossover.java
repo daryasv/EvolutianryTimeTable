@@ -1,4 +1,4 @@
-package UI.evolutionEngine.models;
+package UI.models.evolution;
 
 import schema.models.ETTCrossover;
 

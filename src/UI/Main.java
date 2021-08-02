@@ -14,27 +14,9 @@ import java.util.List;
 
 
 public class Main {
-    public static final String FILE_NAME = "src/resources/EX1-small.xml";
-
     public static void main(String[] args) {
-        //ProgramManager.manageProgram();
-
-        try {
-            File file = new File(FILE_NAME);
-            JAXBContext jaxbContext = JAXBContext.newInstance(ETTDescriptor.class);
-            Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-            ETTDescriptor descriptor = (ETTDescriptor) jaxbUnmarshaller.unmarshal(file);
-
-            TimeTableDataSet timeTable = new TimeTableDataSet(descriptor.getETTTimeTable());
-            Evolutionary evolutionary = new Evolutionary();
-
-            List<Solution<Lesson>> population = evolutionary.generatePopulation(descriptor.getETTEvolutionEngine().getETTInitialPopulation().getSize(),timeTable);
-
-            boolean a = true;
-        } catch (JAXBException e) {
-            e.printStackTrace();
-        }
-
+        ProgramManager programInstance = new ProgramManager();
+        programInstance.manageProgram();
     }
 }
 

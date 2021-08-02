@@ -19,7 +19,7 @@ public class Solution<T> {
         this.list = list;
     }
 
-    public void addLesson(T item)
+    public void addItemToList(T item)
     {
         this.list.add(item);
     }

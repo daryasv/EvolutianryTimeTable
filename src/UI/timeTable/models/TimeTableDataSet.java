@@ -115,7 +115,7 @@ public class TimeTableDataSet implements EvolutionDataSet
                     int randomTeacher = randomSubject == -1 ? -1 : teachersIds.get(rand.nextInt(teachersIds.size()));
 
                     Lesson lesson = new Lesson(grade.getId(), randomTeacher, randomSubject, d, h);
-                    solution.addLesson(lesson);
+                    solution.addItemToList(lesson);
                 }
             }
         });

@@ -2,7 +2,6 @@ package UI.evolutionEngine.models;
 
 import schema.models.ETTSelection;
 
-//maybe enum?
 public class Selection
 {
     private String type;

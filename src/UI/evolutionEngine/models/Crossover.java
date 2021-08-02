@@ -2,7 +2,6 @@ package UI.evolutionEngine.models;
 
 import schema.models.ETTCrossover;
 
-//maybe unum?
 public class Crossover
 {
     private String name;

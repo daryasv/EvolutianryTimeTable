@@ -1,5 +1,6 @@
 package UI.timeTable.models;
 
+import UI.evolutionEngine.models.EvolutionEngineDataSet;
 import engine.models.EvolutionDataSet;
 import engine.models.Solution;
 import schema.models.*;
@@ -17,7 +18,6 @@ public class TimeTableDataSet implements EvolutionDataSet
     private List<Subject> subjects;
     private List<Grade> grades;
     private List<Rule> rules;
-    private ETTTimeTable timeTableMembers;
 
     public TimeTableDataSet(ETTTimeTable timeTableMembers) throws ValidationException {
         days = timeTableMembers.getDays();

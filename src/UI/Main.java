@@ -7,6 +7,7 @@ import java.io.File;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import UI.models.TimeTableDataSet;
 import UI.models.evolution.EvolutionConfig;
 import engine.Evolutionary;
 import engine.models.Solution;
@@ -29,7 +30,7 @@ public class Main {
             ETTDescriptor descriptor = (ETTDescriptor) jaxbUnmarshaller.unmarshal(file);
 
             //create population test demo
-            TimeTableMembers timeTable = new TimeTableMembers(descriptor.getETTTimeTable());
+            TimeTableDataSet timeTable = new TimeTableDataSet(descriptor);
             Evolutionary evolutionary = evolutionary = new Evolutionary();
             EvolutionConfig evolutionEngineDataSet = new EvolutionConfig(descriptor.getETTEvolutionEngine());
             List<Solution<Lesson>> population = evolutionary.generatePopulation(evolutionEngineDataSet.getInitialPopulation(), timeTable);

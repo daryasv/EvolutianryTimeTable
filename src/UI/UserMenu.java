@@ -49,7 +49,7 @@ public class UserMenu
         Scanner sc = new Scanner(System.in);
         String userInput = sc.nextLine();
         if (userInput == Commands.LOAD_TABLE_DETAILS.commandVal) {
-            //TODO: load XML file
+            Commands.RUN_ALGORITHM.setStatus(true);
         } else if (userInput == Commands.SHOW_TABLE_SETTINGS.commandVal) {
 
         } else if (userInput == Commands.RUN_ALGORITHM.commandVal) {

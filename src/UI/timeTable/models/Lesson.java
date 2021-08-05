@@ -15,6 +15,7 @@ public class Lesson {
         this.hour = hour;
     }
 
+
     public int getClassId() {
         return classId;
     }

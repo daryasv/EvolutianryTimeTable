@@ -1,13 +1,18 @@
 package UI.timeTable.models;
 
+import UI.evolutionEngine.models.EvolutionEngineDataSet;
+import UI.evolutionEngine.models.Mutation;
 import engine.models.EvolutionDataSet;
 import engine.models.Solution;
 import schema.models.*;
 
 import java.util.ArrayList;
+import java.util.EventListenerProxy;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
+import java.util.concurrent.ThreadLocalRandom;
+
 
 public class TimeTableDataSet implements EvolutionDataSet
 {
@@ -44,6 +49,56 @@ public class TimeTableDataSet implements EvolutionDataSet
         }
     }
 
+    public static void runMutation(Solution <Lesson> child){
+        List <Mutation> mutations = new EvolutionEngineDataSet().getMutation();
+        double probability;
+        int maxTupples;
+        char component;
+        for(int i=0; i<mutations.size();i++){
+            probability=mutations.get(i).getProbability();
+            maxTupples=mutations.get(i).getMaxTupples();
+            component=mutations.get(i).getComponent();
+            double randomNum = ThreadLocalRandom.current().nextDouble(0.0, 100.0);
+
+
+            if(mutations.get(i).getName().equals(Mutation.MutationOperators.FLIP_OPERATOR.getOperatorName())){
+                if(randomNum< probability)
+                    runFlippingMutation(child,maxTupples, component);
+            }
+        }
+    }
+
+    public static void runFlippingMutation(Solution <Lesson> child, int maxTuples, char component){
+        Random rand = new Random();
+        int randomTuplesNum = rand.nextInt();
+        for(int i=0; i<randomTuplesNum; i ++){
+            if (i>maxTuples)
+                break;
+            else{
+                int tupleIndex = rand.nextInt(child.getList().size());
+                changeComponent(child.getList().get(tupleIndex), component);
+            }
+        }
+    }
+
+    public static void changeComponent(Lesson lesson, char component){
+        int val=0;
+        if(component=='C'){
+            lesson.setClassId(val);
+        }
+        else if(component=='T'){
+            lesson.setTeacherId(val);
+        }
+        else if(component=='D'){
+            lesson.setDay(val);
+        }
+        else if(component=='H'){
+            lesson.setHour(val);
+        }
+        else if(component=='S'){
+            lesson.setSubjectId(val);
+        }
+    }
     public List<Subject> getSubjects() {
         return subjects;
     }
@@ -121,4 +176,5 @@ public class TimeTableDataSet implements EvolutionDataSet
         });
         return solution;
     }
+
 }

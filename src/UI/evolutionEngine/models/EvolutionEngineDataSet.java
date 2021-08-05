@@ -18,6 +18,13 @@ public class EvolutionEngineDataSet
         setSelection(ettEvolutionEngine.getETTSelection());
         setMutations(ettEvolutionEngine.getETTMutations().getETTMutation());
     }
+    public EvolutionEngineDataSet(){
+
+    }
+    public List <Mutation> getMutation(){
+        return mutations;
+    }
+
 
     public int getInitialPopulation() {
         return initialPopulation;

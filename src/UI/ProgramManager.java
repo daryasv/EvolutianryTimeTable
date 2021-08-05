@@ -1,9 +1,11 @@
 package UI;
 
 import UI.timeTable.models.Lesson;
+import UI.timeTable.models.TimeTableDataSet;
 import engine.models.Solution;
 
 import javax.swing.*;
+import java.awt.*;
 
 
 public class ProgramManager {
@@ -13,6 +15,10 @@ public class ProgramManager {
             Boolean isFileLoaded = false;
             UserMenu menu = new UserMenu();
            menu.getUserInput(isFileLoaded);
+           if(UserMenu.Commands.RUN_ALGORITHM.getStatus()){
+               Solution <Lesson> test = new Solution <Lesson>();
+               TimeTableDataSet.runMutation(test);
+           }
         }
         this.exitProgram();
 
@@ -37,6 +43,7 @@ public class ProgramManager {
             System.out.println("unknown print type");
         }
     }
+
 
     private void printRaw(Solution<Lesson> solution){
         for(int i=0; i< solution.getList().size(); i++){

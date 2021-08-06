@@ -6,6 +6,7 @@ import engine.models.Solution;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 
 
 public class ProgramManager {
@@ -30,14 +31,14 @@ public class ProgramManager {
 
     public void printSolution(int printType, Solution<Lesson> solution){
         if(printType== UserMenu.PRINT_RAW){
-            sortDayTimeOriented();
-            //printRaw();
+          //  sortDayTimeOriented(); USE DARIA's FUNCTION FROM CROSSOVER
+            printRaw(solution);
         }
         else if (printType==UserMenu.PRINT_PER_TEACHER){
-            printPerClass();
+           // printPerClass();
         }
         else if(printType==UserMenu.PRINT_PER_CLASS){
-            printPerTeacher();
+           // printPerTeacher();
         }
         else{
             System.out.println("unknown print type");
@@ -47,11 +48,30 @@ public class ProgramManager {
 
     private void printRaw(Solution<Lesson> solution){
         for(int i=0; i< solution.getList().size(); i++){
-            // System.out.println(String.format(<%d%d%d%d%d,));
+            int classId = solution.getList().get(i).getClassId();
+            int teacher =solution.getList().get(i).getTeacherId();
+            int subject =solution.getList().get(i).getSubjectId();
+            int day =solution.getList().get(i).getDay();
+            int hour =solution.getList().get(i).getHour();
+             System.out.println(String.format("%d%d%d%d%d",day,hour, classId, teacher,subject));
         }
     }
-    private void printPerClass(){}
-    private void printPerTeacher(){}
+    private void printPerClass(List<Lesson> lessons){
+
+        for(int i=0; i<lessons.size();i++){
+            int teacher =lessons.get(i).getTeacherId();
+            int subject =lessons.get(i).getSubjectId();
+            int day =lessons.get(i).getDay();
+            int hour =lessons.get(i).getHour();
+            System.out.println("____________________");
+            System.out.println("|____________________|");
+
+            System.out.println(String.format("|%d%d%d%d|",day,hour, teacher,subject));
+            System.out.println("____________________");
+        }
+        //for(int i<)
+    }
+    private void printPerTeacher(List<Lesson> list){}
     public void sortDayTimeOriented(){}
 
 }

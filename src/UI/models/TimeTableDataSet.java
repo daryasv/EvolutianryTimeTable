@@ -23,7 +23,7 @@ public class TimeTableDataSet implements EvolutionDataSet<Lesson> {
         this.evolutionConfig = new EvolutionConfig(descriptor.getETTEvolutionEngine());
     }
 
-    public  void runMutation(Solution <Lesson> child){
+    public void runMutation(Solution <Lesson> child){
         List<Mutation> mutations = evolutionConfig.getMutations();
         double probability;
         int maxTupples;

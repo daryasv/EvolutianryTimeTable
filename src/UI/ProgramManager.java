@@ -1,6 +1,7 @@
 package UI;
 
 import UI.models.Lesson;
+import UI.models.TimeTableDataSet;
 import engine.models.Solution;
 
 
@@ -10,7 +11,12 @@ public class ProgramManager {
         while(!UserMenu.Commands.EXIT.getStatus()){
             Boolean isFileLoaded = false;
             UserMenu menu = new UserMenu();
-           menu.getUserInput(isFileLoaded);
+            menu.getUserInput(isFileLoaded);
+            if(UserMenu.Commands.RUN_ALGORITHM.getStatus()){
+                Solution <Lesson> test = new Solution <Lesson>();
+           //     TimeTableDataSet set = new TimeTableDataSet();
+         //       .runMutation(test);
+            }
         }
         this.exitProgram();
 

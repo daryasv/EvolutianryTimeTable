@@ -48,15 +48,20 @@ public class UserMenu
         printMenu(isFileLoaded);
         Scanner sc = new Scanner(System.in);
         String userInput = sc.nextLine();
-        if (userInput == Commands.LOAD_TABLE_DETAILS.commandVal) {
-            //TODO: load XML file
-        } else if (userInput == Commands.SHOW_TABLE_SETTINGS.commandVal) {
+        if (userInput.equals(Commands.LOAD_TABLE_DETAILS.commandVal)) {
+            Commands.LOAD_TABLE_DETAILS.isActive=true;
 
-        } else if (userInput == Commands.RUN_ALGORITHM.commandVal) {
+        } else if (userInput.equals(Commands.LOAD_TABLE_DETAILS.commandVal)) {
+            Commands.SHOW_TABLE_SETTINGS.isActive=true;
 
-        } else if (userInput == Commands.SHOW_BEST_SOLUTION.commandVal) {
+        } else if (userInput.equals( Commands.RUN_ALGORITHM.commandVal)) {
+            Commands.RUN_ALGORITHM.isActive=true;
 
-        } else if (userInput == Commands.SHOW_ALGORITHM_PROC.commandVal) {
+        } else if (userInput.equals(Commands.SHOW_BEST_SOLUTION.commandVal)) {
+            Commands.SHOW_BEST_SOLUTION.isActive=true;
+
+        } else if (userInput.equals(Commands.SHOW_ALGORITHM_PROC.commandVal)) {
+            Commands.SHOW_ALGORITHM_PROC.isActive=true;
 
         } else if (userInput.equals(Commands.EXIT.commandVal)) {
             Commands.EXIT.isActive=true;

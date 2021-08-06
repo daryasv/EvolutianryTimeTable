@@ -66,6 +66,7 @@ public class ProgramManager {
             }
         }
     }
+
     private void printPerTeacher(Solution <Lesson> solution, int totalDays, int totalHours, int totalTeachers){
         for(int TeacherIndex=0; TeacherIndex<totalTeachers; TeacherIndex++){
             int teacherID = solution.getList().get(TeacherIndex).getTeacherId();
@@ -113,7 +114,7 @@ public class ProgramManager {
         }
         for(int i=0; i<lesson.getList().size(); i++){
             System.out.println("-----------------------------");
-            System.out.println(String.format("%s: %d Subject: %d",type,ID,lesson.getList().get(i).getSubjectId()));
+            System.out.println(String.format("|%s: %d Subject: %d|",type,ID,lesson.getList().get(i).getSubjectId()));
         }
         System.out.println("-----------------------------");
     }

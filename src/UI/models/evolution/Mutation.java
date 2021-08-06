@@ -1,4 +1,4 @@
-package UI.models.evolution;
+package UI.evolutionEngine.models;
 
 import schema.models.ETTMutation;
 
@@ -8,6 +8,21 @@ public class Mutation
     private double probability;
     private int maxTupples;
     private char component;
+
+    public static enum MutationOperators{
+        FLIP_OPERATOR("Flipping");
+        String operator;
+
+        public String getOperatorName() {
+            return operator;
+        }
+
+        MutationOperators(String operator){
+            this.operator=operator;
+        }
+
+    }
+
 
     public Mutation(ETTMutation ettMutation) {
         setName(ettMutation);

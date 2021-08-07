@@ -16,6 +16,8 @@ import java.util.Optional;
 
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
+
 import UI.models.evolution.Mutation;
 
 
@@ -130,7 +132,7 @@ public class TimeTableDataSet implements EvolutionDataSet<Lesson> {
     //TODO: implement method
     @Override
     public List<IRule> getRules() {
-        return null;
+        return new ArrayList<>(timeTableMembers.getRules());
     }
 
     //TODO: implement method

@@ -5,6 +5,7 @@ import engine.models.IRule;
 import engine.models.Solution;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -47,27 +48,33 @@ public class Evolutionary<T> {
         return solutions;
     }
 
-    public HashMap<Solution<T>, Integer> fitnessEvaluation(List<Solution<T>> solutions, List<IRule> rules, int hardRulesWeight,EvolutionDataSet<T> dataSet)
+    public HashMap<Solution<T>, Integer> fitnessEvaluation(List<Solution<T>> solutions, List<IRule> rules, double hardRulesWeight,EvolutionDataSet<T> dataSet)
     {
         HashMap<Solution<T>, Integer> solutionFitness = new HashMap<>();
         for (Solution<T> solution: solutions)
         {
-            int softFitness = 0;
-            int hardFitness = 0;
+            int softFitnessSum = 0;
+            int hardFitnessSum = 0;
+            int hardRulesCount = 0;
+            int softRulesCount = 0;
             for (IRule rule: rules)
             {
                 double fit = dataSet.getFitness(solution,rule);
                 if(rule.isHard())
                 {
-                    hardFitness+= fit;
+                    hardFitnessSum+= fit;
+                    hardRulesCount ++;
                 }
                 else
                 {
-                    softFitness+=fit;
+                    softFitnessSum+=fit;
+                    softRulesCount++;
                 }
             }
-            int finalFitness = hardFitness*(hardRulesWeight/100)+softFitness*((100-hardRulesWeight)/100);
-            solutionFitness.put(solution, finalFitness);
+            int hardAvg = hardFitnessSum / hardRulesCount;
+            int softAvg = softFitnessSum / softRulesCount;
+            double finalFitness = hardAvg*(hardRulesWeight/100)+softAvg*((100-hardRulesWeight)/100);
+            solutionFitness.put(solution, (int) finalFitness);
         }
         return solutionFitness;
     }

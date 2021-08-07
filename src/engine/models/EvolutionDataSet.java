@@ -2,6 +2,7 @@ package engine.models;
 
 import UI.models.Lesson;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface EvolutionDataSet<T> {

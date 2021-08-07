@@ -12,6 +12,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -21,7 +22,13 @@ public class Main {
     public static void main(String[] args) {
         //ProgramManager programInstance = new ProgramManager();
         //programInstance.manageProgram();
-        test();
+        //test();
+        List<Integer> test= new ArrayList<>();
+        test.add(1);
+        test.add(2);
+        test.add(3);
+        test.add(4);
+        List<Integer> a = test.subList(0,4);
     }
 
     private static void test() {

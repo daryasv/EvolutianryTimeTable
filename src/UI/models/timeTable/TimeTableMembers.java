@@ -18,6 +18,7 @@ public class TimeTableMembers
     private List<Subject> subjects;
     private List<Grade> grades;
     private List<Rule> rules;
+    private int hardRulesWeight;
 
     public TimeTableMembers(ETTTimeTable timeTableMembers) throws ValidationException {
         setDays(timeTableMembers.getDays());
@@ -26,6 +27,15 @@ public class TimeTableMembers
         setGrades(timeTableMembers.getETTClasses().getETTClass());
         setSubjects(timeTableMembers.getETTSubjects().getETTSubject());
         setRules(timeTableMembers.getETTRules().getETTRule());
+        setHardRulesWeight(timeTableMembers.getETTRules().getHardRulesWeight());
+    }
+
+    public int getHardRulesWeight() {
+        return hardRulesWeight;
+    }
+
+    public void setHardRulesWeight(int hardRulesWeight) {
+        this.hardRulesWeight = hardRulesWeight;
     }
 
     public int getDays() {
@@ -113,7 +123,7 @@ public class TimeTableMembers
             }
         }
 
-    public Solution<Lesson> getRandomSolution() {
+    public Solution<Lesson> generateRandomSolution() {
 
         Solution<Lesson> solution = new Solution<>();
 

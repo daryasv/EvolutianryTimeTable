@@ -13,14 +13,15 @@ public interface EvolutionDataSet<T> {
 
     Solution<T> getRandomSolution();
 
-    Solution<T> mutation(Solution<T> solution);
-
     int getHardRulesWeight();
 
     List<IRule> getRules();
 
-    List<Solution<T>> crossover(Solution<T> a, Solution<T> b);
+    ICrossoverData getCrossoverData();
 
     double getFitness(Solution<T> solution, IRule rule);
 
+    void mutation(Solution <T> child);
+
+    Solution<T> sort(Solution<T> solution, String operator);
 }

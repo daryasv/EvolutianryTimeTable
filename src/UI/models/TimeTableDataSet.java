@@ -1,25 +1,17 @@
 package UI.models;
 
 import UI.ValidationException;
-import UI.models.evolution.EvolutionConfig;
+import UI.models.evolution.*;
 import UI.models.timeTable.*;
 import engine.models.EvolutionDataSet;
+import engine.models.ICrossoverData;
 import engine.models.IRule;
 import engine.models.Solution;
 import schema.models.ETTDescriptor;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
-import java.util.Optional;
-
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Collectors;
-
-import UI.models.evolution.Mutation;
-
 
 
 public class TimeTableDataSet implements EvolutionDataSet<Lesson> {
@@ -32,8 +24,8 @@ public class TimeTableDataSet implements EvolutionDataSet<Lesson> {
         this.evolutionConfig = new EvolutionConfig(descriptor.getETTEvolutionEngine());
     }
 
-
-    public void runMutation(Solution <Lesson> child, TimeTableMembers allMembers){
+    @Override
+    public void mutation(Solution <Lesson> child){
         List<Mutation> mutations = evolutionConfig.getMutations();
         double probability;
         int maxTupples;
@@ -47,12 +39,12 @@ public class TimeTableDataSet implements EvolutionDataSet<Lesson> {
 
             if(mutations.get(i).getName().equals(Mutation.MutationOperators.FLIP_OPERATOR.getOperatorName())){
                 if(randomNum< probability)
-                    runFlippingMutation(child,maxTupples, component, allMembers);
+                    runFlippingMutation(child,maxTupples, component);
             }
         }
     }
 
-    public static void runFlippingMutation(Solution <Lesson> child, int maxTuples, char component,TimeTableMembers allMembers){
+    private void runFlippingMutation(Solution <Lesson> child, int maxTuples, char component){
         Random rand = new Random();
         int randomTuplesNum = rand.nextInt();
         for(int i=0; i<randomTuplesNum; i ++){
@@ -60,50 +52,50 @@ public class TimeTableDataSet implements EvolutionDataSet<Lesson> {
                 break;
             else{
                 int tupleIndex = rand.nextInt(child.getList().size());
-                changeComponent(child.getList().get(tupleIndex), component,allMembers);
+                changeComponent(child.getList().get(tupleIndex), component);
             }
         }
     }
 
-    public static void changeComponent(Lesson lesson, char component, TimeTableMembers allMembers){
+    private void changeComponent(Lesson lesson, char component){
         if(component=='C'){
-          int classCount=allMembers.getGrades().size();
+          int classCount=this.timeTableMembers.getGrades().size();
             Random rand = new Random();
             int randomIndex = rand.nextInt(classCount);
-            int changedID= allMembers.getGrades().get(randomIndex).getId();
+            int changedID= this.timeTableMembers.getGrades().get(randomIndex).getId();
             lesson.setClassId(changedID);
         }
         else if(component=='T'){
-            int TeachersCount=allMembers.getTeachers().size();
+            int TeachersCount=this.timeTableMembers.getTeachers().size();
             Random rand = new Random();
             int randomIndex = rand.nextInt(TeachersCount);
-            int changedID= allMembers.getTeachers().get(randomIndex).getId();
+            int changedID= this.timeTableMembers.getTeachers().get(randomIndex).getId();
             lesson.setTeacherId(changedID);
         }
         else if(component=='D'){
-            int DaysCount=allMembers.getDays();
+            int DaysCount=this.timeTableMembers.getDays();
             Random rand = new Random();
             int changedVal= rand.nextInt(DaysCount)+1;
             lesson.setDay(changedVal);
         }
         else if(component=='H'){
-            int HoursCount=allMembers.getHours();
+            int HoursCount=this.timeTableMembers.getHours();
             Random rand = new Random();
             int changedVal= rand.nextInt(HoursCount)+1;
             lesson.setHour(changedVal);
         }
         else if(component=='S'){
-            int subjectsCount=allMembers.getSubjects().size();
+            int subjectsCount=this.timeTableMembers.getSubjects().size();
             Random rand = new Random();
             int randomIndex = rand.nextInt(subjectsCount);
-            int changedVal= allMembers.getSubjects().get(randomIndex).getId();
+            int changedVal= this.timeTableMembers.getSubjects().get(randomIndex).getId();
             lesson.setClassId(changedVal);
         }
     }
 
     @Override
     public int getPopulationSize() {
-        return 0;
+        return evolutionConfig.getInitialPopulation();
     }
 
     //TODO: implement method
@@ -114,31 +106,23 @@ public class TimeTableDataSet implements EvolutionDataSet<Lesson> {
 
     @Override
     public Solution<Lesson> getRandomSolution() {
-        return timeTableMembers.getRandomSolution();
+        return timeTableMembers.generateRandomSolution();
     }
 
-    //TODO: implement method
-    @Override
-    public Solution<Lesson> mutation(Solution<Lesson> solution) {
-        return null;
-    }
-
-    //TODO: implement method
     @Override
     public int getHardRulesWeight() {
-        return 0;
+        return timeTableMembers.getHardRulesWeight();
     }
 
-    //TODO: implement method
     @Override
     public List<IRule> getRules() {
         return new ArrayList<>(timeTableMembers.getRules());
     }
 
-    //TODO: implement method
     @Override
-    public List<Solution<Lesson>> crossover(Solution<Lesson> a, Solution<Lesson> b) {
-        return null;
+    public ICrossoverData getCrossoverData()
+    {
+        return evolutionConfig.getCrossover();
     }
 
     @Override
@@ -253,5 +237,15 @@ public class TimeTableDataSet implements EvolutionDataSet<Lesson> {
                 break;
         }
         return 0;
+    }
+
+    @Override
+    public Solution<Lesson> sort(Solution<Lesson> solution, String operator) {
+        CrossoverSortType sortType = CrossoverSortType.valueOfLabel(operator);
+        Solution<Lesson> sorted = new Solution<Lesson>();
+        sorted.setList(new ArrayList<>(solution.getList())); //duplicate the solution
+        sorted.getList().sort(new LessonComparator(sortType));
+
+        return sorted;
     }
 }

@@ -98,6 +98,7 @@ public class TimeTableDataSet implements EvolutionDataSet<Lesson> {
         }
     }
 
+
     @Override
     public int getPopulationSize() {
         return evolutionConfig.getInitialPopulation();

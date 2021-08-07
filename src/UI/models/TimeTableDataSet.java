@@ -2,12 +2,16 @@ package UI.models;
 
 import UI.ValidationException;
 import UI.models.evolution.EvolutionConfig;
-import UI.models.timeTable.TimeTableMembers;
+import UI.models.timeTable.*;
 import engine.models.EvolutionDataSet;
 import engine.models.IRule;
 import engine.models.Solution;
 import schema.models.ETTDescriptor;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 
 public class TimeTableDataSet implements EvolutionDataSet<Lesson> {
@@ -20,13 +24,13 @@ public class TimeTableDataSet implements EvolutionDataSet<Lesson> {
         this.evolutionConfig = new EvolutionConfig(descriptor.getETTEvolutionEngine());
     }
 
-    //TODO
+    //TODO: implement method
     @Override
     public int getPopulationSize() {
         return 0;
     }
 
-    //TODO
+    //TODO: implement method
     @Override
     public int getGenerations() {
         return 0;
@@ -37,27 +41,141 @@ public class TimeTableDataSet implements EvolutionDataSet<Lesson> {
         return timeTableMembers.getRandomSolution();
     }
 
-    //TODO
+    //TODO: implement method
     @Override
     public Solution<Lesson> mutation(Solution<Lesson> solution) {
         return null;
     }
 
-    //TODO
+    //TODO: implement method
     @Override
     public int getHardRulesWeight() {
         return 0;
     }
 
-    //TODO
+    //TODO: implement method
     @Override
-    public List<IRule<Lesson>> getRules() {
+    public List<IRule> getRules() {
         return null;
     }
 
-    //TODO
+    //TODO: implement method
     @Override
     public List<Solution<Lesson>> crossover(Solution<Lesson> a, Solution<Lesson> b) {
         return null;
+    }
+
+    @Override
+    public double getFitness(Solution<Lesson> solution, IRule rule) {
+        double fails = 0;
+        List<Lesson> lessons = solution.getList();
+        RuleId ruleId = RuleId.valueOf(rule.getName());
+        switch (ruleId) {
+            case TeacherIsHuman:
+                HashMap<HourInDay, List<Integer>> teachersByHour = new HashMap<>();
+                for (Lesson l : lessons) {
+                    if (l.getTeacherId() != -1) {
+                        HourInDay hourInDay = new HourInDay(l.getDay(), l.getHour());
+                        if (teachersByHour.containsKey(hourInDay)) {
+                            if (teachersByHour.get(hourInDay).contains(l.getTeacherId())) {
+                                fails++;
+                                continue;
+                            }
+                        } else {
+                            teachersByHour.put(hourInDay, new ArrayList<>());
+                        }
+                        teachersByHour.get(hourInDay).add(l.getTeacherId());
+                    }
+                }
+                return (1 - (fails / lessons.size())) * 100;
+            case Singularity:
+                HashMap<HourInDay, List<Integer>> classesByHour = new HashMap<>();
+                for (Lesson l : lessons) {
+                    HourInDay hourInDay = new HourInDay(l.getDay(), l.getHour());
+                    if (classesByHour.containsKey(hourInDay)) {
+                        if (classesByHour.get(hourInDay).contains(l.getClassId())) {
+                            fails++;
+                            continue;
+                        }
+                    } else {
+                        classesByHour.put(hourInDay, new ArrayList<>());
+                    }
+                    classesByHour.get(hourInDay).add(l.getClassId());
+                }
+                return (1 - (fails / lessons.size())) * 100;
+            case Knowledgeable:
+                for (Lesson lesson : lessons) {
+                    if (lesson.getSubjectId() != -1) {
+                        Optional<Teacher> teacher = timeTableMembers.getTeachers().stream().filter(t -> t.getId() == lesson.getTeacherId()).findFirst();
+                        if (teacher.isPresent()) {
+                            if (!teacher.get().getSubjectsIdsList().contains(lesson.getSubjectId())) {
+                                fails++;
+                            }
+                        } else {
+                            fails++;
+                        }
+                    }
+                }
+                return (1 - (fails / lessons.size())) * 100;
+            case Satisfactory:
+
+                HashMap<Integer, HashMap<Integer, Integer>> hoursByClass = new HashMap<>();
+
+                //set actual
+                for (Lesson l : lessons) {
+                    if (l.getSubjectId() == -1)
+                        continue;
+                    int grade = l.getClassId();
+                    HashMap<Integer, Integer> subjectsCount;
+                    if (!hoursByClass.containsKey(grade)) {
+                        subjectsCount = new HashMap<>();
+                        subjectsCount.put(l.getSubjectId(), 1);
+                    } else {
+                        subjectsCount = hoursByClass.get(grade);
+                        int hours = 1;
+                        if (subjectsCount.containsKey(l.getSubjectId())) {
+                            hours += subjectsCount.get(l.getSubjectId());
+                        }
+                        subjectsCount.put(l.getSubjectId(), hours);
+                    }
+
+                    hoursByClass.put(l.getClassId(), subjectsCount);
+                }
+
+                int totalSubjectsExpect = 0;
+                for (Grade grade : this.timeTableMembers.getGrades()) {
+                    int gradeId = grade.getId();
+                    if (hoursByClass.containsKey(gradeId)) {
+                        //go over all subjects in grade
+                        //check if they exist in actual
+                        //mark all the subjects that are invalid hours
+                        for (Integer subjectId : grade.getRequirements().keySet()) {
+                            int expect = grade.getRequirements().get(subjectId);
+                            int actual = 0;
+                            if (hoursByClass.get(gradeId).containsKey(subjectId)) {
+                                actual = hoursByClass.get(gradeId).get(subjectId);
+                            }
+                            if (expect != actual) {
+                                fails++;
+                            }
+                        }
+
+                        //check on actual if there is subjects that not relevant to the class
+                        for(Integer subjectId: hoursByClass.get(gradeId).keySet()) {
+                            if (!grade.getRequirements().containsKey(subjectId)) {
+                                fails++;
+                                totalSubjectsExpect++;
+                            }
+                        }
+                    } else {
+                        fails += grade.getRequirements().size();
+                    }
+                    totalSubjectsExpect += grade.getRequirements().size();
+                }
+                return (1 - (fails / totalSubjectsExpect)) * 100;
+            default:
+                break;
+        }
+        return 0;
     }
 }

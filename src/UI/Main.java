@@ -37,7 +37,7 @@ public class Main {
 
             //demo for the best solution
             Solution<Lesson> solution = population.get(0);
-            List<Lesson> lessons = solution.getList().stream().filter(l -> l.getTeacherId() == 1).collect(Collectors.toList());
+
             boolean a = true;
         } catch (JAXBException | ValidationException e) {
             e.printStackTrace();

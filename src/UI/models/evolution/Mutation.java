@@ -9,6 +9,21 @@ public class Mutation
     private int maxTupples;
     private char component;
 
+    public static enum MutationOperators{
+        FLIP_OPERATOR("Flipping");
+        String operator;
+
+        public String getOperatorName() {
+            return operator;
+        }
+
+        MutationOperators(String operator){
+            this.operator=operator;
+        }
+
+    }
+
+
     public Mutation(ETTMutation ettMutation) {
         setName(ettMutation);
         setProbability(ettMutation);

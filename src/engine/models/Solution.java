@@ -25,8 +25,4 @@ public class Solution<T> {
     {
         this.list.add(item);
     }
-
-
-
-
 }

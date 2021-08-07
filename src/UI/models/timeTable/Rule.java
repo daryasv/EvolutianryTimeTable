@@ -6,15 +6,19 @@ import engine.models.IRule;
 import engine.models.Solution;
 import schema.models.ETTRule;
 
-public class Rule implements IRule<Lesson> {
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
-    protected String id;
+public class Rule implements IRule {
+
+    protected RuleId id;
     protected String configuration;
     protected RuleType type;
 
-
-    //TODO: with set (set methods will do the validation, Example in "Teacher" class)
     public Rule(ETTRule ettRule) throws ValidationException {
+      setId(ettRule.getETTRuleId());
+      setConfiguration(ettRule.getETTConfiguration());
       setRuleType(ettRule.getType());
     }
 
@@ -23,18 +27,25 @@ public class Rule implements IRule<Lesson> {
         return type == RuleType.HARD;
     }
 
-    //TODO
     @Override
-    public int getFitness(Solution<Lesson> solution) {
-        return 0;
+    public String getName() {
+        return this.id.toString();
     }
 
-    public String getId() {
+    public RuleId getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(RuleId id) {
         this.id = id;
+    }
+
+    public void setId(String id) throws ValidationException {
+        RuleId ruleId = RuleId.valueOfLabel(id);
+        if(ruleId == null){
+            throw new ValidationException("Invalid rule id");
+        }
+        this.id = ruleId;
     }
 
     public String getConfiguration() {

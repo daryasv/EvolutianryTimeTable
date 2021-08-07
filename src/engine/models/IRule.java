@@ -1,8 +1,8 @@
 package engine.models;
 
-public interface IRule<T> {
+public interface IRule {
 
     boolean isHard();
-    int getFitness(Solution <T> solution);
+    String getName();
 
 }

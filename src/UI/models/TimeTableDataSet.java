@@ -23,7 +23,7 @@ public class TimeTableDataSet implements EvolutionDataSet<Lesson> {
         this.evolutionConfig = new EvolutionConfig(descriptor.getETTEvolutionEngine());
     }
 
-    public void runMutation(Solution <Lesson> child){
+    public void runMutation(Solution <Lesson> child, TimeTableMembers allMembers){
         List<Mutation> mutations = evolutionConfig.getMutations();
         double probability;
         int maxTupples;
@@ -37,12 +37,12 @@ public class TimeTableDataSet implements EvolutionDataSet<Lesson> {
 
             if(mutations.get(i).getName().equals(Mutation.MutationOperators.FLIP_OPERATOR.getOperatorName())){
                 if(randomNum< probability)
-                    runFlippingMutation(child,maxTupples, component);
+                    runFlippingMutation(child,maxTupples, component, allMembers);
             }
         }
     }
 
-    public static void runFlippingMutation(Solution <Lesson> child, int maxTuples, char component){
+    public static void runFlippingMutation(Solution <Lesson> child, int maxTuples, char component,TimeTableMembers allMembers){
         Random rand = new Random();
         int randomTuplesNum = rand.nextInt();
         for(int i=0; i<randomTuplesNum; i ++){
@@ -50,27 +50,44 @@ public class TimeTableDataSet implements EvolutionDataSet<Lesson> {
                 break;
             else{
                 int tupleIndex = rand.nextInt(child.getList().size());
-                changeComponent(child.getList().get(tupleIndex), component);
+                changeComponent(child.getList().get(tupleIndex), component,allMembers);
             }
         }
     }
 
-    public static void changeComponent(Lesson lesson, char component){
-        int val=0;
+    public static void changeComponent(Lesson lesson, char component, TimeTableMembers allMembers){
         if(component=='C'){
-            lesson.setClassId(val);
+          int classCount=allMembers.getGrades().size();
+            Random rand = new Random();
+            int randomIndex = rand.nextInt(classCount);
+            int changedID= allMembers.getGrades().get(randomIndex).getId();
+            lesson.setClassId(changedID);
         }
         else if(component=='T'){
-            lesson.setTeacherId(val);
+            int TeachersCount=allMembers.getTeachers().size();
+            Random rand = new Random();
+            int randomIndex = rand.nextInt(TeachersCount);
+            int changedID= allMembers.getTeachers().get(randomIndex).getId();
+            lesson.setTeacherId(changedID);
         }
         else if(component=='D'){
-            lesson.setDay(val);
+            int DaysCount=allMembers.getDays();
+            Random rand = new Random();
+            int changedVal= rand.nextInt(DaysCount)+1;
+            lesson.setDay(changedVal);
         }
         else if(component=='H'){
-            lesson.setHour(val);
+            int HoursCount=allMembers.getHours();
+            Random rand = new Random();
+            int changedVal= rand.nextInt(HoursCount)+1;
+            lesson.setHour(changedVal);
         }
         else if(component=='S'){
-            lesson.setSubjectId(val);
+            int subjectsCount=allMembers.getSubjects().size();
+            Random rand = new Random();
+            int randomIndex = rand.nextInt(subjectsCount);
+            int changedVal= allMembers.getSubjects().get(randomIndex).getId();
+            lesson.setClassId(changedVal);
         }
     }
 

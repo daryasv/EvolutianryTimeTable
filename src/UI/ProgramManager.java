@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 
 public class ProgramManager {
     TimeTableDataSet timeTable;
-    EvolutionConfig evolutionEngineDataSet;
     List<Solution<Lesson>> population;
 
     public static enum systemSetting{
@@ -32,7 +31,7 @@ public class ProgramManager {
 
     public void manageProgram(){
         UserMenu.Commands.EXIT.setStatus(false);
-        while(!UserMenu.Commands.EXIT.getStatus()){
+        while(!UserMenu.Commands.EXIT.getStatus()) {
             UserMenu menu = new UserMenu();
             menu.getUserInput();
             runCommand();
@@ -52,7 +51,7 @@ public class ProgramManager {
 
         }
         else if(UserMenu.Commands.RUN_ALGORITHM.getStatus()){
-
+            runAlgorithm();
         }
         else if(UserMenu.Commands.SHOW_BEST_SOLUTION.getStatus()){
 
@@ -77,28 +76,32 @@ public class ProgramManager {
         }
     }
 
-    private void runAlgorithm(){
-        try{
-            Evolutionary evolutionary = evolutionary = new Evolutionary();
-            population = evolutionary.generatePopulation(evolutionEngineDataSet.getInitialPopulation(), timeTable);
-            //demo for the best solution
-            Solution<Lesson> solution = population.get(0);
-            List<Lesson> lessons = solution.getList().stream().filter(l -> l.getTeacherId() == 1).collect(Collectors.toList());
-            boolean a = true;
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
     private void updateDataSets(ETTDescriptor descriptor){
         try{
             timeTable = new TimeTableDataSet(descriptor);
-            evolutionEngineDataSet = new EvolutionConfig(descriptor.getETTEvolutionEngine());
         } catch (ValidationException e) {
             e.printStackTrace();
         }
 
     }
+
+    private void runAlgorithm(){
+        try{
+            System.out.println("Please enter num of generations");
+            int generations = System.in.read();
+            timeTable.getEvolutionConfig().setGenerations(generations);
+            System.out.println("Please enter logs generations jump");
+            int logGenerations = System.in.read();
+            timeTable.getEvolutionConfig().setGenerations(logGenerations);
+
+            Evolutionary evolutionary = evolutionary = new Evolutionary();
+            evolutionary.run(timeTable);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public void printSolution(int printType, Solution<Lesson> solution, int totalDays, int totalHours){
         if(printType== UserMenu.PRINT_RAW){

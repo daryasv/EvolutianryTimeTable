@@ -14,7 +14,7 @@ public class Component {
       if(id > 0){
          this.id = id;
       }else{
-         throw new ValidationException("Invalid teacher id");
+         throw new ValidationException("Invalid id");
       }
    }
 
@@ -23,11 +23,10 @@ public class Component {
    }
 
    public void setName(String name) throws ValidationException {
-      //TODO : add more validations
-      if(!name.isEmpty()) {
+      if(name != null && name.length() > 1) {
          this.name = name;
-      }else{
-         throw new ValidationException("Invalid teacher name");
+      }else {
+         throw new ValidationException("Invalid name");
       }
    }
 }

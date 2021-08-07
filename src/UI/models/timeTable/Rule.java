@@ -36,16 +36,16 @@ public class Rule implements IRule {
         return id;
     }
 
-    public void setId(RuleId id) {
+    public void setId(RuleId id) throws ValidationException {
+        if(id == null){
+            throw new ValidationException("Invalid rule id");
+        }
         this.id = id;
     }
 
     public void setId(String id) throws ValidationException {
         RuleId ruleId = RuleId.valueOfLabel(id);
-        if(ruleId == null){
-            throw new ValidationException("Invalid rule id");
-        }
-        this.id = ruleId;
+        setId(ruleId);
     }
 
     public String getConfiguration() {
@@ -60,16 +60,16 @@ public class Rule implements IRule {
         return type;
     }
 
-    public void setType(RuleType type) {
+    public void setType(RuleType type) throws ValidationException {
+        if(type == null){
+            throw new ValidationException("Invalid rule type");
+        }
         this.type = type;
     }
 
     public void setRuleType(String ruleType) throws ValidationException {
         RuleType type = RuleType.valueOfLabel(ruleType);
-        if(type == null){
-            throw new ValidationException("Invalid rule type");
-        }
-        this.type = type;
+        setType(type);
     }
 }
 

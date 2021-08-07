@@ -28,18 +28,18 @@ public class TimeTableDataSet implements EvolutionDataSet<Lesson> {
     public void mutation(Solution <Lesson> child){
         List<Mutation> mutations = evolutionConfig.getMutations();
         double probability;
-        int maxTupples;
+        int maxTuples;
         char component;
         for(int i=0; i<mutations.size();i++){
             probability=mutations.get(i).getProbability();
-            maxTupples=mutations.get(i).getMaxTupples();
+            maxTuples=mutations.get(i).getMaxTupples();
             component=mutations.get(i).getComponent();
             double randomNum = ThreadLocalRandom.current().nextDouble(0.0, 100.0);
 
 
             if(mutations.get(i).getName().equals(Mutation.MutationOperators.FLIP_OPERATOR.getOperatorName())){
                 if(randomNum< probability)
-                    runFlippingMutation(child,maxTupples, component);
+                    runFlippingMutation(child,maxTuples, component);
             }
         }
     }
@@ -101,7 +101,7 @@ public class TimeTableDataSet implements EvolutionDataSet<Lesson> {
     //TODO: implement method
     @Override
     public int getGenerations() {
-        return 0;
+        return evolutionConfig.getGenerations();
     }
 
     @Override
@@ -166,9 +166,9 @@ public class TimeTableDataSet implements EvolutionDataSet<Lesson> {
             case Knowledgeable:
                 for (Lesson lesson : lessons) {
                     if (lesson.getSubjectId() != -1) {
-                        Optional<Teacher> teacher = timeTableMembers.getTeachers().stream().filter(t -> t.getId() == lesson.getTeacherId()).findFirst();
-                        if (teacher.isPresent()) {
-                            if (!teacher.get().getSubjectsIdsList().contains(lesson.getSubjectId())) {
+                        Teacher teacher = timeTableMembers.getTeachers().get(lesson.getTeacherId());
+                        if (teacher!=null) {
+                            if (!teacher.getSubjectsIdsList().contains(lesson.getSubjectId())) {
                                 fails++;
                             }
                         } else {
@@ -203,7 +203,7 @@ public class TimeTableDataSet implements EvolutionDataSet<Lesson> {
                 }
 
                 int totalSubjectsExpect = 0;
-                for (Grade grade : this.timeTableMembers.getGrades()) {
+                for (Grade grade : this.timeTableMembers.getGrades().values()) {
                     int gradeId = grade.getId();
                     if (hoursByClass.containsKey(gradeId)) {
                         //go over all subjects in grade
@@ -247,5 +247,9 @@ public class TimeTableDataSet implements EvolutionDataSet<Lesson> {
         sorted.getList().sort(new LessonComparator(sortType));
 
         return sorted;
+    }
+
+    public EvolutionConfig getEvolutionConfig(){
+        return this.evolutionConfig;
     }
 }

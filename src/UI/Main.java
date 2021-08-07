@@ -20,15 +20,10 @@ public class Main {
     public static final String FILE_NAME = "src/resources/EX1-small.xml";
 
     public static void main(String[] args) {
-        //ProgramManager programInstance = new ProgramManager();
-        //programInstance.manageProgram();
+        ProgramManager programInstance = new ProgramManager();
+        programInstance.manageProgram();
         //test();
-        List<Integer> test= new ArrayList<>();
-        test.add(1);
-        test.add(2);
-        test.add(3);
-        test.add(4);
-        List<Integer> a = test.subList(0,4);
+
     }
 
     private static void test() {
@@ -48,6 +43,7 @@ public class Main {
             //demo for the best solution
             Solution<Lesson> solution = population.get(0);
             HashMap<List<Solution<Lesson>>, Integer> fitnessMap = evolutionary.fitnessEvaluation(population, timeTable.getRules(), 70, timeTable);
+            evolutionary.run(timeTable);
             boolean a = true;
         } catch (JAXBException | ValidationException e) {
             e.printStackTrace();

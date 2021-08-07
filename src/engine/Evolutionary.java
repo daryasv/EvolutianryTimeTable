@@ -88,7 +88,7 @@ public class Evolutionary<T> {
                 child1.getList().addAll(subList2);
                 child2.getList().addAll(subList1);
             }
-            startIndex = end + 1;
+            startIndex = end;
         }
 
         List<Solution<T>> children = new ArrayList<>();

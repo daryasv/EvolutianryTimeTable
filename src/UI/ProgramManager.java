@@ -4,18 +4,38 @@ import UI.models.Lesson;
 import UI.models.TimeTableDataSet;
 import UI.models.evolution.EvolutionConfig;
 import UI.models.timeTable.TimeTableMembers;
+import engine.Evolutionary;
 import engine.models.Solution;
+import schema.models.ETTDescriptor;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import java.io.File;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class ProgramManager {
+    TimeTableDataSet timeTable;
+    EvolutionConfig evolutionEngineDataSet;
+    List<Solution<Lesson>> population;
+
+    public static enum systemSetting{
+        IS_FILE_LOADED(false);
+        boolean status;
+        systemSetting(boolean status){
+            this.status=status;
+        }
+    }
+    public static final String FILE_NAME = "src/resources/EX1-small.xml";
+
     public void manageProgram(){
         UserMenu.Commands.EXIT.setStatus(false);
         while(!UserMenu.Commands.EXIT.getStatus()){
-            Boolean isFileLoaded = false;
             UserMenu menu = new UserMenu();
-            menu.getUserInput(isFileLoaded);
+            menu.getUserInput();
+            runCommand();
         }
         this.exitProgram();
 
@@ -24,6 +44,61 @@ public class ProgramManager {
         System.out.println("The program closed");
     }
 
+    private void runCommand(){
+        if(UserMenu.Commands.LOAD_TABLE_DETAILS.getStatus()){
+            loadXMLFile();
+        }
+        else if(UserMenu.Commands.SHOW_TABLE_SETTINGS.getStatus()){
+
+        }
+        else if(UserMenu.Commands.RUN_ALGORITHM.getStatus()){
+
+        }
+        else if(UserMenu.Commands.SHOW_BEST_SOLUTION.getStatus()){
+
+        }
+        else if(UserMenu.Commands.SHOW_ALGORITHM_PROC.getStatus()){
+
+        }
+    }
+    private void loadXMLFile(){
+        try{
+            //load xml file into ETT classes
+            File file = new File(FILE_NAME);
+            JAXBContext jaxbContext = JAXBContext.newInstance(ETTDescriptor.class);
+            Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+            ETTDescriptor descriptor = (ETTDescriptor) jaxbUnmarshaller.unmarshal(file);
+            updateDataSets(descriptor);
+            systemSetting.IS_FILE_LOADED.status=true;
+
+        } catch (JAXBException e) {
+            systemSetting.IS_FILE_LOADED.status=false;
+            e.printStackTrace();
+        }
+    }
+
+    private void runAlgorithm(){
+        try{
+            Evolutionary evolutionary = evolutionary = new Evolutionary();
+            population = evolutionary.generatePopulation(evolutionEngineDataSet.getInitialPopulation(), timeTable);
+            //demo for the best solution
+            Solution<Lesson> solution = population.get(0);
+            List<Lesson> lessons = solution.getList().stream().filter(l -> l.getTeacherId() == 1).collect(Collectors.toList());
+            boolean a = true;
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    private void updateDataSets(ETTDescriptor descriptor){
+        try{
+            timeTable = new TimeTableDataSet(descriptor);
+            evolutionEngineDataSet = new EvolutionConfig(descriptor.getETTEvolutionEngine());
+        } catch (ValidationException e) {
+            e.printStackTrace();
+        }
+
+    }
 
     public void printSolution(int printType, Solution<Lesson> solution, int totalDays, int totalHours){
         if(printType== UserMenu.PRINT_RAW){

@@ -1,3 +1,4 @@
+
 package UI;
 
 import UI.models.Lesson;
@@ -15,14 +16,12 @@ import java.util.HashMap;
 import java.util.List;
 
 public class Main {
-
     public static final String FILE_NAME = "src/resources/EX1-small.xml";
 
     public static void main(String[] args) {
         //ProgramManager programInstance = new ProgramManager();
         //programInstance.manageProgram();
         test();
-
     }
 
     private static void test() {
@@ -41,11 +40,10 @@ public class Main {
 
             //demo for the best solution
             Solution<Lesson> solution = population.get(0);
-            HashMap<List<Solution<Lesson>>, Integer> fitnessMap = evolutionary.fitnessEvaluation(population, timeTable.getRules(), 70,timeTable);
+            HashMap<List<Solution<Lesson>>, Integer> fitnessMap = evolutionary.fitnessEvaluation(population, timeTable.getRules(), 70, timeTable);
             boolean a = true;
         } catch (JAXBException | ValidationException e) {
             e.printStackTrace();
         }
-
     }
 }

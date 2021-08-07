@@ -21,3 +21,5 @@ public class Main {
         ProgramManager programInstance = new ProgramManager();
         programInstance.manageProgram();
 
+    }
+    }

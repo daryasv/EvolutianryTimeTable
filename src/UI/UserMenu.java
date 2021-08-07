@@ -32,9 +32,6 @@ public class UserMenu
         }
     }
     private final String openingMsg= "please enter your command:";
-    public static final int PRINT_RAW=1;
-    public static final int PRINT_PER_TEACHER=2;
-    public static final int PRINT_PER_CLASS=3;
 
     private void printMenu()
     {

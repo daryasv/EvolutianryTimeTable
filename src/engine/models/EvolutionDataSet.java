@@ -11,6 +11,8 @@ public interface EvolutionDataSet<T> {
 
     int getGenerations();
 
+    int getGenerationInterval();
+
     Solution<T> getRandomSolution();
 
     int getHardRulesWeight();
@@ -24,4 +26,6 @@ public interface EvolutionDataSet<T> {
     void mutation(Solution <T> child);
 
     Solution<T> sort(Solution<T> solution, String operator);
+
+    ISelectionData getSelectionData();
 }

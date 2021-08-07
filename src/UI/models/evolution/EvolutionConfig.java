@@ -60,7 +60,7 @@ public class EvolutionConfig
     }
 
     //TODO : validation
-    public void setSelection(ETTSelection ettSelection) {
+    public void setSelection(ETTSelection ettSelection) throws ValidationException {
         this.selection = new Selection(ettSelection);
     }
 

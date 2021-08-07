@@ -1,9 +1,6 @@
 package engine;
 
-import UI.models.Lesson;
-import engine.models.EvolutionDataSet;
-import engine.models.IRule;
-import engine.models.Solution;
+import engine.models.*;
 
 import java.util.*;
 
@@ -15,37 +12,63 @@ public class Evolutionary<T> {
         List<IRule> rules = dataSet.getRules();
         int hardRulesWeight = dataSet.getHardRulesWeight();
         int generations = dataSet.getGenerations();
+        int generationInterval = dataSet.getGenerationInterval();
         int genCounter=0;
+
+        System.out.println("Evolutionary Engine starts !");
+        //generate population
         List<Solution<T>> populationList = generatePopulation(populationSize, dataSet);
 
         while(!isEndOfEvolution(genCounter,generations))
         {
-            List<Solution<T>> newPopulation = new ArrayList<>();
-            HashMap<Solution<T>, Integer> solutionsFitnessMap = fitnessEvaluation(populationList, rules, hardRulesWeight, dataSet);
+            List<Solution<T>> newGeneration = new ArrayList<>();
+            //Fitness
+            Map<Solution<T>, Integer> solutionsFitnessMap = fitnessEvaluation(populationList, rules, hardRulesWeight, dataSet);
+            //Selection
+            List<Solution<T>> selectionSolutions = getSelectionSolutions(solutionsFitnessMap, dataSet.getSelectionData());
+
             //selection - returns list of best parents
             for (int i = 0; i < populationSize;) {
                 //make new generation
-                //todo: change population list to best parents
-                Solution<T> parent1 = getRandomSolution(populationList);
-                Solution<T> parent2 = getRandomSolution(populationList);
+                Solution<T> parent1 = getRandomSolution(selectionSolutions);
+                Solution<T> parent2 = getRandomSolution(selectionSolutions);
                 while (parent1.equals(parent2)) //verify the parents are not the same one
                 {
-                    parent2 = getRandomSolution(populationList);
+                    parent2 = getRandomSolution(selectionSolutions);
                 }
                 List<Solution<T>> children = crossover(dataSet, parent1, parent2);
                 //run mutation on children
                 children.forEach(dataSet::mutation);
-                newPopulation.add(children.get(0));
+                newGeneration.add(children.get(0));
                 i++;
                 if(i<populationSize) {
-                    newPopulation.add(children.get(1));
+                    newGeneration.add(children.get(1));
                     i++;
                 }
             }
-            populationList = newPopulation;
+            populationList = newGeneration;
             genCounter++;
+
         }
 
+    }
+
+    private List<Solution<T>> getSelectionSolutions(Map<Solution<T>, Integer> map, ISelectionData selectionData) {
+        List<Map.Entry<Solution<T>, Integer>> list = new LinkedList<>(map.entrySet());
+        list.sort((obj01, obj02) -> obj02.getValue() - obj01.getValue());
+
+        if(selectionData.getType() == SelectionType.Truncation){
+            double value = selectionData.getValue();
+            int numToPull = (int)((value / 100) * list.size());
+            list = list.subList(0,numToPull);
+        }
+
+        //add to result list
+        List<Solution<T>> result = new ArrayList<>();
+        for (Map.Entry<Solution<T>, Integer> entry : list) {
+            result.add(entry.getKey());
+        }
+        return result;
     }
 
     private List<Solution<T>> crossover(EvolutionDataSet<T> dataSet, Solution<T> parent1, Solution<T> parent2)

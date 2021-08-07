@@ -3,10 +3,7 @@ package UI.models;
 import UI.ValidationException;
 import UI.models.evolution.*;
 import UI.models.timeTable.*;
-import engine.models.EvolutionDataSet;
-import engine.models.ICrossoverData;
-import engine.models.IRule;
-import engine.models.Solution;
+import engine.models.*;
 import schema.models.ETTDescriptor;
 
 import java.util.*;
@@ -113,6 +110,11 @@ public class TimeTableDataSet implements EvolutionDataSet<Lesson> {
     @Override
     public int getGenerations() {
         return evolutionConfig.getGenerations();
+    }
+
+    @Override
+    public int getGenerationInterval() {
+        return evolutionConfig.getGenerationsInterval();
     }
 
     @Override
@@ -258,5 +260,10 @@ public class TimeTableDataSet implements EvolutionDataSet<Lesson> {
         sorted.getList().sort(new LessonComparator(sortType));
 
         return sorted;
+    }
+
+    @Override
+    public ISelectionData getSelectionData() {
+        return getEvolutionConfig().getSelection();
     }
 }

@@ -1,33 +1,53 @@
 package UI.models.evolution;
 
+import UI.ValidationException;
+import engine.models.ISelectionData;
+import engine.models.SelectionType;
 import schema.models.ETTSelection;
 
-public class Selection
+public class Selection implements ISelectionData
 {
-    private String type;
-    private int topPercent;
+    private SelectionType type;
+    private int value;
 
-    public Selection(ETTSelection ettSelection) {
-        setType(ettSelection);
-        setTopPercent(ettSelection);
+    public Selection(ETTSelection ettSelection) throws ValidationException {
+        setType(ettSelection.getType());
+        setValue(ettSelection.getConfiguration());
     }
 
-    public String getType() {
+    public SelectionType getType() {
         return type;
     }
 
-    //TODO : validation
-    public void setType(ETTSelection ettSelection) {
-        this.type = ettSelection.getType();
+    public void setType(SelectionType type) throws ValidationException {
+        if(type == null){
+            throw new ValidationException("Invalid selection type");
+        }
+        this.type = type;
     }
 
-    public int getTopPercent() {
-        return topPercent;
+    public void setType(String type) throws ValidationException {
+        SelectionType selectionType = SelectionType.valueOfLabel(type);
+        setType(selectionType);
     }
 
-    //TODO : validation
-    //very hardcoded
-    public void setTopPercent(ETTSelection ettSelection) {
-        this.topPercent = Integer.parseInt(ettSelection.getConfiguration().split("=")[1]);
+    @Override
+    public int getValue() {
+        return value;
+    }
+
+    public void setValue(String configuration) throws ValidationException {
+        if(configuration == null || !configuration.contains("=")){
+            throw new ValidationException("Invalid selection config");
+        }
+        int value = Integer.parseInt(configuration.split("=")[1]);
+        setTopPercent(value);
+    }
+
+    public void setTopPercent(int value) throws ValidationException {
+        if(value < 1){
+            throw new ValidationException("Invalid selection config");
+        }
+        this.value = value;
     }
 }

@@ -21,10 +21,11 @@ public class Evolutionary<T> {
         while(!isEndOfEvolution(genCounter,generations))
         {
             List<Solution<T>> newPopulation = new ArrayList<>();
+            HashMap<Solution<T>, Integer> solutionsFitnessMap = fitnessEvaluation(populationList, rules, hardRulesWeight, dataSet);
+            //selection - returns list of best parents
             for (int i = 0; i < populationSize;) {
-                HashMap<Solution<T>, Integer> solutionsFitnessMap = fitnessEvaluation(populationList, rules, hardRulesWeight, dataSet);
-                //selection - returns list of best parents
                 //make new generation
+                //todo: change population list to best parents
                 Solution<T> parent1 = getRandomSolution(populationList);
                 Solution<T> parent2 = getRandomSolution(populationList);
                 while (parent1.equals(parent2)) //verify the parents are not the same one

@@ -34,7 +34,7 @@ public class UserMenu
     public static final int PRINT_PER_TEACHER=2;
     public static final int PRINT_PER_CLASS=3;
 
-    private void printMenu(Boolean isFileLoaded)
+    private void printMenu()
     {
         System.out.println(openingMsg);
         System.out.println(String.format("Press (%s) to load a file", Commands.LOAD_TABLE_DETAILS.commandVal));
@@ -44,8 +44,8 @@ public class UserMenu
         System.out.println(String.format("Press (%s) to show algorithm's logs", Commands.SHOW_ALGORITHM_PROC.commandVal));
         System.out.println(String.format("Press (%s) to exit", Commands.EXIT.commandVal));
     }
-    public void getUserInput(Boolean isFileLoaded) {
-        printMenu(isFileLoaded);
+    public void getUserInput() {
+        printMenu();
         Scanner sc = new Scanner(System.in);
         String userInput = sc.nextLine();
         if (userInput.equals(Commands.LOAD_TABLE_DETAILS.commandVal)) {

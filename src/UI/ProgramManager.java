@@ -55,7 +55,7 @@ public class ProgramManager {
         }
     }
     private void printPerClass(Solution <Lesson> solution, int totalDays, int totalHours, int totalClasses)  {
-        for(int classIndex=0; classIndex<totalClasses; classIndex++){
+        for(int classIndex=0; classIndex<solution.getList().size(); classIndex++){
             int classID = solution.getList().get(classIndex).getClassId();
             Solution classSolution= getClassSolution(solution,classID);
             for(int curHour=0; curHour<totalHours+1; curHour++){
@@ -64,11 +64,14 @@ public class ProgramManager {
                    printLesson(DayHourSol, classID,"Class");
                 }
             }
+            while (classID==solution.getList().get(classIndex+1).getTeacherId()){
+                classIndex++;
+            }
         }
     }
 
-    private void printPerTeacher(Solution <Lesson> solution, int totalDays, int totalHours, int totalTeachers){
-        for(int TeacherIndex=0; TeacherIndex<totalTeachers; TeacherIndex++){
+    private void printPerTeacher(Solution <Lesson> solution, int totalDays, int totalHours){
+        for(int TeacherIndex=0; TeacherIndex<solution.getList().size(); TeacherIndex++){
             int teacherID = solution.getList().get(TeacherIndex).getTeacherId();
             Solution TeacherSolution= getClassSolution(solution,teacherID);
             for(int curHour=0; curHour<totalHours+1; curHour++){
@@ -76,6 +79,9 @@ public class ProgramManager {
                     Solution DayHourSol=  getDayHourSolution(TeacherSolution,curDay,curHour);
                     printLesson(DayHourSol, teacherID,"Teacher");
                 }
+            }
+            while (teacherID==solution.getList().get(TeacherIndex+1).getTeacherId()){
+                TeacherIndex++;
             }
         }
     }

@@ -13,7 +13,7 @@ public class Evolutionary<T> {
     public void run(EvolutionDataSet<T> dataSet)
     {
         int populationSize = dataSet.getPopulationSize();
-        List<IRule<T>> rules = dataSet.getRules();
+        List<IRule> rules = dataSet.getRules();
         int hardRulesWeight = dataSet.getHardRulesWeight();
         int generations = dataSet.getGenerations();
 
@@ -22,7 +22,7 @@ public class Evolutionary<T> {
 
         while(!isEndOfEvolution(genCounter,generations))
         {
-            HashMap<Solution<T>, Integer> solutionsFitnessMap = fitnessEvaluation(populationList,rules,hardRulesWeight);
+            HashMap<Solution<T>, Integer> solutionsFitnessMap = fitnessEvaluation(populationList,rules,hardRulesWeight, dataSet);
 
             //selection - returns list of best parents
             //make new generation
@@ -47,16 +47,16 @@ public class Evolutionary<T> {
         return solutions;
     }
 
-    public HashMap<Solution<T>, Integer> fitnessEvaluation(List<Solution<T>> solutions, List<IRule<T>> rules, int hardRulesWeight)
+    public HashMap<Solution<T>, Integer> fitnessEvaluation(List<Solution<T>> solutions, List<IRule> rules, int hardRulesWeight,EvolutionDataSet<T> dataSet)
     {
         HashMap<Solution<T>, Integer> solutionFitness = new HashMap<>();
         for (Solution<T> solution: solutions)
         {
             int softFitness = 0;
             int hardFitness = 0;
-            for (IRule<T> rule: rules)
+            for (IRule rule: rules)
             {
-                int fit = rule.getFitness(solution);
+                double fit = dataSet.getFitness(solution,rule);
                 if(rule.isHard())
                 {
                     hardFitness+= fit;
@@ -76,10 +76,5 @@ public class Evolutionary<T> {
     {
         return generationCounter >= evolutionGenerationNumber;
     }
-
-
-
-
-
 
 }

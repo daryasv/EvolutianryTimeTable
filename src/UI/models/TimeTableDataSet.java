@@ -22,6 +22,7 @@ import UI.models.evolution.Mutation;
 
 public class TimeTableDataSet implements EvolutionDataSet<Lesson> {
 
+
     final private TimeTableMembers timeTableMembers;
     final private EvolutionConfig evolutionConfig;
 
@@ -29,7 +30,12 @@ public class TimeTableDataSet implements EvolutionDataSet<Lesson> {
         this.timeTableMembers = new TimeTableMembers(descriptor.getETTTimeTable());
         this.evolutionConfig = new EvolutionConfig(descriptor.getETTEvolutionEngine());
     }
-
+    public TimeTableMembers getTimeTableMembers() {
+        return timeTableMembers;
+    }
+    public EvolutionConfig getEvolutionConfig() {
+        return evolutionConfig;
+    }
 
     public void runMutation(Solution <Lesson> child, TimeTableMembers allMembers){
         List<Mutation> mutations = evolutionConfig.getMutations();

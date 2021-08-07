@@ -1,13 +1,15 @@
 package UI.models.timeTable;
 
+import UI.ValidationException;
 import schema.models.ETTSubject;
 
 import java.util.List;
 
 public class Subject extends Component {
 
-    //TODO: with set (set methods will do the validation, Example in "Teacher" class)
-    public Subject(List<ETTSubject> ettSubjects) {
+    public Subject(ETTSubject ettSubject) throws ValidationException {
         super();
+        setId(ettSubject.getId());
+        setName(ettSubject.getName());
     }
 }

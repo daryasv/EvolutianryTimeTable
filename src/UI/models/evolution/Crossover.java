@@ -1,10 +1,11 @@
 package UI.models.evolution;
 
+import engine.models.ICrossoverData;
 import schema.models.ETTCrossover;
 
-public class Crossover
+public class Crossover implements ICrossoverData
 {
-    private String name;
+    private CrossoverSortType name;
     private int cuttingPoints;
 
     public Crossover(ETTCrossover ettCrossover) {
@@ -12,17 +13,22 @@ public class Crossover
         setCuttingPoints(ettCrossover);
     }
 
-    public String getName() {
+    public CrossoverSortType getName() {
         return name;
     }
 
-    //TODO : add validation
+    //TODO : add validation - check if null
     public void setName(ETTCrossover ettCrossover) {
-        this.name = ettCrossover.getName();
+        this.name = CrossoverSortType.valueOf(ettCrossover.getName());
     }
 
     public int getCuttingPoints() {
         return cuttingPoints;
+    }
+
+    @Override
+    public String getSortOperator() {
+        return name.toString();
     }
 
     //TODO : add validation

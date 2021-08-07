@@ -98,6 +98,7 @@ public class ProgramManager {
     private void runAlgorithm(){
         if(checkIfFileLoaded()){
             try{
+                //TODO: read generation and logs and add to ev config
                 Evolutionary evolutionary = evolutionary = new Evolutionary();
                 population = evolutionary.generatePopulation(evolutionEngineDataSet.getInitialPopulation(), timeTable);
                 //demo for the best solution

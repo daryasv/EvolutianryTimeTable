@@ -16,6 +16,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class TimeTableDataSet implements EvolutionDataSet<Lesson> {
 
+
     final private TimeTableMembers timeTableMembers;
     final private EvolutionConfig evolutionConfig;
 
@@ -24,22 +25,32 @@ public class TimeTableDataSet implements EvolutionDataSet<Lesson> {
         this.evolutionConfig = new EvolutionConfig(descriptor.getETTEvolutionEngine());
     }
 
+
+    public TimeTableMembers getTimeTableMembers() {
+        return timeTableMembers;
+    }
+
+    public EvolutionConfig getEvolutionConfig() {
+        return evolutionConfig;
+    }
+
     @Override
-    public void mutation(Solution <Lesson> child){
+    public void mutation(Solution <Lesson> child) {
+
         List<Mutation> mutations = evolutionConfig.getMutations();
         double probability;
         int maxTuples;
         char component;
-        for(int i=0; i<mutations.size();i++){
-            probability=mutations.get(i).getProbability();
-            maxTuples=mutations.get(i).getMaxTupples();
-            component=mutations.get(i).getComponent();
+        for (int i = 0; i < mutations.size(); i++) {
+            probability = mutations.get(i).getProbability();
+            maxTuples = mutations.get(i).getMaxTupples();
+            component = mutations.get(i).getComponent();
             double randomNum = ThreadLocalRandom.current().nextDouble(0.0, 100.0);
 
 
-            if(mutations.get(i).getName().equals(Mutation.MutationOperators.FLIP_OPERATOR.getOperatorName())){
-                if(randomNum< probability)
-                    runFlippingMutation(child,maxTuples, component);
+            if (mutations.get(i).getName().equals(Mutation.MutationOperators.FLIP_OPERATOR.getOperatorName())) {
+                if (randomNum < probability)
+                    runFlippingMutation(child, maxTuples, component);
             }
         }
     }
@@ -247,9 +258,5 @@ public class TimeTableDataSet implements EvolutionDataSet<Lesson> {
         sorted.getList().sort(new LessonComparator(sortType));
 
         return sorted;
-    }
-
-    public EvolutionConfig getEvolutionConfig(){
-        return this.evolutionConfig;
     }
 }

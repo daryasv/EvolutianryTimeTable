@@ -8,7 +8,9 @@ public class UserMenu
 {
     public static enum Commands
     {
-        LOAD_TABLE_DETAILS("1"), SHOW_TABLE_SETTINGS("2"), RUN_ALGORITHM("3"), SHOW_BEST_SOLUTION("4"), SHOW_ALGORITHM_PROC("5"), EXIT("6");
+        LOAD_TABLE_DETAILS("1"), SHOW_TABLE_SETTINGS("2"), RUN_ALGORITHM("3"),
+        SHOW_BEST_SOLUTION("4"), SHOW_ALGORITHM_PROC("5"), EXIT("6"),
+        PRINT_RAW("1"), PRINT_PER_CLASS("2"),PRINT_PER_TEACHER("3");
         private final String commandVal;
         private Boolean isActive;
 
@@ -29,7 +31,7 @@ public class UserMenu
             return this.commandVal;
         }
     }
-    private final String openingMsg= "Welcome!\nplease enter your command:";
+    private final String openingMsg= "please enter your command:";
     public static final int PRINT_RAW=1;
     public static final int PRINT_PER_TEACHER=2;
     public static final int PRINT_PER_CLASS=3;
@@ -50,26 +52,46 @@ public class UserMenu
         String userInput = sc.nextLine();
         if (userInput.equals(Commands.LOAD_TABLE_DETAILS.commandVal)) {
             Commands.LOAD_TABLE_DETAILS.isActive=true;
+            System.out.println("please enter your file's path:\n");
 
-        } else if (userInput.equals(Commands.LOAD_TABLE_DETAILS.commandVal)) {
+        } else if (userInput.equals(Commands.SHOW_TABLE_SETTINGS.commandVal)) {
             Commands.SHOW_TABLE_SETTINGS.isActive=true;
 
         } else if (userInput.equals( Commands.RUN_ALGORITHM.commandVal)) {
             Commands.RUN_ALGORITHM.isActive=true;
 
-        } else if (userInput.equals(Commands.SHOW_BEST_SOLUTION.commandVal)) {
-            Commands.SHOW_BEST_SOLUTION.isActive=true;
-
-        } else if (userInput.equals(Commands.SHOW_ALGORITHM_PROC.commandVal)) {
-            Commands.SHOW_ALGORITHM_PROC.isActive=true;
-
-        } else if (userInput.equals(Commands.EXIT.commandVal)) {
-            Commands.EXIT.isActive=true;
         }
-        else{
-            System.out.println("invalid command, please try again:\n");
-        }
+        else if (userInput.equals(Commands.SHOW_BEST_SOLUTION.commandVal)) {
+          if(ProgramManager.checkIfFileLoaded()) {
+              Commands.SHOW_BEST_SOLUTION.isActive = true;
+              System.out.println("Select a printing option\n");
+              System.out.println(String.format("Press (%s) to print as a raw", Commands.PRINT_RAW.commandVal));
+              System.out.println(String.format("Press (%s) to print per a class", Commands.PRINT_PER_CLASS.commandVal));
+              System.out.println(String.format("Press (%s) to print per a teacher", Commands.PRINT_PER_TEACHER.commandVal));
+              userInput = sc.nextLine();
+              if (userInput.equals(Commands.PRINT_RAW.commandVal))
+                  Commands.PRINT_RAW.isActive = true;
+              else if (userInput.equals(Commands.PRINT_PER_CLASS.commandVal))
+                  Commands.PRINT_PER_CLASS.isActive = true;
+              else if (userInput.equals(Commands.PRINT_PER_TEACHER.commandVal))
+                  Commands.PRINT_PER_TEACHER.isActive = true;
+              else
+                  System.out.println("unknown command");
 
+          }
+          }
+          else if (userInput.equals(Commands.SHOW_ALGORITHM_PROC.commandVal)) {
+              Commands.SHOW_ALGORITHM_PROC.isActive=true;
+
+          }
+          else if (userInput.equals(Commands.EXIT.commandVal)) {
+              Commands.EXIT.isActive=true;
+          }
+          else{
+              System.out.println("invalid command, please try again:\n");
+          }
+
+          }
     }
 
-}
+

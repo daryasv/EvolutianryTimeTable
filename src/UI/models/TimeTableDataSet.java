@@ -9,6 +9,7 @@ import schema.models.ETTDescriptor;
 import java.util.*;
 
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 
 public class TimeTableDataSet implements EvolutionDataSet<Lesson> {
@@ -65,38 +66,34 @@ public class TimeTableDataSet implements EvolutionDataSet<Lesson> {
         }
     }
 
-    private void changeComponent(Lesson lesson, char component){
-        if(component=='C'){
-          int classCount=this.timeTableMembers.getGrades().size();
+    private void changeComponent(Lesson lesson, char component) {
+        if (component == 'C') {
+            int classCount = this.timeTableMembers.getGrades().size();
             Random rand = new Random();
             int randomIndex = rand.nextInt(classCount);
-            int changedID= this.timeTableMembers.getGrades().get(randomIndex).getId();
+            int changedID = new ArrayList<>(this.timeTableMembers.getGrades().keySet()).get(randomIndex);
             lesson.setClassId(changedID);
-        }
-        else if(component=='T'){
-            int TeachersCount=this.timeTableMembers.getTeachers().size();
+        } else if (component == 'T') {
+            int TeachersCount = this.timeTableMembers.getTeachers().size();
             Random rand = new Random();
             int randomIndex = rand.nextInt(TeachersCount);
-            int changedID= this.timeTableMembers.getTeachers().get(randomIndex).getId();
+            int changedID = new ArrayList<>(this.timeTableMembers.getTeachers().keySet()).get(randomIndex);
             lesson.setTeacherId(changedID);
-        }
-        else if(component=='D'){
-            int DaysCount=this.timeTableMembers.getDays();
+        } else if (component == 'D') {
+            int DaysCount = this.timeTableMembers.getDays();
             Random rand = new Random();
-            int changedVal= rand.nextInt(DaysCount)+1;
+            int changedVal = rand.nextInt(DaysCount) + 1;
             lesson.setDay(changedVal);
-        }
-        else if(component=='H'){
-            int HoursCount=this.timeTableMembers.getHours();
+        } else if (component == 'H') {
+            int HoursCount = this.timeTableMembers.getHours();
             Random rand = new Random();
-            int changedVal= rand.nextInt(HoursCount)+1;
+            int changedVal = rand.nextInt(HoursCount) + 1;
             lesson.setHour(changedVal);
-        }
-        else if(component=='S'){
-            int subjectsCount=this.timeTableMembers.getSubjects().size();
+        } else if (component == 'S') {
+            int subjectsCount = this.timeTableMembers.getSubjects().size();
             Random rand = new Random();
             int randomIndex = rand.nextInt(subjectsCount);
-            int changedVal= this.timeTableMembers.getSubjects().get(randomIndex).getId();
+            int changedVal = new ArrayList<>(this.timeTableMembers.getSubjects().keySet()).get(randomIndex);
             lesson.setClassId(changedVal);
         }
     }

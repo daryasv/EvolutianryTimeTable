@@ -7,6 +7,7 @@ import UI.models.evolution.EvolutionConfig;
 import UI.models.timeTable.TimeTableMembers;
 import engine.Evolutionary;
 import engine.models.Solution;
+import engine.models.SolutionFitness;
 import schema.models.ETTDescriptor;
 
 import javax.xml.bind.JAXBContext;
@@ -37,7 +38,7 @@ public class ProgramManager {
     //public static String FILE_NAME = "src/resources/EX1-small.xml";
 
     public void manageProgram(){
-        System.out.println("Welcome!");
+        System.out.println("WELCOME!");
         UserMenu.Commands.EXIT.setStatus(false);
         while(!UserMenu.Commands.EXIT.getStatus()){
             UserMenu menu = new UserMenu();
@@ -48,7 +49,7 @@ public class ProgramManager {
 
     }
     private void exitProgram(){
-        System.out.println("The program closed");
+        System.out.println("THE PROGRAM CLOSED. SEE YOU SOON");
     }
 
     private void runCommand(){
@@ -62,7 +63,7 @@ public class ProgramManager {
 
             } else if (UserMenu.Commands.RUN_ALGORITHM.getStatus()) {
                 UserMenu.Commands.RUN_ALGORITHM.setStatus(false);
-
+                System.out.println("START: RUN ALGORITHM");
                 System.out.println("Enter num of generations: ");
                 Scanner scanner = new Scanner(System.in);
                 int generations = scanner.nextInt();
@@ -70,6 +71,7 @@ public class ProgramManager {
                 int interval = scanner.nextInt();
                 timeTable.setGenerationsInterval(interval);
                 runAlgorithm();
+                System.out.println("END: RUN ALGORITHM");
             } else if (
                     UserMenu.Commands.SHOW_BEST_SOLUTION.getStatus()) {
                 UserMenu.Commands.SHOW_BEST_SOLUTION.setStatus(false);
@@ -80,6 +82,10 @@ public class ProgramManager {
 
             } else if (UserMenu.Commands.SHOW_ALGORITHM_PROC.getStatus()) {
                 UserMenu.Commands.SHOW_ALGORITHM_PROC.setStatus(false);
+                if(evolutionary!=null)
+                    printAlgorithmProgress();
+                else
+                    System.out.println("NO ALGORITHM RUN YET");
             }
         }
         catch (ValidationException e){
@@ -113,6 +119,31 @@ public class ProgramManager {
             evolutionary.run(timeTable);
             timeTableSolution = evolutionary.getGlobalBestSolution().getSolution();
         }
+    }
+
+    private void printAlgorithmProgress()
+    {
+        int genInterval = timeTable.getGenerationInterval();
+        List<SolutionFitness<Lesson>> allSolutions = evolutionary.getBestSolutions();
+        SolutionFitness<Lesson> currSolution = null;
+        SolutionFitness<Lesson> prevSolution = null;
+        System.out.println("START: SHOW ALGORITHM PROCESS (EVERY " +genInterval+ "GENERATIONS) :");
+        for (int i=0; i< allSolutions.size();i++)
+        {
+            currSolution = allSolutions.get(i);
+            if(prevSolution == null)
+            {
+                System.out.println("In Generation #1 Best Fitness is "+(currSolution.getFitness())+"");
+            }
+            else
+            {
+                double fitnessDiff = prevSolution.getFitness() - currSolution.getFitness();
+                System.out.println("In Generation #"+(i*genInterval)+" Best Fitness is "+(currSolution.getFitness())+"," +
+                        ", Distance of "+(fitnessDiff)+ "from the previous.");
+            }
+            prevSolution = currSolution;
+        }
+        System.out.println("END: SHOW ALGORITHM PROCESS");
     }
 
     private void updateDataSets(ETTDescriptor descriptor) throws ValidationException {

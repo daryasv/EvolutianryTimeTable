@@ -5,10 +5,7 @@ import UI.models.Lesson;
 import engine.models.Solution;
 import schema.models.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class TimeTableMembers
@@ -24,9 +21,9 @@ public class TimeTableMembers
     public TimeTableMembers(ETTTimeTable timeTableMembers) throws ValidationException {
         setDays(timeTableMembers.getDays());
         setHours(timeTableMembers.getHours());
-        setTeachers(timeTableMembers.getETTTeachers().getETTTeacher());
-        setGrades(timeTableMembers.getETTClasses().getETTClass());
         setSubjects(timeTableMembers.getETTSubjects().getETTSubject());
+        setGrades(timeTableMembers.getETTClasses().getETTClass());
+        setTeachers(timeTableMembers.getETTTeachers().getETTTeacher());
         setRules(timeTableMembers.getETTRules().getETTRule());
         setHardRulesWeight(timeTableMembers.getETTRules().getHardRulesWeight());
     }
@@ -61,14 +58,28 @@ public class TimeTableMembers
 
     public void setTeachers(List<ETTTeacher> ettTeachers) throws ValidationException {
         this.teachers = new HashMap<>();
+        List<Integer> subjectIds = new ArrayList<>(this.subjects.keySet());
+
         for (ETTTeacher ettTeacher : ettTeachers) {
             try {
                 Teacher teacher = new Teacher(ettTeacher);
+                if(teacher.getSubjectsIdsList().size() == 0){
+                    throw new ValidationException("Teacher not teaching any subject");
+                }
+                for (Integer id : teacher.getSubjectsIdsList()){
+                    if(!subjectIds.contains(id)) {
+                        throw new ValidationException("Teacher subject id not in subjects");
+                    }
+                }
                 this.teachers.put(teacher.getId(),teacher);
             } catch (ValidationException e) {
                 e.printStackTrace();
             }
         }
+
+        List<Component> components = new ArrayList<>(this.teachers.values());
+        if (!Component.checkIfRunningIds(components))
+            throw new ValidationException("Teachers ids are not in running order");
     }
 
     public HashMap<Integer,Subject> getSubjects() {
@@ -77,9 +88,16 @@ public class TimeTableMembers
 
     public void setSubjects(List<ETTSubject> ettSubjects) throws ValidationException {
         this.subjects = new HashMap<>();
+        if(ettSubjects.size() == 0){
+            throw new ValidationException("Subjects list cant be empty");
+        }
         for (ETTSubject ettSubject : ettSubjects) {
             Subject subject = new Subject(ettSubject);
             this.subjects.put(subject.getId(),subject);
+        }
+        List<Component> components = new ArrayList<>(this.subjects.values());
+        if (!Component.checkIfRunningIds(components)) {
+            throw new ValidationException("Subjects ids are not in running order");
         }
     }
 
@@ -89,10 +107,28 @@ public class TimeTableMembers
 
     public void setGrades(List<ETTClass> ettClasses) throws ValidationException {
         this.grades = new HashMap<>();
+        List<Integer> subjectIds = new ArrayList<>(this.subjects.keySet());
+
         for (ETTClass ettClass : ettClasses) {
             Grade grade = new Grade(ettClass);
-            this.grades.put(grade.getId(),grade);
+            if(grade.getRequirements().size() == 0){
+                throw new ValidationException("Grade requirements cant be empty");
+            }
+            for (Integer id : grade.getRequirements().keySet()){
+                if(!subjectIds.contains(id)){
+                    throw new ValidationException("Teacher subject id not in subjects");
+                }
+            }
+            int sumOfHours = grade.getRequirements().values().stream().mapToInt(Integer::intValue).sum();
+            if(sumOfHours > hours * days){
+                throw new ValidationException("Class subjects hours cant be more then week hours");
+            }
+            this.grades.put(grade.getId(), grade);
         }
+
+        List<Component> grades = new ArrayList<>(this.grades.values());
+        if (!Component.checkIfRunningIds(grades))
+            throw new ValidationException("Grades ids are not in running order");
     }
 
     public List<Rule> getRules() {
@@ -103,6 +139,9 @@ public class TimeTableMembers
         this.rules = new ArrayList<Rule>();
         for (ETTRule ettRule : ettRules) {
             Rule rule = new Rule(ettRule);
+            if(rules.contains(rule)){
+                throw new ValidationException("Rule " +rule.getId()+ " already exists");
+            }
             this.rules.add(rule);
         }
     }

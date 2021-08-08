@@ -2,6 +2,9 @@ package UI.models.timeTable;
 
 import UI.ValidationException;
 
+import java.util.Comparator;
+import java.util.List;
+
 public class Component {
    private int id;
    private String name;
@@ -28,5 +31,19 @@ public class Component {
       }else {
          throw new ValidationException("Invalid name");
       }
+   }
+
+   private boolean checkIfNext(Component obj){
+      return this.id + 1 == obj.getId();
+   }
+
+   public static boolean checkIfRunningIds(List<Component> componentList) {
+      componentList.sort(Comparator.comparingInt(Component::getId));
+      for (int i = 0; i < componentList.size() - 1; i++) {
+         if (!componentList.get(i).checkIfNext(componentList.get(i + 1))) {
+            return false;
+         }
+      }
+      return true;
    }
 }

@@ -67,7 +67,8 @@ public class ProgramManager {
                 System.out.println("Enter num of generations: ");
                 Scanner scanner = new Scanner(System.in);
                 int generations = scanner.nextInt();
-                timeTable.setGenerations(generations);System.out.println("Enter interval of generations print: ");
+                timeTable.setGenerations(generations);
+                System.out.println("Enter interval of generations print: ");
                 int interval = scanner.nextInt();
                 timeTable.setGenerationsInterval(interval);
                 runAlgorithm();
@@ -115,7 +116,6 @@ public class ProgramManager {
     private void runAlgorithm() throws ValidationException {
         if (checkIfFileLoaded()) {
             evolutionary = new Evolutionary();
-
             evolutionary.run(timeTable);
             timeTableSolution = evolutionary.getGlobalBestSolution().getSolution();
         }

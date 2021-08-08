@@ -19,10 +19,8 @@ public class Mutation
 
         MutationOperators(String operator){
             this.operator=operator;
-        }
-
+        }=
     }
-
 
     public Mutation(ETTMutation ettMutation) {
         setName(ettMutation);

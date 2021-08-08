@@ -12,38 +12,12 @@ public class EvolutionConfig
     private Selection selection;
     private Crossover crossover;
     private List<Mutation> mutations;
-    private int generations;
-    private int generationsInterval;
 
     public EvolutionConfig(ETTEvolutionEngine ettEvolutionEngine) throws ValidationException {
         setInitialPopulation(ettEvolutionEngine.getETTInitialPopulation());
         setCrossover(ettEvolutionEngine.getETTCrossover());
         setSelection(ettEvolutionEngine.getETTSelection());
         setMutations(ettEvolutionEngine.getETTMutations().getETTMutation());
-    }
-
-
-    public int getGenerations() {
-        return generations;
-    }
-
-    public void setGenerations(int generations) throws ValidationException {
-        if(generations >= 100)
-            this.generations = generations;
-        else
-            throw new ValidationException("generation smaller than 100");
-    }
-
-    public int getGenerationsInterval() {
-        return generationsInterval;
-    }
-
-    public void setGenerationsInterval(int generationsInterval) throws ValidationException {
-        if(generationsInterval < this.generations)
-            this.generationsInterval = generationsInterval;
-        else
-            throw new ValidationException("generation interval bigger than generations");
-
     }
 
     public int getInitialPopulation() {

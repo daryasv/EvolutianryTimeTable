@@ -3,26 +3,19 @@ package engine;
 import engine.models.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Evolutionary<T> {
 
-     List<BestSolution<T>> bestSolutions = new ArrayList<>();
-     BestSolution<T> bestSolution = null;
+     List<SolutionFitness<T>> bestSolutions = new ArrayList<>();
+     SolutionFitness<T> globalBestSolution = null;
 
-    public List<BestSolution<T>> getBestSolutions() {
+    public List<SolutionFitness<T>> getBestSolutions() {
         return bestSolutions;
     }
 
-    public void setBestSolutions(List<BestSolution<T>> bestSolutions) {
-        this.bestSolutions = bestSolutions;
-    }
-
-    public BestSolution<T> getBestSolution() {
-        return bestSolution;
-    }
-
-    public void setBestSolution(BestSolution<T> bestSolution) {
-        this.bestSolution = bestSolution;
+    public SolutionFitness<T> getGlobalBestSolution() {
+        return globalBestSolution;
     }
 
     public void run(EvolutionDataSet<T> dataSet)
@@ -38,29 +31,32 @@ public class Evolutionary<T> {
         //generate population
         List<Solution<T>> populationList = generatePopulation(populationSize, dataSet);
         //fitness
-        Map<Solution<T>, Integer> solutionsFitnessMap = fitnessEvaluation(populationList, rules, hardRulesWeight, dataSet);
+        List<SolutionFitness<T>> solutionsFitnessMap = fitnessEvaluation(populationList, rules, hardRulesWeight, dataSet);
+        //Selection
+        List<SolutionFitness<T>> selectionSolutions = getSelectionSolutions(solutionsFitnessMap, dataSet.getSelectionData());
 
         while(!isEndOfEvolution(genCounter,generations))
         {
-            //Selection
-            List<Solution<T>> selectionSolutions = getSelectionSolutions(solutionsFitnessMap, dataSet.getSelectionData());
-
             List<Solution<T>> newGeneration = new ArrayList<>();
+            //make selectionSolutions into parents solution
+            List<Solution<T>> parentSolutions = selectionSolutions.stream().map(SolutionFitness::getSolution).collect(Collectors.toList());
 
-            //selection - returns list of best parents
+            //create new generation - children in size of population
             for (int i = 0; i < populationSize;) {
-                //make new generation
-                Solution<T> parent1 = getRandomSolution(selectionSolutions);
-                Solution<T> parent2 = getRandomSolution(selectionSolutions);
+                //pick 2 parents
+                Solution<T> parent1 = getRandomSolution(parentSolutions);
+                Solution<T> parent2 = getRandomSolution(parentSolutions);
                 while (parent1.equals(parent2)) //verify the parents are not the same one
                 {
-                    parent2 = getRandomSolution(selectionSolutions);
+                    parent2 = getRandomSolution(parentSolutions);
                 }
+                //return list of children
                 List<Solution<T>> children = crossover(dataSet, parent1, parent2);
                 //run mutation on children
                 children.forEach(dataSet::mutation);
                 newGeneration.add(children.get(0));
                 i++;
+                //in case of odd population size, will not enter the if
                 if(i<populationSize) {
                     newGeneration.add(children.get(1));
                     i++;
@@ -68,35 +64,31 @@ public class Evolutionary<T> {
             }
             populationList = newGeneration;
             genCounter++;
+            //generation created
 
             //Fitness
             solutionsFitnessMap = fitnessEvaluation(populationList, rules, hardRulesWeight, dataSet);
+            //Selection
+            selectionSolutions = getSelectionSolutions(solutionsFitnessMap, dataSet.getSelectionData());
 
-            if(genCounter != 0) //save the generation best solution
+            SolutionFitness<T> bestGenSolution = selectionSolutions.get(0);
+            bestSolutions.add(bestGenSolution);
+            if(globalBestSolution == null || bestGenSolution.compareTo(globalBestSolution) > 0)
+                globalBestSolution = bestGenSolution;
+
+            //printing interval every #generationInterva generations
+            if(genCounter % generationInterval == 0)
             {
-                BestSolution<T> bestGenSolution = getGenBestSolution();
-                bestSolutions.add(bestGenSolution);
-                if(bestSolution == null)
-                    bestSolution = bestGenSolution;
-                else if(!bestSolution.IsBetterSolutionThan(bestGenSolution))
-                    bestSolution = bestGenSolution;
+                System.out.println("EVOLUTIONARY ENGINE STATUS: Generation: "+(genCounter)+
+                                    ", Best Fitness On Generation: "+(bestGenSolution.getFitness()));
             }
-
         }
-
     }
 
-    //TODO
-    private BestSolution<T> getGenBestSolution() {
-        return null;
-    }
-
-    //TODO:
-
-
-    private List<Solution<T>> getSelectionSolutions(Map<Solution<T>, Integer> map, ISelectionData selectionData) {
-        List<Map.Entry<Solution<T>, Integer>> list = new LinkedList<>(map.entrySet());
-        list.sort((obj01, obj02) -> obj02.getValue() - obj01.getValue());
+    private List<SolutionFitness<T>> getSelectionSolutions(List<SolutionFitness<T>> map, ISelectionData selectionData) {
+        List<SolutionFitness<T>> list = new ArrayList<>(map);
+        //desc sort -> z to a
+        list.sort((obj01, obj02) -> obj02.compareTo(obj01));
 
         if(selectionData.getType() == SelectionType.Truncation){
             double value = selectionData.getValue();
@@ -104,12 +96,7 @@ public class Evolutionary<T> {
             list = list.subList(0,numToPull);
         }
 
-        //add to result list
-        List<Solution<T>> result = new ArrayList<>();
-        for (Map.Entry<Solution<T>, Integer> entry : list) {
-            result.add(entry.getKey());
-        }
-        return result;
+        return list;
     }
 
 //    private LinkedHashMap<Solution, Integer> sortSolutionsByFitness(Map<Solution, Integer> fitnessPerSolution) {
@@ -200,9 +187,10 @@ public class Evolutionary<T> {
         return solutions;
     }
 
-    public HashMap<Solution<T>, Integer> fitnessEvaluation(List<Solution<T>> solutions, List<IRule> rules, double hardRulesWeight,EvolutionDataSet<T> dataSet)
+    public List<SolutionFitness<T>> fitnessEvaluation(List<Solution<T>> solutions, List<IRule> rules, double hardRulesWeight,EvolutionDataSet<T> dataSet)
     {
-        HashMap<Solution<T>, Integer> solutionFitness = new HashMap<>();
+        List<SolutionFitness<T>> solutionFitness = new ArrayList<>();
+        HashMap<IRule,Double> rulesFitness = new HashMap<>();
         for (Solution<T> solution: solutions)
         {
             int softFitnessSum = 0;
@@ -212,6 +200,8 @@ public class Evolutionary<T> {
             for (IRule rule: rules)
             {
                 double fit = dataSet.getFitness(solution,rule);
+                rulesFitness.put(rule,fit);
+
                 if(rule.isHard())
                 {
                     hardFitnessSum+= fit;
@@ -222,11 +212,13 @@ public class Evolutionary<T> {
                     softFitnessSum+=fit;
                     softRulesCount++;
                 }
+
             }
             int hardAvg = hardFitnessSum / hardRulesCount;
             int softAvg = softFitnessSum / softRulesCount;
             double finalFitness = hardAvg*(hardRulesWeight/100)+softAvg*((100-hardRulesWeight)/100);
-            solutionFitness.put(solution, (int) finalFitness);
+            SolutionFitness<T> solutionFitness1 = new SolutionFitness<T>(solution,finalFitness,rulesFitness,hardAvg,softAvg);
+            solutionFitness.add(solutionFitness1);
         }
         return solutionFitness;
     }

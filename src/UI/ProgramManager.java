@@ -60,7 +60,13 @@ public class ProgramManager {
         }
         else if(UserMenu.Commands.RUN_ALGORITHM.getStatus()){
             UserMenu.Commands.RUN_ALGORITHM.setStatus(false);
-            runAlgorithm();
+
+            System.out.println("Enter num of generations: ");
+            Scanner scanner  = new Scanner(System.in);
+            int generations = scanner.nextInt();
+            System.out.println("Enter interval of generations print: ");
+            int interval = scanner.nextInt();
+            runAlgorithm(generations,interval);
         }
         else if(UserMenu.Commands.SHOW_BEST_SOLUTION.getStatus()){
             UserMenu.Commands.SHOW_BEST_SOLUTION.setStatus(false);
@@ -95,15 +101,14 @@ public class ProgramManager {
         }
     }
 
-    private void runAlgorithm(){
+    private void runAlgorithm(int generations,int interval){
         if(checkIfFileLoaded()){
             try{
-                //TODO: read generation and logs and add to ev config
                 Evolutionary evolutionary = evolutionary = new Evolutionary();
-                population = evolutionary.generatePopulation(evolutionEngineDataSet.getInitialPopulation(), timeTable);
-                //demo for the best solution
-                timeTableSolution = population.get(0);
-                List<Lesson> lessons = timeTableSolution.getList().stream().filter(l -> l.getTeacherId() == 1).collect(Collectors.toList());
+                timeTable.setGenerations(generations);
+                timeTable.setGenerationsInterval(interval);
+
+                evolutionary.run(timeTable);
             }
             catch (Exception e) {
                 e.printStackTrace();

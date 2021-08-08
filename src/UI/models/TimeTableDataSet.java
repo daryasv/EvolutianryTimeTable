@@ -13,9 +13,17 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class TimeTableDataSet implements EvolutionDataSet<Lesson> {
 
-
     final private TimeTableMembers timeTableMembers;
     final private EvolutionConfig evolutionConfig;
+    private int generations;
+    private int generationsInterval;
+
+    public TimeTableDataSet(ETTDescriptor descriptor, int generations, int generationsInterval) throws ValidationException {
+        this.timeTableMembers = new TimeTableMembers(descriptor.getETTTimeTable());
+        this.evolutionConfig = new EvolutionConfig(descriptor.getETTEvolutionEngine());
+        setGenerations(generations);
+        setGenerationsInterval(generationsInterval);
+    }
 
     public TimeTableDataSet(ETTDescriptor descriptor) throws ValidationException {
         this.timeTableMembers = new TimeTableMembers(descriptor.getETTTimeTable());
@@ -54,13 +62,9 @@ public class TimeTableDataSet implements EvolutionDataSet<Lesson> {
     private void runFlippingMutation(Solution <Lesson> child, int maxTuples, char component){
         Random rand = new Random();
         int randomTuplesNum = rand.nextInt();
-        for(int i=0; i<randomTuplesNum; i ++){
-            if (i>maxTuples)
-                break;
-            else{
-                int tupleIndex = rand.nextInt(child.getList().size());
-                changeComponent(child.getList().get(tupleIndex), component);
-            }
+        for(int i=0; i<randomTuplesNum && i < maxTuples; i ++) {
+            int tupleIndex = rand.nextInt(child.getList().size());
+            changeComponent(child.getList().get(tupleIndex), component);
         }
     }
 
@@ -101,15 +105,28 @@ public class TimeTableDataSet implements EvolutionDataSet<Lesson> {
         return evolutionConfig.getInitialPopulation();
     }
 
-    //TODO: implement method
+    public void setGenerations(int generations) throws ValidationException {
+        if(generations >= 100)
+            this.generations = generations;
+        else
+            throw new ValidationException("generation smaller than 100");
+    }
+
     @Override
     public int getGenerations() {
-        return evolutionConfig.getGenerations();
+        return generations;
+    }
+
+    public void setGenerationsInterval(int generationsInterval) throws ValidationException {
+        if(generationsInterval < this.generations)
+            this.generationsInterval = generationsInterval;
+        else
+            throw new ValidationException("generation interval bigger than generations");
     }
 
     @Override
     public int getGenerationInterval() {
-        return evolutionConfig.getGenerationsInterval();
+        return generationsInterval;
     }
 
     @Override

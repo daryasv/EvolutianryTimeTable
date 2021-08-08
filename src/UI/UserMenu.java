@@ -59,7 +59,7 @@ public class UserMenu
 
         }
         else if (userInput.equals(Commands.SHOW_BEST_SOLUTION.commandVal)) {
-          if(ProgramManager.checkIfFileLoaded()) {
+          if(ProgramManager.checkIfFileLoaded()&&(ProgramManager.checkIfSolutionFound())) {
               Commands.SHOW_BEST_SOLUTION.isActive = true;
               System.out.println("Select a printing option\n");
               System.out.println(String.format("Press (%s) to print as a raw", Commands.PRINT_RAW.commandVal));

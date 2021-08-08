@@ -25,7 +25,7 @@ public class ProgramManager {
     Solution<Lesson> timeTableSolution;
 
     public static enum systemSetting{
-        IS_FILE_LOADED(false);
+        IS_FILE_LOADED(false),SOLUTION_FOUND(true);
         boolean status;
         systemSetting(boolean status){
             this.status=status;
@@ -147,6 +147,14 @@ public class ProgramManager {
             }
         }
 
+    }
+
+    public static boolean checkIfSolutionFound(){
+        if(systemSetting.SOLUTION_FOUND.status){
+            return true;
+        }
+        System.out.println("solution has not found\n");
+        return false;
     }
 
     public static boolean checkIfFileLoaded(){

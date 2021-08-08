@@ -35,7 +35,9 @@ public class Main {
             ETTDescriptor descriptor = (ETTDescriptor) jaxbUnmarshaller.unmarshal(file);
 
             //create population test demo
-            TimeTableDataSet timeTable = new TimeTableDataSet(descriptor);
+
+            TimeTableDataSet timeTable = new TimeTableDataSet(descriptor,100,1);
+
             Evolutionary evolutionary = new Evolutionary();
             List<Solution<Lesson>> population = evolutionary.generatePopulation(timeTable.getEvolutionConfig().getInitialPopulation(), timeTable);
 

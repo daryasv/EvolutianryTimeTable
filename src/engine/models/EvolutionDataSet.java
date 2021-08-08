@@ -23,9 +23,12 @@ public interface EvolutionDataSet<T> {
 
     double getFitness(Solution<T> solution, IRule rule);
 
-    void mutation(Solution <T> child);
+    void mutation(Solution <T> child,IMutation<T> mutation);
 
     Solution<T> sort(Solution<T> solution, String operator);
 
     ISelectionData getSelectionData();
+
+    List<IMutation<T>> getMutations();
+
 }

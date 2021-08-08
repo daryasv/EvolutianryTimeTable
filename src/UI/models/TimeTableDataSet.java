@@ -38,33 +38,25 @@ public class TimeTableDataSet implements EvolutionDataSet<Lesson> {
         return evolutionConfig;
     }
 
+
     @Override
-    public void mutation(Solution <Lesson> child) {
-
-        List<Mutation> mutations = evolutionConfig.getMutations();
-        double probability;
-        int maxTuples;
-        char component;
-        for (int i = 0; i < mutations.size(); i++) {
-            probability = mutations.get(i).getProbability();
-            maxTuples = mutations.get(i).getMaxTupples();
-            component = mutations.get(i).getComponent();
-            double randomNum = ThreadLocalRandom.current().nextDouble(0.0, 100.0);
-
-
-            if (mutations.get(i).getName().equals(Mutation.MutationOperators.FLIP_OPERATOR.getOperatorName())) {
-                if (randomNum < probability)
-                    runFlippingMutation(child, maxTuples, component);
-            }
+    public void mutation(Solution <Lesson> child,IMutation<Lesson> mutation) {
+        if (mutation.getName().equals(Mutation.MutationOperators.FLIP_OPERATOR.getOperatorName())) {
+                runFlippingMutation(child, mutation);
         }
     }
 
-    private void runFlippingMutation(Solution <Lesson> child, int maxTuples, char component){
+    private void runFlippingMutation(Solution <Lesson> child, IMutation mutation){
         Random rand = new Random();
-        int randomTuplesNum = rand.nextInt();
-        for(int i=0; i<randomTuplesNum && i < maxTuples; i ++) {
+        int randomTuplesNum = rand.nextInt(mutation.getMaxTupples());
+        List<Integer> changed = new ArrayList<>();
+        for(int i=0; i<randomTuplesNum ;) {
             int tupleIndex = rand.nextInt(child.getList().size());
-            changeComponent(child.getList().get(tupleIndex), component);
+            if(!changed.contains(tupleIndex)){
+                changeComponent(child.getList().get(tupleIndex), mutation.getComponent());
+                changed.add(tupleIndex);
+                i++;
+            }
         }
     }
 
@@ -94,9 +86,14 @@ public class TimeTableDataSet implements EvolutionDataSet<Lesson> {
         } else if (component == 'S') {
             int subjectsCount = this.timeTableMembers.getSubjects().size();
             Random rand = new Random();
-            int randomIndex = rand.nextInt(subjectsCount);
-            int changedVal = new ArrayList<>(this.timeTableMembers.getSubjects().keySet()).get(randomIndex);
-            lesson.setClassId(changedVal);
+            int randomIndex = rand.nextInt(subjectsCount + 1);
+            if (randomIndex == subjectsCount) {
+                lesson.setSubjectId(-1);
+                lesson.setTeacherId(-1);
+            } else {
+                int changedVal = new ArrayList<>(this.timeTableMembers.getSubjects().keySet()).get(randomIndex);
+                lesson.setSubjectId(changedVal);
+            }
         }
     }
 
@@ -278,4 +275,11 @@ public class TimeTableDataSet implements EvolutionDataSet<Lesson> {
     public ISelectionData getSelectionData() {
         return getEvolutionConfig().getSelection();
     }
+
+    @Override
+    public List<IMutation<Lesson>> getMutations() {
+        return new ArrayList<>(getEvolutionConfig().getMutations());
+    }
+
+
 }

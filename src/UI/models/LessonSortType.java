@@ -1,17 +1,15 @@
-package UI.models.evolution;
+package UI.models;
 
-import UI.models.timeTable.RuleType;
-
-public enum CrossoverSortType {
+public enum LessonSortType {
     DayTimeOriented("DayTimeOriented");
 
     public String name;
-    CrossoverSortType(String name) {
+    LessonSortType(String name) {
         this.name = name;
     }
 
-    public static CrossoverSortType valueOfLabel(String label) {
-        for (CrossoverSortType e : values()) {
+    public static LessonSortType valueOfLabel(String label) {
+        for (LessonSortType e : values()) {
             if (e.name.equals(label)) {
                 return e;
             }

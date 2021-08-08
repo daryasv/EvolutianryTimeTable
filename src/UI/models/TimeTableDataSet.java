@@ -9,7 +9,6 @@ import schema.models.ETTDescriptor;
 import java.util.*;
 
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Collectors;
 
 
 public class TimeTableDataSet implements EvolutionDataSet<Lesson> {
@@ -22,7 +21,6 @@ public class TimeTableDataSet implements EvolutionDataSet<Lesson> {
         this.timeTableMembers = new TimeTableMembers(descriptor.getETTTimeTable());
         this.evolutionConfig = new EvolutionConfig(descriptor.getETTEvolutionEngine());
     }
-
 
     public TimeTableMembers getTimeTableMembers() {
         return timeTableMembers;
@@ -97,7 +95,6 @@ public class TimeTableDataSet implements EvolutionDataSet<Lesson> {
             lesson.setClassId(changedVal);
         }
     }
-
 
     @Override
     public int getPopulationSize() {
@@ -252,7 +249,7 @@ public class TimeTableDataSet implements EvolutionDataSet<Lesson> {
 
     @Override
     public Solution<Lesson> sort(Solution<Lesson> solution, String operator) {
-        CrossoverSortType sortType = CrossoverSortType.valueOfLabel(operator);
+        LessonSortType sortType = LessonSortType.valueOfLabel(operator);
         Solution<Lesson> sorted = new Solution<Lesson>();
         sorted.setList(new ArrayList<>(solution.getList())); //duplicate the solution
         sorted.getList().sort(new LessonComparator(sortType));

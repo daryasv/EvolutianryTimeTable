@@ -6,6 +6,25 @@ import java.util.*;
 
 public class Evolutionary<T> {
 
+     List<BestSolution<T>> bestSolutions = new ArrayList<>();
+     BestSolution<T> bestSolution = null;
+
+    public List<BestSolution<T>> getBestSolutions() {
+        return bestSolutions;
+    }
+
+    public void setBestSolutions(List<BestSolution<T>> bestSolutions) {
+        this.bestSolutions = bestSolutions;
+    }
+
+    public BestSolution<T> getBestSolution() {
+        return bestSolution;
+    }
+
+    public void setBestSolution(BestSolution<T> bestSolution) {
+        this.bestSolution = bestSolution;
+    }
+
     public void run(EvolutionDataSet<T> dataSet)
     {
         int populationSize = dataSet.getPopulationSize();
@@ -14,9 +33,6 @@ public class Evolutionary<T> {
         int generations = dataSet.getGenerations();
         int generationInterval = dataSet.getGenerationInterval();
         int genCounter=0;
-
-        List<BestSolution<T>> bestSolutions = new ArrayList<>();
-        BestSolution<T> bestSolution = null;
 
         System.out.println("Evolutionary Engine starts !");
         //generate population
@@ -65,6 +81,7 @@ public class Evolutionary<T> {
                 else if(!bestSolution.IsBetterSolutionThan(bestGenSolution))
                     bestSolution = bestGenSolution;
             }
+
         }
 
     }

@@ -1,13 +1,14 @@
-package UI.models.evolution;
+package UI.models;
 
 import UI.models.Lesson;
+import UI.models.LessonSortType;
 
 import java.util.Comparator;
 
 public class LessonComparator implements Comparator<Lesson> {
 
-    CrossoverSortType sortType;
-    public LessonComparator(CrossoverSortType sortType) {
+    LessonSortType sortType;
+    public LessonComparator(LessonSortType sortType) {
         this.sortType = sortType;
     }
 

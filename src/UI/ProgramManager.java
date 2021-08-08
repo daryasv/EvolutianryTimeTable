@@ -23,6 +23,7 @@ public class ProgramManager {
     EvolutionConfig evolutionEngineDataSet;
     List<Solution<Lesson>> population;
     Solution<Lesson> timeTableSolution;
+    Evolutionary<Lesson> evolutionary = null;
 
     public static enum systemSetting{
         IS_FILE_LOADED(false),SOLUTION_FOUND(true);
@@ -61,7 +62,13 @@ public class ProgramManager {
         }
         else if(UserMenu.Commands.RUN_ALGORITHM.getStatus()){
             UserMenu.Commands.RUN_ALGORITHM.setStatus(false);
-            runAlgorithm();
+
+            System.out.println("Enter num of generations: ");
+            Scanner scanner  = new Scanner(System.in);
+            int generations = scanner.nextInt();
+            System.out.println("Enter interval of generations print: ");
+            int interval = scanner.nextInt();
+            runAlgorithm(generations,interval);
         }
         else if(UserMenu.Commands.SHOW_BEST_SOLUTION.getStatus()){
             UserMenu.Commands.SHOW_BEST_SOLUTION.setStatus(false);
@@ -94,27 +101,21 @@ public class ProgramManager {
         }
     }
 
-    private void runAlgorithm(){
+    private void runAlgorithm(int generations,int interval){
         if(checkIfFileLoaded()){
             try{
-                //TODO: read generation and logs and add to ev config
-                Evolutionary evolutionary = new Evolutionary();
-                population = evolutionary.generatePopulation(evolutionEngineDataSet.getInitialPopulation(), timeTable);
+                evolutionary = new Evolutionary();
+                timeTable.setGenerations(generations);
+                timeTable.setGenerationsInterval(interval);
 
-                //demo for the best solution
-
-                timeTableSolution = population.get(0);
-                //   HashMap<List<Solution<Lesson>>, Integer> fitnessMap = evolutionary.fitnessEvaluation(population, timeTable.getRules(), 70, timeTable);
-                //  evolutionary.run(timeTable);
-                boolean a = true;
-
-
+                evolutionary.run(timeTable);
             }
             catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
+
     private void updateDataSets(ETTDescriptor descriptor){
         try{
             timeTable = new TimeTableDataSet(descriptor);

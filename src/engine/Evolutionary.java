@@ -15,27 +15,19 @@ public class Evolutionary<T> {
         int generationInterval = dataSet.getGenerationInterval();
         int genCounter=0;
 
-        List<Map.Entry<Solution<T>, Integer>> bestSolutions = new ArrayList<>();
-        Map.Entry<Solution<T>, Integer> bestSolution = new AbstractMap.SimpleEntry<Solution<T>, Integer>(null, 0);
+        List<BestSolution<T>> bestSolutions = new ArrayList<>();
+        BestSolution<T> bestSolution = null;
 
         System.out.println("Evolutionary Engine starts !");
         //generate population
         List<Solution<T>> populationList = generatePopulation(populationSize, dataSet);
+        //fitness
+        Map<Solution<T>, Integer> solutionsFitnessMap = fitnessEvaluation(populationList, rules, hardRulesWeight, dataSet);
 
         while(!isEndOfEvolution(genCounter,generations))
         {
-            //Fitness
-            Map<Solution<T>, Integer> solutionsFitnessMap = fitnessEvaluation(populationList, rules, hardRulesWeight, dataSet);
             //Selection
             List<Solution<T>> selectionSolutions = getSelectionSolutions(solutionsFitnessMap, dataSet.getSelectionData());
-
-            if(genCounter != 0) //save the generation best solution
-            {
-                Map.Entry<Solution<T>, Integer> bestGenSolution = getGenBestSolution(solutionsFitnessMap);
-                bestSolutions.add(bestGenSolution);
-                if(bestGenSolution.getValue() > bestSolution.getValue())
-                    bestSolution = bestGenSolution;
-            }
 
             List<Solution<T>> newGeneration = new ArrayList<>();
 
@@ -60,14 +52,30 @@ public class Evolutionary<T> {
             }
             populationList = newGeneration;
             genCounter++;
+
+            //Fitness
+            solutionsFitnessMap = fitnessEvaluation(populationList, rules, hardRulesWeight, dataSet);
+
+            if(genCounter != 0) //save the generation best solution
+            {
+                BestSolution<T> bestGenSolution = getGenBestSolution();
+                bestSolutions.add(bestGenSolution);
+                if(bestSolution == null)
+                    bestSolution = bestGenSolution;
+                else if(!bestSolution.IsBetterSolutionThan(bestGenSolution))
+                    bestSolution = bestGenSolution;
+            }
         }
 
     }
 
-    //TODO:
-    private Map.Entry<Solution<T>, Integer> getGenBestSolution(Map<Solution<T>, Integer> solutionsFitnessMap) {
+    //TODO
+    private BestSolution<T> getGenBestSolution() {
         return null;
     }
+
+    //TODO:
+
 
     private List<Solution<T>> getSelectionSolutions(Map<Solution<T>, Integer> map, ISelectionData selectionData) {
         List<Map.Entry<Solution<T>, Integer>> list = new LinkedList<>(map.entrySet());

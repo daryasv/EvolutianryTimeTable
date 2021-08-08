@@ -53,7 +53,7 @@ public class Evolutionary<T> {
                 //return list of children
                 List<Solution<T>> children = crossover(dataSet, parent1, parent2);
                 //run mutation on children
-                children.forEach(dataSet::mutation);
+
                 newGeneration.add(children.get(0));
                 i++;
                 //in case of odd population size, will not enter the if
@@ -62,6 +62,23 @@ public class Evolutionary<T> {
                     i++;
                 }
             }
+
+
+            for (int i=0; i< dataSet.getMutations().size();i++) {
+                IMutation<T> mutation = dataSet.getMutations().get(i);
+                List<Integer> changed = new ArrayList<>();
+
+                int total = (int)(populationSize * mutation.getProbability());
+                for (int j =0;j<total;){
+                    int rndSol = getRandomSolutionIndex(newGeneration);
+                    if(!changed.contains(rndSol)){
+                        changed.add(rndSol);
+                        j++;
+                        dataSet.mutation(newGeneration.get(rndSol),mutation);
+                    }
+                }
+            }
+
             populationList = newGeneration;
             genCounter++;
             //generation created
@@ -171,10 +188,16 @@ public class Evolutionary<T> {
         return children;
     }
 
-    public Solution<T> getRandomSolution (List<Solution<T>> solutions)
+
+    private int getRandomSolutionIndex (List<Solution<T>> solutions)
     {
         Random random = new Random();
-        return solutions.get(random.nextInt(solutions.size()));
+        return random.nextInt(solutions.size());
+    }
+
+    private Solution<T> getRandomSolution (List<Solution<T>> solutions)
+    {
+        return solutions.get(getRandomSolutionIndex(solutions));
     }
 
     public List<Solution<T>> generatePopulation(int size, EvolutionDataSet dataSet){

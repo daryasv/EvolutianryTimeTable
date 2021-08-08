@@ -33,7 +33,7 @@ public class Main {
             ETTDescriptor descriptor = (ETTDescriptor) jaxbUnmarshaller.unmarshal(file);
 
             //create population test demo
-            TimeTableDataSet timeTable = new TimeTableDataSet(descriptor,200,10);
+            TimeTableDataSet timeTable = new TimeTableDataSet(descriptor,100,1);
             Evolutionary evolutionary = new Evolutionary();
 
             evolutionary.run(timeTable);

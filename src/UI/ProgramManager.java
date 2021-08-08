@@ -51,38 +51,42 @@ public class ProgramManager {
     }
 
     private void runCommand(){
-        if(UserMenu.Commands.LOAD_TABLE_DETAILS.getStatus()){
-            UserMenu.Commands.LOAD_TABLE_DETAILS.setStatus(false);
-            loadXMLFile();
+        try {
+            if (UserMenu.Commands.LOAD_TABLE_DETAILS.getStatus()) {
+                UserMenu.Commands.LOAD_TABLE_DETAILS.setStatus(false);
+                loadXMLFile();
+            } else if (UserMenu.Commands.SHOW_TABLE_SETTINGS.getStatus()) {
+                UserMenu.Commands.SHOW_TABLE_SETTINGS.setStatus(false);
+
+
+            } else if (UserMenu.Commands.RUN_ALGORITHM.getStatus()) {
+                UserMenu.Commands.RUN_ALGORITHM.setStatus(false);
+
+                System.out.println("Enter num of generations: ");
+                Scanner scanner = new Scanner(System.in);
+                int generations = scanner.nextInt();
+                timeTable.setGenerations(generations);System.out.println("Enter interval of generations print: ");
+                int interval = scanner.nextInt();
+                timeTable.setGenerationsInterval(interval);
+                runAlgorithm();
+            } else if (
+                    UserMenu.Commands.SHOW_BEST_SOLUTION.getStatus()) {
+                UserMenu.Commands.SHOW_BEST_SOLUTION.setStatus(false);
+                int totalDays = timeTable.getTimeTableMembers().getDays();
+                int totalHours = timeTable.getTimeTableMembers().getHours();
+                printSolution(totalDays, totalHours);
+
+
+            } else if (UserMenu.Commands.SHOW_ALGORITHM_PROC.getStatus()) {
+                UserMenu.Commands.SHOW_ALGORITHM_PROC.setStatus(false);
+            }
         }
-        else if(UserMenu.Commands.SHOW_TABLE_SETTINGS.getStatus()){
-            UserMenu.Commands.SHOW_TABLE_SETTINGS.setStatus(false);
-
-
-        }
-        else if(UserMenu.Commands.RUN_ALGORITHM.getStatus()){
-            UserMenu.Commands.RUN_ALGORITHM.setStatus(false);
-
-            System.out.println("Enter num of generations: ");
-            Scanner scanner  = new Scanner(System.in);
-            int generations = scanner.nextInt();
-            System.out.println("Enter interval of generations print: ");
-            int interval = scanner.nextInt();
-            runAlgorithm(generations,interval);
-        }
-        else if(UserMenu.Commands.SHOW_BEST_SOLUTION.getStatus()){
-            UserMenu.Commands.SHOW_BEST_SOLUTION.setStatus(false);
-            int totalDays= timeTable.getTimeTableMembers().getDays();
-            int totalHours= timeTable.getTimeTableMembers().getHours();
-            printSolution(totalDays,totalHours);
-
-
-        }
-        else if(UserMenu.Commands.SHOW_ALGORITHM_PROC.getStatus()){
-            UserMenu.Commands.SHOW_ALGORITHM_PROC.setStatus(false);
+        catch (ValidationException e){
+            System.out.println(e.getMessage());
         }
     }
-    private void loadXMLFile(){
+
+    private void loadXMLFile() throws ValidationException {
         Scanner sc = new Scanner(System.in);
         FILE_NAME = sc.nextLine();
         try{
@@ -97,33 +101,22 @@ public class ProgramManager {
 
         } catch (JAXBException e) {
             systemSetting.IS_FILE_LOADED.status=false;
-            System.out.println("failed to load file, please try again");
+            throw new ValidationException("failed to load file, please try again");
         }
     }
 
-    private void runAlgorithm(int generations,int interval){
-        if(checkIfFileLoaded()){
-            try{
-                evolutionary = new Evolutionary();
-                timeTable.setGenerations(generations);
-                timeTable.setGenerationsInterval(interval);
-                evolutionary.run(timeTable);
-                timeTableSolution = evolutionary.getGlobalBestSolution().getSolution();
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-            }
+    private void runAlgorithm() throws ValidationException {
+        if (checkIfFileLoaded()) {
+            evolutionary = new Evolutionary();
+
+            evolutionary.run(timeTable);
+            timeTableSolution = evolutionary.getGlobalBestSolution().getSolution();
         }
     }
 
-    private void updateDataSets(ETTDescriptor descriptor){
-        try{
-            timeTable = new TimeTableDataSet(descriptor);
-            evolutionEngineDataSet = new EvolutionConfig(descriptor.getETTEvolutionEngine());
-        } catch (ValidationException e) {
-            e.printStackTrace();
-        }
-
+    private void updateDataSets(ETTDescriptor descriptor) throws ValidationException {
+        timeTable = new TimeTableDataSet(descriptor);
+        evolutionEngineDataSet = new EvolutionConfig(descriptor.getETTEvolutionEngine());
     }
 
     public void printSolution( int totalDays, int totalHours){

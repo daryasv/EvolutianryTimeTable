@@ -20,10 +20,12 @@ public class Main {
     public static final String FILE_NAME = "src/resources/EX1-small.xml";
 
     public static void main(String[] args) {
-        //ProgramManager programInstance = new ProgramManager();
-        //programInstance.manageProgram();
-        test();
+        ProgramManager programInstance = new ProgramManager();
+        programInstance.manageProgram();
+       // test();
+
     }
+
     private static void test() {
         try {
             //load xml file into ETT classes
@@ -33,9 +35,13 @@ public class Main {
             ETTDescriptor descriptor = (ETTDescriptor) jaxbUnmarshaller.unmarshal(file);
 
             //create population test demo
-            TimeTableDataSet timeTable = new TimeTableDataSet(descriptor,200,10);
+            TimeTableDataSet timeTable = new TimeTableDataSet(descriptor);
             Evolutionary evolutionary = new Evolutionary();
+            List<Solution<Lesson>> population = evolutionary.generatePopulation(timeTable.getEvolutionConfig().getInitialPopulation(), timeTable);
 
+            //demo for the best solution
+            Solution<Lesson> solution = population.get(0);
+          //  HashMap<List<Solution<Lesson>>, Integer> fitnessMap = evolutionary.fitnessEvaluation(population, timeTable.getRules(), 70, timeTable);
             evolutionary.run(timeTable);
             boolean a = true;
         } catch (JAXBException | ValidationException e) {

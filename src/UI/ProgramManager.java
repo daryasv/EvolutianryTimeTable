@@ -107,8 +107,8 @@ public class ProgramManager {
                 evolutionary = new Evolutionary();
                 timeTable.setGenerations(generations);
                 timeTable.setGenerationsInterval(interval);
-
                 evolutionary.run(timeTable);
+                timeTableSolution = evolutionary.getGlobalBestSolution().getSolution();
             }
             catch (Exception e) {
                 e.printStackTrace();

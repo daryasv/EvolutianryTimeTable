@@ -20,9 +20,9 @@ public class Main {
     public static final String FILE_NAME = "src/resources/EX1-small.xml";
 
     public static void main(String[] args) {
-        ProgramManager programInstance = new ProgramManager();
-        programInstance.manageProgram();
-        //test();
+        //ProgramManager programInstance = new ProgramManager();
+        //programInstance.manageProgram();
+        test();
 
     }
 
@@ -36,9 +36,8 @@ public class Main {
 
             //create population test demo
             TimeTableDataSet timeTable = new TimeTableDataSet(descriptor);
-            Evolutionary evolutionary = evolutionary = new Evolutionary();
-            EvolutionConfig evolutionEngineDataSet = new EvolutionConfig(descriptor.getETTEvolutionEngine());
-            List<Solution<Lesson>> population = evolutionary.generatePopulation(evolutionEngineDataSet.getInitialPopulation(), timeTable);
+            Evolutionary evolutionary = new Evolutionary();
+            List<Solution<Lesson>> population = evolutionary.generatePopulation(timeTable.getEvolutionConfig().getInitialPopulation(), timeTable);
 
             //demo for the best solution
             Solution<Lesson> solution = population.get(0);

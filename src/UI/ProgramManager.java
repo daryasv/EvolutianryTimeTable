@@ -1,6 +1,7 @@
 package UI;
 
 import UI.models.Lesson;
+import UI.models.LessonSortType;
 import UI.models.TimeTableDataSet;
 import UI.models.evolution.EvolutionConfig;
 import UI.models.timeTable.TimeTableMembers;
@@ -130,17 +131,17 @@ public class ProgramManager {
         if(checkIfFileLoaded()){
             if(UserMenu.Commands.PRINT_RAW.getStatus()){
                 UserMenu.Commands.PRINT_RAW.setStatus(false);
-                //  sortDayTimeOriented(); USE DARIA's FUNCTION FROM CROSSOVER
+                 timeTableSolution=  timeTable.sort(timeTableSolution, LessonSortType.DayTimeOriented.name);
                 printRaw();
             }
             else if(UserMenu.Commands.PRINT_PER_CLASS.getStatus()){
                 UserMenu.Commands.PRINT_PER_CLASS.setStatus(false);
-                //sortTeacherOriented()
+                timeTableSolution=  timeTable.sort(timeTableSolution, LessonSortType.TEACHER_ORIENTED.name);
                 printPerClass();
             }
             else if (UserMenu.Commands.PRINT_PER_TEACHER.getStatus()){
                 UserMenu.Commands.PRINT_PER_TEACHER.setStatus(false);
-                //sortClassOriented()
+                timeTableSolution=  timeTable.sort(timeTableSolution, LessonSortType.CLASS_ORIENTED.name);
                 printPerTeacher();
             }
             else{

@@ -3,10 +3,11 @@ package UI.models.evolution;
 import UI.ValidationException;
 import schema.models.*;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EvolutionConfig
+public class EvolutionConfig implements Serializable
 {
     private int initialPopulation;
     private Selection selection;

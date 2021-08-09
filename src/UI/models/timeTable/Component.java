@@ -2,10 +2,11 @@ package UI.models.timeTable;
 
 import UI.ValidationException;
 
+import java.io.Serializable;
 import java.util.Comparator;
 import java.util.List;
 
-public class Component {
+public class Component implements Serializable {
    private int id;
    private String name;
 

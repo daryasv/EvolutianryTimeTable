@@ -5,10 +5,11 @@ import UI.models.Lesson;
 import engine.models.Solution;
 import schema.models.*;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class TimeTableMembers
+public class TimeTableMembers implements Serializable
 {
     private int days;
     private int hours;

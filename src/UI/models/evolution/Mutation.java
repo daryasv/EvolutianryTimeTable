@@ -5,7 +5,9 @@ import engine.models.IMutation;
 import engine.models.Solution;
 import schema.models.ETTMutation;
 
-public class Mutation implements IMutation<Lesson>
+import java.io.Serializable;
+
+public class Mutation implements IMutation<Lesson> , Serializable
 {
     private String name;
     private double probability;
@@ -13,7 +15,8 @@ public class Mutation implements IMutation<Lesson>
     private char component;
 
     public static enum MutationOperators{
-        FLIP_OPERATOR("Flipping");
+        FLIP_OPERATOR("Flipping"),
+        SIZE_OPERATOR("Sizer");
         String operator;
 
         public String getOperatorName() {

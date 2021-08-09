@@ -5,7 +5,9 @@ import engine.models.ISelectionData;
 import engine.models.SelectionType;
 import schema.models.ETTSelection;
 
-public class Selection implements ISelectionData
+import java.io.Serializable;
+
+public class Selection implements ISelectionData , Serializable
 {
     private SelectionType type;
     private int value;

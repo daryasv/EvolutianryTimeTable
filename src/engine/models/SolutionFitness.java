@@ -1,8 +1,9 @@
 package engine.models;
 
+import java.io.Serializable;
 import java.util.HashMap;
 
-public class SolutionFitness<T> {
+public class SolutionFitness<T> implements Serializable {
     private Solution<T> solution;
     private double fitness;
     private HashMap<IRule, Double> rulesFitness;

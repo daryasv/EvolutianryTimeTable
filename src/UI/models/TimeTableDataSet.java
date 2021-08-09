@@ -6,12 +6,13 @@ import UI.models.timeTable.*;
 import engine.models.*;
 import schema.models.ETTDescriptor;
 
+import java.io.Serializable;
 import java.util.*;
 
 import java.util.concurrent.ThreadLocalRandom;
 
 
-public class TimeTableDataSet implements EvolutionDataSet<Lesson> {
+public class TimeTableDataSet implements EvolutionDataSet<Lesson>, Serializable {
 
     final private TimeTableMembers timeTableMembers;
     final private EvolutionConfig evolutionConfig;
@@ -43,6 +44,25 @@ public class TimeTableDataSet implements EvolutionDataSet<Lesson> {
     public void mutation(Solution <Lesson> child,IMutation<Lesson> mutation) {
         if (mutation.getName().equals(Mutation.MutationOperators.FLIP_OPERATOR.getOperatorName())) {
                 runFlippingMutation(child, mutation);
+        }
+        else if (mutation.getName().equals(Mutation.MutationOperators.FLIP_OPERATOR.getOperatorName())) {
+            runSizerMutation(child, mutation);
+        }
+    }
+
+    private void runSizerMutation(Solution<Lesson> child, IMutation<Lesson> mutation) {
+        Random rand = new Random();
+        boolean isPositive = mutation.getMaxTupples() >= 0;
+        int randomTuplesNum = rand.nextInt(Math.abs(mutation.getMaxTupples()));
+        int maxOptions = this.timeTableMembers.getDays() * this.timeTableMembers.getHours();
+        int minOptions = this.timeTableMembers.getDays();
+        Solution<Lesson> rndSol = getRandomSolution();
+        for(int i=0; i<randomTuplesNum && child.getList().size() <maxOptions && child.getList().size() > minOptions ;i++) {
+            if (isPositive) {
+                child.getList().add(rndSol.getList().get(i));
+            } else {
+                child.getList().remove(i);
+            }
         }
     }
 

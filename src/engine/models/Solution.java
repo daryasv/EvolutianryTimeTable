@@ -2,10 +2,11 @@ package engine.models;
 
 import UI.UserMenu;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Solution<T> {
+public class Solution<T> implements Serializable {
 
     private List<T> list;
 

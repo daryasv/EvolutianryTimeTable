@@ -17,6 +17,8 @@ public class SolutionFitness<T> {
         this.softRulesAvg = softRulesAvg;
     }
 
+
+
     public Solution<T> getSolution() {
         return solution;
     }

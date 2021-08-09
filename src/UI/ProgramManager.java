@@ -4,8 +4,9 @@ import UI.models.Lesson;
 import UI.models.LessonSortType;
 import UI.models.TimeTableDataSet;
 import UI.models.evolution.EvolutionConfig;
-import UI.models.timeTable.TimeTableMembers;
+import UI.models.timeTable.*;
 import engine.Evolutionary;
+import engine.models.IRule;
 import engine.models.Solution;
 import schema.models.ETTDescriptor;
 
@@ -15,6 +16,7 @@ import javax.xml.bind.Unmarshaller;
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
@@ -52,42 +54,38 @@ public class ProgramManager {
     }
 
     private void runCommand(){
-        try {
-            if (UserMenu.Commands.LOAD_TABLE_DETAILS.getStatus()) {
-                UserMenu.Commands.LOAD_TABLE_DETAILS.setStatus(false);
-                loadXMLFile();
-            } else if (UserMenu.Commands.SHOW_TABLE_SETTINGS.getStatus()) {
-                UserMenu.Commands.SHOW_TABLE_SETTINGS.setStatus(false);
-
-
-            } else if (UserMenu.Commands.RUN_ALGORITHM.getStatus()) {
-                UserMenu.Commands.RUN_ALGORITHM.setStatus(false);
-
-                System.out.println("Enter num of generations: ");
-                Scanner scanner = new Scanner(System.in);
-                int generations = scanner.nextInt();
-                timeTable.setGenerations(generations);System.out.println("Enter interval of generations print: ");
-                int interval = scanner.nextInt();
-                timeTable.setGenerationsInterval(interval);
-                runAlgorithm();
-            } else if (
-                    UserMenu.Commands.SHOW_BEST_SOLUTION.getStatus()) {
-                UserMenu.Commands.SHOW_BEST_SOLUTION.setStatus(false);
-                int totalDays = timeTable.getTimeTableMembers().getDays();
-                int totalHours = timeTable.getTimeTableMembers().getHours();
-                printSolution(totalDays, totalHours);
-
-
-            } else if (UserMenu.Commands.SHOW_ALGORITHM_PROC.getStatus()) {
-                UserMenu.Commands.SHOW_ALGORITHM_PROC.setStatus(false);
-            }
+        if(UserMenu.Commands.LOAD_TABLE_DETAILS.getStatus()){
+            UserMenu.Commands.LOAD_TABLE_DETAILS.setStatus(false);
+            loadXMLFile();
         }
-        catch (ValidationException e){
-            System.out.println(e.getMessage());
+        else if(UserMenu.Commands.SHOW_TABLE_SETTINGS.getStatus()){
+            UserMenu.Commands.SHOW_TABLE_SETTINGS.setStatus(false);
+            printSystemDetailes();
+
+        }
+        else if(UserMenu.Commands.RUN_ALGORITHM.getStatus()){
+            UserMenu.Commands.RUN_ALGORITHM.setStatus(false);
+
+            System.out.println("Enter num of generations: ");
+            Scanner scanner  = new Scanner(System.in);
+            int generations = scanner.nextInt();
+            System.out.println("Enter interval of generations print: ");
+            int interval = scanner.nextInt();
+            runAlgorithm(generations,interval);
+        }
+        else if(UserMenu.Commands.SHOW_BEST_SOLUTION.getStatus()){
+            UserMenu.Commands.SHOW_BEST_SOLUTION.setStatus(false);
+            int totalDays= timeTable.getTimeTableMembers().getDays();
+            int totalHours= timeTable.getTimeTableMembers().getHours();
+            printSolution(totalDays,totalHours);
+
+
+        }
+        else if(UserMenu.Commands.SHOW_ALGORITHM_PROC.getStatus()){
+            UserMenu.Commands.SHOW_ALGORITHM_PROC.setStatus(false);
         }
     }
-
-    private void loadXMLFile() throws ValidationException {
+    private void loadXMLFile(){
         Scanner sc = new Scanner(System.in);
         FILE_NAME = sc.nextLine();
         try{
@@ -102,39 +100,52 @@ public class ProgramManager {
 
         } catch (JAXBException e) {
             systemSetting.IS_FILE_LOADED.status=false;
-            throw new ValidationException("failed to load file, please try again");
+            System.out.println("failed to load file, please try again");
         }
     }
 
-    private void runAlgorithm() throws ValidationException {
-        if (checkIfFileLoaded()) {
-            evolutionary = new Evolutionary();
-
-            evolutionary.run(timeTable);
-            timeTableSolution = evolutionary.getGlobalBestSolution().getSolution();
-        }
-    }
-
-    private void updateDataSets(ETTDescriptor descriptor) throws ValidationException {
-        timeTable = new TimeTableDataSet(descriptor);
-        evolutionEngineDataSet = new EvolutionConfig(descriptor.getETTEvolutionEngine());
-    }
-
-    public void printSolution( int totalDays, int totalHours){
+    private void runAlgorithm(int generations,int interval){
         if(checkIfFileLoaded()){
+            try{
+                evolutionary = new Evolutionary();
+                timeTable.setGenerations(generations);
+                timeTable.setGenerationsInterval(interval);
+                evolutionary.run(timeTable);
+                timeTableSolution = evolutionary.getGlobalBestSolution().getSolution();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void updateDataSets(ETTDescriptor descriptor){
+        try{
+            timeTable = new TimeTableDataSet(descriptor);
+            evolutionEngineDataSet = new EvolutionConfig(descriptor.getETTEvolutionEngine());
+        } catch (ValidationException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void printSolution(int totalDays, int totalHours){
+        
+        if(checkIfFileLoaded()){
+            printBestSolutionDetails();
             if(UserMenu.Commands.PRINT_RAW.getStatus()){
                 UserMenu.Commands.PRINT_RAW.setStatus(false);
-                 timeTableSolution=  timeTable.sort(timeTableSolution, LessonSortType.DayTimeOriented.name);
+               timeTableSolution= timeTable.sort(timeTableSolution,LessonSortType.DayTimeOriented.name);
                 printRaw();
             }
             else if(UserMenu.Commands.PRINT_PER_CLASS.getStatus()){
                 UserMenu.Commands.PRINT_PER_CLASS.setStatus(false);
-                timeTableSolution=  timeTable.sort(timeTableSolution, LessonSortType.TEACHER_ORIENTED.name);
+                timeTableSolution= timeTable.sort(timeTableSolution,LessonSortType.CLASS_ORIENTED.name);
                 printPerClass();
             }
             else if (UserMenu.Commands.PRINT_PER_TEACHER.getStatus()){
                 UserMenu.Commands.PRINT_PER_TEACHER.setStatus(false);
-                timeTableSolution=  timeTable.sort(timeTableSolution, LessonSortType.CLASS_ORIENTED.name);
+                timeTableSolution= timeTable.sort(timeTableSolution,LessonSortType.TEACHER_ORIENTED.name);
                 printPerTeacher();
             }
             else{
@@ -142,6 +153,30 @@ public class ProgramManager {
             }
         }
 
+    }
+    public void reviewRules(){
+        System.out.println("\nRule's:\n");
+        HashMap<IRule, Double> rulesFitness =evolutionary.getGlobalBestSolution().getRulesFitness();
+        for (Map.Entry<IRule, Double> entry : rulesFitness.entrySet()){
+            System.out.println(String.format("Rule name: %s ", entry.getKey().getName()));
+            if(entry.getKey().isHard())
+              System.out.println("Rule type: hard");
+            else{
+                System.out.println("Rule type: soft");
+            }
+            System.out.println(String.format("Rule grade: %,.1f ", entry.getValue()));
+        }
+    }
+
+    public void printBestSolutionDetails(){
+        double fitnessValue =evolutionary.getGlobalBestSolution().getFitness();
+        double softRulesAVG = evolutionary.getGlobalBestSolution().getSoftRulesAvg();
+        double hardRulesAVG = evolutionary.getGlobalBestSolution().getHardRulesAvg();
+        System.out.println("\nSolution's Details:\n");
+        System.out.println(String.format("The fitness value of this solution is: %,.2f", fitnessValue));
+        reviewRules();
+        System.out.println(String.format("The soft rules avg is: %,.1f", softRulesAVG));
+        System.out.println(String.format("The hard rule4s avg is: %,.1f\n", hardRulesAVG));
     }
 
     public static boolean checkIfSolutionFound(){
@@ -271,8 +306,13 @@ public class ProgramManager {
             }
         }
         for(int i=0; i<lesson.getList().size(); i++){
-            if(lesson.getList().get(i).getSubjectId()==-1){
-                System.out.printf("|                            |");
+            if((lesson.getList().get(i).getSubjectId()==-1)||(lesson.getList().get(i).getTeacherId()==-1)){
+                if(lesson.getList().size()>1){
+                    ;
+                }
+                else{
+                    System.out.printf("|                            |");
+                }
             }
             else{
                 if(type=="Teacher"){
@@ -284,6 +324,47 @@ public class ProgramManager {
 
             }
         }
+    }
+
+
+
+    public void printSystemDetailes(){
+        System.out.println("Time Table Details:");
+        HashMap<Integer, Subject> subjects = timeTable.getTimeTableMembers().getSubjects();
+        HashMap<Integer, Teacher> teachers= timeTable.getTimeTableMembers().getTeachers();
+        HashMap<Integer, Grade> grades = timeTable.getTimeTableMembers().getGrades();
+        List<Rule> rules = timeTable.getTimeTableMembers().getRules();
+        int populationCount= evolutionEngineDataSet.getInitialPopulation();
+        for(Map.Entry<Integer, Subject > entry : subjects.entrySet()){
+            System.out.println(String.format("ID:%d, Name:%s", entry.getKey(),entry.getValue().getName()));
+        }
+        printTeachers(teachers,subjects);
+        //printGrades(grades,subjects);
+
+
+    }
+    private void printTeachers(HashMap<Integer, Teacher> teachers,HashMap<Integer, Subject> subjects){
+        System.out.println("Teachers:");
+        for(Map.Entry<Integer, Teacher > entry : teachers.entrySet()){
+            System.out.println(String.format("ID:", entry.getKey()));
+            System.out.println(String.format("Teaching subjects:"));
+            for(int i=0; i<entry.getValue().getSubjectsIdsList().size();i++){
+                int subjectID=entry.getValue().getSubjectsIdsList().get(i);
+                System.out.println(String.format("subject ID:%d", subjectID));
+                System.out.println(String.format("subject name:%s", subjects.get(subjectID).getName()));
+            }
+        }
+    }
+
+    private void printGrades(HashMap<Integer, Grade> grades,HashMap<Integer, Subject> subjects){
+        System.out.println("Grades:");
+for(Map.Entry<Integer, Grade> entry : grades.entrySet()){
+    System.out.println(String.format("Grade ID:%d", entry.getKey()));
+
+    for(Map.Entry<Integer, Integer> required : entry.getValue().getRequirements().entrySet())
+         System.out.println(String.format("Subject ID:%d, name: %s", entry.getKey(),subjects.get(entry.getKey())));
+         System.out.println(String.format("required hours:%d", entry.getValue()));
+}
     }
 }
 

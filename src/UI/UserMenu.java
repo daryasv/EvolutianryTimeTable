@@ -52,7 +52,9 @@ public class UserMenu
             System.out.println("please enter your file's path:\n");
 
         } else if (userInput.equals(Commands.SHOW_TABLE_SETTINGS.commandVal)) {
-            Commands.SHOW_TABLE_SETTINGS.isActive=true;
+            if(ProgramManager.checkIfFileLoaded()){
+                Commands.SHOW_TABLE_SETTINGS.isActive=true;
+            }
 
         } else if (userInput.equals( Commands.RUN_ALGORITHM.commandVal)) {
             Commands.RUN_ALGORITHM.isActive=true;

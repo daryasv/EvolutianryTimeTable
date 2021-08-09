@@ -14,7 +14,9 @@ import schema.models.ETTDescriptor;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import java.io.File;
+import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -77,19 +79,24 @@ public class ProgramManager {
                 int totalDays = timeTable.getTimeTableMembers().getDays();
                 int totalHours = timeTable.getTimeTableMembers().getHours();
                 printSolution(totalDays, totalHours);
-
-
             } else if (UserMenu.Commands.SHOW_ALGORITHM_PROC.getStatus()) {
                 UserMenu.Commands.SHOW_ALGORITHM_PROC.setStatus(false);
                 if (evolutionary != null)
                     printAlgorithmProgress();
                 else
                     System.out.println("NO ALGORITHM RUN YET");
+            }else if(UserMenu.Commands.SAVE.getStatus()){
+                UserMenu.Commands.SAVE.setStatus(false);
+                saveSystemFile();
+            }else if(UserMenu.Commands.LOAD.getStatus()){
+                UserMenu.Commands.LOAD.setStatus(false);
+                loadSavedSystemFile();
             }
         }catch (ValidationException e){
             System.out.println(e.getMessage());
         }
     }
+
     private void loadXMLFile() throws ValidationException {
         Scanner sc = new Scanner(System.in);
         FILE_NAME = sc.nextLine();
@@ -427,4 +434,64 @@ public class ProgramManager {
         }
         System.out.println("END: SHOW ALGORITHM PROCESS");
     }
+
+    private void saveSystemFile() throws ValidationException {
+        Scanner sc = new Scanner(System.in);
+        String uri = sc.nextLine();
+
+        //load xml file into ETT classes
+        Path path = Paths.get(uri);
+        if (!path.isAbsolute()) {
+            throw new ValidationException("ERROR - failed to load system file");
+        }
+
+        FileOutputStream fileOut = null;
+        try {
+            fileOut = new FileOutputStream(path.toFile().getAbsolutePath() + "/test.tt");
+            ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
+            objectOut.writeObject(timeTable);
+            objectOut.writeObject(evolutionary.getGlobalBestSolution());
+            objectOut.writeObject(evolutionary.getBestSolutions());
+            objectOut.close();
+        }
+        catch (IOException e) {
+            throw new ValidationException("ERROR - failed to parse file");
+        }
+
+        System.out.println("File saved Successfully!\n");
+    }
+
+    private void loadSavedSystemFile() throws ValidationException {
+        Scanner sc = new Scanner(System.in);
+        String filePath = sc.nextLine();
+
+        //load xml file into ETT classes
+        File file = new File(filePath);
+        if (!file.exists()) {
+            throw new ValidationException("ERROR - failed to load system file");
+        }
+        if(!file.getAbsoluteFile().toString().endsWith(".tt")){
+            throw new ValidationException("ERROR - bad file format");
+        }
+
+        try {
+            FileInputStream fi = new FileInputStream(file);
+            ObjectInputStream oi = new ObjectInputStream(fi);
+            // Read objects
+            TimeTableDataSet loadTimeTable = (TimeTableDataSet) oi.readObject();
+            SolutionFitness<Lesson> solution = (SolutionFitness<Lesson>) oi.readObject();
+            List<SolutionFitness<Lesson>> bestSolutions = (List<SolutionFitness<Lesson>>) oi.readObject();
+
+            evolutionary = new Evolutionary<>();
+            timeTable = loadTimeTable;
+
+
+        }
+        catch (IOException | ClassNotFoundException e) {
+            throw new ValidationException("ERROR - failed to parse file");
+        }
+        systemSetting.IS_FILE_LOADED.status = true;
+        System.out.println("File Loaded Successfully!\n");
+    }
+
 }

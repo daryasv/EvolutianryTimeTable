@@ -18,6 +18,8 @@ public class SolutionFitness<T> implements Serializable {
         this.softRulesAvg = softRulesAvg;
     }
 
+
+
     public Solution<T> getSolution() {
         return solution;
     }

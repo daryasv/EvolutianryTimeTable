@@ -103,6 +103,12 @@ public class ProgramManager {
         try{
             //load xml file into ETT classes
             File file = new File(FILE_NAME);
+            if(!file.exists()){
+                throw new ValidationException("File not exists");
+            }
+            if(!FILE_NAME.endsWith(".xml")){
+                throw new ValidationException("File not xml");
+            }
             JAXBContext jaxbContext = JAXBContext.newInstance(ETTDescriptor.class);
             Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
             ETTDescriptor descriptor = (ETTDescriptor) jaxbUnmarshaller.unmarshal(file);

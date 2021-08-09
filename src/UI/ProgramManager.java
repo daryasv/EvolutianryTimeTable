@@ -17,6 +17,7 @@ import javax.xml.bind.Unmarshaller;
 import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -427,15 +428,16 @@ public class ProgramManager {
         SolutionFitness<Lesson> currSolution = null;
         SolutionFitness<Lesson> prevSolution = null;
         System.out.println("START: SHOW ALGORITHM PROCESS (EVERY " + genInterval + "GENERATIONS) :");
+        DecimalFormat f = new DecimalFormat("#0.0");
         for (int i = 0; i < allSolutions.size(); i++) {
             currSolution = allSolutions.get(i);
-            if (prevSolution == null) {
-                System.out.println("In Generation #1 Best Fitness is " + (currSolution.getFitness()) + "");
-            } else {
-                double fitnessDiff = prevSolution.getFitness() - currSolution.getFitness();
-                System.out.println("In Generation #" + (i * genInterval) + " Best Fitness is " + (currSolution.getFitness()) + "," +
-                        ", Distance of " + (fitnessDiff) + "from the previous.");
+            double fitnessDiff = 0;
+            if (prevSolution != null) {
+                fitnessDiff = prevSolution.getFitness() - currSolution.getFitness();
             }
+            System.out.println("In Generation #" + ((i * genInterval) + genInterval) + " Best Fitness is " + (f.format(currSolution.getFitness())) + "," +
+                    " Distance of " + (f.format(fitnessDiff)) + " from the previous.");
+
             prevSolution = currSolution;
         }
         System.out.println("END: SHOW ALGORITHM PROCESS");

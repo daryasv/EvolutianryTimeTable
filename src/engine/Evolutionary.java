@@ -2,6 +2,7 @@ package engine;
 
 import engine.models.*;
 
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -110,8 +111,9 @@ public class Evolutionary<T> {
             if(genCounter % generationInterval == 0)
             {
                 bestSolutions.add(bestGenSolution);
+                DecimalFormat f = new DecimalFormat("##.0");
                 System.out.println("EVOLUTIONARY ENGINE STATUS: Generation: "+(genCounter)+
-                                    ", Best Fitness On Generation: "+(bestGenSolution.getFitness()));
+                                    ", Best Fitness On Generation: "+(f.format(bestGenSolution.getFitness())));
             }
         }
     }
@@ -130,29 +132,6 @@ public class Evolutionary<T> {
         return list;
     }
 
-//    private LinkedHashMap<Solution, Integer> sortSolutionsByFitness(Map<Solution, Integer> fitnessPerSolution) {
-//        LinkedHashMap<Solution, Integer> reverseSortedMap = new LinkedHashMap<>();
-//        fitnessPerSolution.entrySet()
-//                .stream()
-//                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-//                .forEachOrdered(x -> reverseSortedMap.put(x.getKey(), x.getValue()));
-//        return reverseSortedMap;
-//    }
-//
-//        private List<Solution<T>> selectionProcess(Map<Solution, Integer> fitnessPerSolution, String type, int present){
-//       int numOfSolutions=(present)*fitnessPerSolution.size()/100;
-//       List<Solution<T>> bestSolutions = new ArrayList<>();
-//        if(type.equals("Truncation")){
-//            LinkedHashMap<Solution, Integer> sortedMap = sortSolutionsByFitness(fitnessPerSolution);
-//            List<Solution> sortedList=new ArrayList<>(sortedMap.keySet());
-//            for(int i=0; i<numOfSolutions; i++){
-//                bestSolutions.add(sortedList.get(i));
-//            }
-//        }
-//        return bestSolutions;
-//    }
-//
-//
     private List<Solution<T>> crossover(EvolutionDataSet<T> dataSet, Solution<T> parent1, Solution<T> parent2)
     {
         int cuttingPoints = dataSet.getCrossoverData().getCuttingPoints();

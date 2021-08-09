@@ -43,8 +43,7 @@ public class EvolutionConfig implements Serializable
         return crossover;
     }
 
-    //TODO : validation
-    public void setCrossover(ETTCrossover ettCrossover) {
+    public void setCrossover(ETTCrossover ettCrossover) throws ValidationException {
         this.crossover = new Crossover(ettCrossover);
     }
 

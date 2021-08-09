@@ -40,8 +40,8 @@ public class UserMenu {
         System.out.println(String.format("Press (%s) to run the evolutionary algorithm", Commands.RUN_ALGORITHM.commandVal));
         System.out.println(String.format("Press (%s) to show the best solution", Commands.SHOW_BEST_SOLUTION.commandVal));
         System.out.println(String.format("Press (%s) to show algorithm's logs", Commands.SHOW_ALGORITHM_PROC.commandVal));
-        System.out.println(String.format("Press (%s) to save algorithm's logs", Commands.SAVE.commandVal));
-        System.out.println(String.format("Press (%s) to load algorithm's logs", Commands.LOAD.commandVal));
+        System.out.println(String.format("Press (%s) to save system logs", Commands.SAVE.commandVal));
+        System.out.println(String.format("Press (%s) to load system logs", Commands.LOAD.commandVal));
         System.out.println(String.format("Press (%s) to exit", Commands.EXIT.commandVal));
     }
 
@@ -87,11 +87,11 @@ public class UserMenu {
                 Commands.EXIT.isActive = true;
             } else if (userInput.equals(Commands.SAVE.commandVal)) {
                 if (ProgramManager.checkIfFileLoaded() && (ProgramManager.checkIfSolutionFound())) {
-                    System.out.println("please enter your folder path:\n");
+                    System.out.println("please enter your folder path to save the log:\n");
                     Commands.SAVE.isActive = true;
                 }
             } else if (userInput.equals(Commands.LOAD.commandVal)) {
-                System.out.println("please enter your file's path:\n");
+                System.out.println("please enter your log file path:\n");
                 Commands.LOAD.isActive = true;
             } else {
                 System.out.println("invalid command, please try again:\n");

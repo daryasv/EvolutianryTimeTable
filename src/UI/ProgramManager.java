@@ -274,14 +274,19 @@ public class ProgramManager {
     {
         int totalDays= timeTable.getTimeTableMembers().getDays();
         int totalHours= timeTable.getTimeTableMembers().getHours();
+        boolean isValidTable=true;
 
         for(int classIndex=0; classIndex<timeTableSolution.getList().size(); classIndex++){
+            isValidTable=true;
             int classID = timeTableSolution.getList().get(classIndex).getClassId();
             printClassStatus(classID);
             Solution classSolution= getClassSolution(classID);
             for(int curHour=0; curHour<totalHours+1; curHour++){
                 for(int curDay=0; curDay<totalDays+1; curDay++){
                     Solution DayHourSol=  getDayHourSolution(classSolution,curDay,curHour);
+                    if(DayHourSol.getList().size()>1){
+                        isValidTable=false;
+                    }
                     if((curDay==0)&&(curHour!=0)){
                         printLesson(DayHourSol, curHour,"Hour");
                     }
@@ -299,6 +304,9 @@ public class ProgramManager {
                 System.out.printf("\n------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n");
             }
 
+            if(!isValidTable){
+                System.out.println("************This Table Is Not Valid!!*********\n");
+            }
             while ((classIndex<timeTableSolution.getList().size()-1)&&(classID==timeTableSolution.getList().get(classIndex+1).getClassId())){
                 classIndex++;
             }
@@ -320,7 +328,7 @@ public class ProgramManager {
                 System.out.printf("%-8s",msg);
             }
             else{
-                System.out.printf("%-60s",msg);
+                System.out.printf("%-70s",msg);
             }
         }
         else{
@@ -352,8 +360,7 @@ public class ProgramManager {
                 }
             }
             if(isValidLesson)
-                System.out.printf("%-60s",allLessons);
-
+                System.out.printf("%-70s",allLessons);
         }
         if(isValidLesson){
             System.out.printf(String.format("%s","|"));

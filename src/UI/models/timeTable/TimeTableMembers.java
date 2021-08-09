@@ -41,7 +41,10 @@ public class TimeTableMembers implements Serializable
         return days;
     }
 
-    public void setDays(int days) {
+    public void setDays(int days) throws ValidationException {
+        if (days < 1 || days > 7) {
+            throw new ValidationException("Invalid days num: " + days);
+        }
         this.days = days;
     }
 
@@ -49,7 +52,10 @@ public class TimeTableMembers implements Serializable
         return hours;
     }
 
-    public void setHours(int hours) {
+    public void setHours(int hours) throws ValidationException {
+        if (days < 1 || hours > 24) {
+            throw new ValidationException("Invalid hours num: " + hours);
+        }
         this.hours = hours;
     }
 

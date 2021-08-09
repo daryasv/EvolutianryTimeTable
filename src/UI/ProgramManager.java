@@ -147,7 +147,7 @@ public class ProgramManager {
             else if (UserMenu.Commands.PRINT_PER_TEACHER.getStatus()){
                 UserMenu.Commands.PRINT_PER_TEACHER.setStatus(false);
                 timeTableSolution= timeTable.sort(timeTableSolution,LessonSortType.TEACHER_ORIENTED.name);
-              //1  printPerTeacher();
+                printPerTeacher();
             }
             else{
                 System.out.println("unknown printing type");
@@ -212,35 +212,7 @@ public class ProgramManager {
         System.out.println(String.format("\nClass ID: %s", classID));
     }
 
-    private void printPerTeacher(){
-        int totalDays= timeTable.getTimeTableMembers().getDays();
-        int totalHours= timeTable.getTimeTableMembers().getHours();
-        for(int TeacherIndex=0; TeacherIndex<timeTableSolution.getList().size(); TeacherIndex++){
-            int teacherID = timeTableSolution.getList().get(TeacherIndex).getTeacherId();
-            Solution TeacherSolution= getClassSolution(teacherID);
-            for(int curHour=0; curHour<totalHours+1; curHour++){
-                for(int curDay=0; curDay<totalDays+1; curDay++){
-                    Solution DayHourSol=  getDayHourSolution(TeacherSolution,curDay,curHour);
 
-                    if((curDay==0)&&(curHour!=0)){
-                        printLesson(DayHourSol, curHour,"Hour");
-                    }
-                    else if(((curDay==0)&&(curHour==0))){
-                        System.out.println("       ");
-                    }
-                    else if((curDay!=0)&&(curHour==0)){
-                        printLesson(DayHourSol, curDay,"Day");
-                    }
-                    else{
-                        printLesson(DayHourSol, teacherID,"Class");
-                    }
-                }
-            }
-            while (teacherID==timeTableSolution.getList().get(TeacherIndex+1).getTeacherId()){
-                TeacherIndex++;
-            }
-        }
-    }
     public Solution<Lesson> getClassSolution(int classId){
         Solution<Lesson> solutionPerClass= new Solution<Lesson>();
         for(int i=0; i<timeTableSolution.getList().size(); i++){
@@ -270,6 +242,56 @@ public class ProgramManager {
         return solutionPerTime;
     }
 
+    private void printPerTeacher(){
+
+        int totalDays= timeTable.getTimeTableMembers().getDays();
+        int totalHours= timeTable.getTimeTableMembers().getHours();
+        boolean isValidTable=true;
+        int teacherID;
+
+        for(int TeacherIndex=0; TeacherIndex<timeTableSolution.getList().size(); TeacherIndex++){
+            isValidTable=true;
+            do{
+                 teacherID = timeTableSolution.getList().get(TeacherIndex).getTeacherId();
+                 if(teacherID==-1)
+                     TeacherIndex++;
+            }while (teacherID==-1);
+
+            System.out.println(String.format("\nTeacher ID: %s", teacherID));
+
+            Solution TeacherSolution= getTeacherSolution(teacherID);
+
+            for(int curHour=0; curHour<totalHours+1; curHour++){
+                for(int curDay=0; curDay<totalDays+1; curDay++){
+                    Solution DayHourSol=  getDayHourSolution(TeacherSolution,curDay,curHour);
+                    if(DayHourSol.getList().size()>1) {
+                        isValidTable = false;
+                    }
+
+                    if((curDay==0)&&(curHour!=0)){
+                        printLesson(DayHourSol, curHour,"Hour");
+                    }
+                    else if(((curDay==0)&&(curHour==0))){
+                        System.out.printf("%-9s","");
+                    }
+                    else if((curDay!=0)&&(curHour==0)){
+                        printLesson(DayHourSol, curDay,"Day");
+                    }
+                    else{
+                        printLesson(DayHourSol, teacherID,"Class");
+                    }
+                }
+                System.out.printf("\n------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n");
+            }
+            if(!isValidTable) {
+                System.out.println("************This Table Is Not Valid!!*********\n");
+            }
+            while ((teacherID<timeTableSolution.getList().size()-1)&&(teacherID==timeTableSolution.getList().get(teacherID+1).getTeacherId())){
+                TeacherIndex++;
+            }
+        }
+    }
+
     private void printPerClass()
     {
         int totalDays= timeTable.getTimeTableMembers().getDays();
@@ -280,10 +302,14 @@ public class ProgramManager {
             isValidTable=true;
             int classID = timeTableSolution.getList().get(classIndex).getClassId();
             printClassStatus(classID);
+
             Solution classSolution= getClassSolution(classID);
             for(int curHour=0; curHour<totalHours+1; curHour++){
                 for(int curDay=0; curDay<totalDays+1; curDay++){
+
+
                     Solution DayHourSol=  getDayHourSolution(classSolution,curDay,curHour);
+
                     if(DayHourSol.getList().size()>1){
                         isValidTable=false;
                     }

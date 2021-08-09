@@ -118,7 +118,7 @@ public class ProgramManager {
 
         } catch (JAXBException e) {
             systemSetting.IS_FILE_LOADED.status=false;
-            System.out.println("failed to load file, please try again");
+            System.out.println("Failed to parse xml");
         }
     }
 

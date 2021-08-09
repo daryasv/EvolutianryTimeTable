@@ -30,7 +30,7 @@ public class ProgramManager {
     Evolutionary<Lesson> evolutionary = null;
 
     public static enum systemSetting{
-        IS_FILE_LOADED(false),SOLUTION_FOUND(true);
+        IS_FILE_LOADED(false),SOLUTION_FOUND(false);
         boolean status;
         systemSetting(boolean status){
             this.status=status;
@@ -116,6 +116,7 @@ public class ProgramManager {
             timeTable.setGenerationsInterval(interval);
             evolutionary.run(timeTable);
             timeTableSolution = evolutionary.getGlobalBestSolution().getSolution();
+            systemSetting.SOLUTION_FOUND.status=true;
         }
     }
 
@@ -124,9 +125,10 @@ public class ProgramManager {
         evolutionEngineDataSet = new EvolutionConfig(descriptor.getETTEvolutionEngine());
     }
 
-    public void printSolution(int totalDays, int totalHours){
+    public void printSolution(int totalDays, int totalHours) throws ValidationException {
 
         if(checkIfFileLoaded()){
+
             printBestSolutionDetails();
             if(UserMenu.Commands.PRINT_RAW.getStatus()){
                 UserMenu.Commands.PRINT_RAW.setStatus(false);
@@ -149,6 +151,7 @@ public class ProgramManager {
         }
 
     }
+
     public void reviewRules(){
         System.out.println("\nRule's:\n");
         HashMap<IRule, Double> rulesFitness =evolutionary.getGlobalBestSolution().getRulesFitness();
@@ -163,15 +166,19 @@ public class ProgramManager {
         }
     }
 
-    public void printBestSolutionDetails(){
-        double fitnessValue =evolutionary.getGlobalBestSolution().getFitness();
-        double softRulesAVG = evolutionary.getGlobalBestSolution().getSoftRulesAvg();
-        double hardRulesAVG = evolutionary.getGlobalBestSolution().getHardRulesAvg();
-        System.out.println("\nSolution's Details:\n");
-        System.out.println(String.format("The fitness value of this solution is: %,.2f", fitnessValue));
-        reviewRules();
-        System.out.println(String.format("The soft rules avg is: %,.1f", softRulesAVG));
-        System.out.println(String.format("The hard rule4s avg is: %,.1f\n", hardRulesAVG));
+    public void printBestSolutionDetails() throws ValidationException {
+        if(evolutionary != null && evolutionary.getGlobalBestSolution() != null) {
+            double fitnessValue = evolutionary.getGlobalBestSolution().getFitness();
+            double softRulesAVG = evolutionary.getGlobalBestSolution().getSoftRulesAvg();
+            double hardRulesAVG = evolutionary.getGlobalBestSolution().getHardRulesAvg();
+            System.out.println("\nSolution's Details:\n");
+            System.out.println(String.format("The fitness value of this solution is: %,.2f", fitnessValue));
+            reviewRules();
+            System.out.println(String.format("The soft rules avg is: %,.1f", softRulesAVG));
+            System.out.println(String.format("The hard rule4s avg is: %,.1f\n", hardRulesAVG));
+        }else {
+            throw new ValidationException("ERROR - no algorithm ran yet");
+        }
     }
 
     public static boolean checkIfSolutionFound(){

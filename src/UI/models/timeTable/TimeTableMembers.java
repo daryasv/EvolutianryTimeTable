@@ -68,20 +68,17 @@ public class TimeTableMembers implements Serializable
         List<Integer> subjectIds = new ArrayList<>(this.subjects.keySet());
 
         for (ETTTeacher ettTeacher : ettTeachers) {
-            try {
-                Teacher teacher = new Teacher(ettTeacher);
-                if(teacher.getSubjectsIdsList().size() == 0){
-                    throw new ValidationException("Teacher not teaching any subject");
-                }
-                for (Integer id : teacher.getSubjectsIdsList()){
-                    if(!subjectIds.contains(id)) {
-                        throw new ValidationException("Teacher subject id not in subjects");
-                    }
-                }
-                this.teachers.put(teacher.getId(),teacher);
-            } catch (ValidationException e) {
-                e.printStackTrace();
+
+            Teacher teacher = new Teacher(ettTeacher);
+            if (teacher.getSubjectsIdsList().size() == 0) {
+                throw new ValidationException("Teacher not teaching any subject");
             }
+            for (Integer id : teacher.getSubjectsIdsList()) {
+                if (!subjectIds.contains(id)) {
+                    throw new ValidationException("Teacher subject id not in subjects");
+                }
+            }
+            this.teachers.put(teacher.getId(), teacher);
         }
 
         List<Component> components = new ArrayList<>(this.teachers.values());

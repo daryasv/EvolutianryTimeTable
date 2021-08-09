@@ -52,8 +52,7 @@ public class EvolutionConfig implements Serializable
         return mutations;
     }
 
-    //TODO : validation
-    public void setMutations(List<ETTMutation> ettMutations) {
+    public void setMutations(List<ETTMutation> ettMutations) throws ValidationException {
         this.mutations = new ArrayList<>();
         for (ETTMutation ettMutation: ettMutations) {
             mutations.add(new Mutation(ettMutation));

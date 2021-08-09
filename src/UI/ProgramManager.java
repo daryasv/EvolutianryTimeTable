@@ -57,7 +57,14 @@ public class ProgramManager {
         System.out.println("THE PROGRAM CLOSED. SEE YOU SOON");
     }
 
-    private void runCommand() {
+    private void runCommand(){
+        if(UserMenu.Commands.LOAD_TABLE_DETAILS.getStatus()){
+            UserMenu.Commands.LOAD_TABLE_DETAILS.setStatus(false);
+            loadXMLFile();
+        }
+        else if(UserMenu.Commands.SHOW_TABLE_SETTINGS.getStatus()){
+            UserMenu.Commands.SHOW_TABLE_SETTINGS.setStatus(false);
+            printSystemDetails();
 
         try {
             if (UserMenu.Commands.LOAD_TABLE_DETAILS.getStatus()) {
@@ -167,9 +174,10 @@ public class ProgramManager {
                 printPerClass();
             } else if (UserMenu.Commands.PRINT_PER_TEACHER.getStatus()) {
                 UserMenu.Commands.PRINT_PER_TEACHER.setStatus(false);
-                timeTableSolution = timeTable.sort(timeTableSolution, LessonSortType.TEACHER_ORIENTED.name);
-                printPerTeacher();
-            } else {
+                timeTableSolution= timeTable.sort(timeTableSolution,LessonSortType.TEACHER_ORIENTED.name);
+              //1  printPerTeacher();
+            }
+            else{
                 System.out.println("unknown printing type");
             }
         }
@@ -344,44 +352,86 @@ public class ProgramManager {
     }
 
 
-    public void printSystemDetailes() {
-        System.out.println("Time Table Details:");
+
+
+    public void printSystemDetails(){
+        System.out.println("\n***Time Table Details***\n");
+
         HashMap<Integer, Subject> subjects = timeTable.getTimeTableMembers().getSubjects();
         HashMap<Integer, Teacher> teachers = timeTable.getTimeTableMembers().getTeachers();
         HashMap<Integer, Grade> grades = timeTable.getTimeTableMembers().getGrades();
         List<Rule> rules = timeTable.getTimeTableMembers().getRules();
-        int populationCount = evolutionEngineDataSet.getInitialPopulation();
-        for (Map.Entry<Integer, Subject> entry : subjects.entrySet()) {
-            System.out.println(String.format("ID:%d, Name:%s", entry.getKey(), entry.getValue().getName()));
+
+        String selectionType = evolutionEngineDataSet.getSelection().getType().name;
+        int populationCount= evolutionEngineDataSet.getInitialPopulation();
+        System.out.println("-Subjects-");
+        for(Map.Entry<Integer, Subject > entry : subjects.entrySet()){
+            System.out.println(String.format("ID:%d, Name:%s", entry.getKey(),entry.getValue().getName()));
         }
-        printTeachers(teachers, subjects);
-        //printGrades(grades,subjects);
+        System.out.printf("\n");
+        printTeachers(teachers,subjects);
+        printGrades(grades,subjects);
+        printRules(rules);
+        System.out.println("\n***evolution Details***\n");
+        System.out.println(String.format("\npopulation count:%d", populationCount));
+        System.out.println(String.format("selection type:%s", selectionType));
+        printMutationDetails();
+        printCrossoverDetails();
 
 
     }
-
-    private void printTeachers(HashMap<Integer, Teacher> teachers, HashMap<Integer, Subject> subjects) {
-        System.out.println("Teachers:");
-        for (Map.Entry<Integer, Teacher> entry : teachers.entrySet()) {
-            System.out.println(String.format("ID:", entry.getKey()));
+    private void printTeachers(HashMap<Integer, Teacher> teachers,HashMap<Integer, Subject> subjects){
+        System.out.println("-Teachers-");
+        for(Map.Entry<Integer, Teacher > entry : teachers.entrySet()){
+            System.out.println(String.format("Teacher ID:%d", entry.getKey()));
             System.out.println(String.format("Teaching subjects:"));
-            for (int i = 0; i < entry.getValue().getSubjectsIdsList().size(); i++) {
-                int subjectID = entry.getValue().getSubjectsIdsList().get(i);
-                System.out.println(String.format("subject ID:%d", subjectID));
+            for(int i=0; i<entry.getValue().getSubjectsIdsList().size();i++){
+                int subjectID=entry.getValue().getSubjectsIdsList().get(i);
+                System.out.printf(String.format("subject ID:%d ", subjectID));
                 System.out.println(String.format("subject name:%s", subjects.get(subjectID).getName()));
+            }
+            System.out.printf("\n");
+        }
+    }
+
+    private void printGrades(HashMap<Integer, Grade> grades,HashMap<Integer, Subject> subjects){
+        System.out.println("-Grades-");
+    for(Map.Entry<Integer, Grade> entry : grades.entrySet()){
+    System.out.println(String.format("\nGrade ID:%d", entry.getKey()));
+
+    for(Map.Entry<Integer, Integer> required : entry.getValue().getRequirements().entrySet()){
+        System.out.printf(String.format("Subject ID:%d, name: %s ", required.getKey(),subjects.get(required.getKey()).getName()));
+        System.out.println(String.format(", required hours:%d", required.getValue()));
+    }
+
+}
+
+    System.out.println("\n");
+    }
+    private void printRules(List<Rule> rules){
+        System.out.println("-Rules-");
+        for(int i=0; i<rules.size();i++){
+            if(rules.get(i).isHard())
+                 System.out.println(String.format("rule name:%s, type:Hard", rules.get(i).getName()));
+            else{
+                System.out.println(String.format("rule name:%s, type:Soft", rules.get(i).getName()));
             }
         }
     }
 
-    private void printGrades(HashMap<Integer, Grade> grades, HashMap<Integer, Subject> subjects) {
-        System.out.println("Grades:");
-        for (Map.Entry<Integer, Grade> entry : grades.entrySet()) {
-            System.out.println(String.format("Grade ID:%d", entry.getKey()));
-
-            for (Map.Entry<Integer, Integer> required : entry.getValue().getRequirements().entrySet())
-                System.out.println(String.format("Subject ID:%d, name: %s", entry.getKey(), subjects.get(entry.getKey())));
-            System.out.println(String.format("required hours:%d", entry.getValue()));
+    private void printMutationDetails(){
+        System.out.println("\n-Mutations-");
+        for(int i=0; i<evolutionEngineDataSet.getMutations().size();i++){
+            System.out.println(String.format("mutation type:%s, probability:%.2f, component:%c", evolutionEngineDataSet.getMutations().get(i).getName(),evolutionEngineDataSet.getMutations().get(i).getProbability(),evolutionEngineDataSet.getMutations().get(i).getComponent()));
         }
+    }
+
+    private void printCrossoverDetails(){
+        System.out.println("\n-Crossover-");
+        String crossoverType= evolutionEngineDataSet.getCrossover().getName().name;
+       int cuttingPoints= evolutionEngineDataSet.getCrossover().getCuttingPoints();
+       System.out.println(String.format("Crossover type:%s, num of cutting points:%d",crossoverType,cuttingPoints));
+
     }
 }
 

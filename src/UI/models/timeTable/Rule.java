@@ -6,11 +6,12 @@ import engine.models.IRule;
 import engine.models.Solution;
 import schema.models.ETTRule;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class Rule implements IRule {
+public class Rule implements IRule, Serializable {
 
     protected RuleId id;
     protected String configuration;

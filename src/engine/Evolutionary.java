@@ -89,13 +89,13 @@ public class Evolutionary<T> {
             selectionSolutions = getSelectionSolutions(solutionsFitnessMap, dataSet.getSelectionData());
 
             SolutionFitness<T> bestGenSolution = selectionSolutions.get(0);
-            bestSolutions.add(bestGenSolution);
             if(globalBestSolution == null || bestGenSolution.compareTo(globalBestSolution) > 0)
                 globalBestSolution = bestGenSolution;
 
             //printing interval every #generationInterva generations
             if(genCounter % generationInterval == 0)
             {
+                bestSolutions.add(bestGenSolution);
                 System.out.println("EVOLUTIONARY ENGINE STATUS: Generation: "+(genCounter)+
                                     ", Best Fitness On Generation: "+(bestGenSolution.getFitness()));
             }

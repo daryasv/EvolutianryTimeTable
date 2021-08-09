@@ -41,7 +41,10 @@ public class TimeTableMembers implements Serializable
         return days;
     }
 
-    public void setDays(int days) {
+    public void setDays(int days) throws ValidationException {
+        if (days < 1 || days > 7) {
+            throw new ValidationException("Invalid days num: " + days);
+        }
         this.days = days;
     }
 
@@ -49,7 +52,10 @@ public class TimeTableMembers implements Serializable
         return hours;
     }
 
-    public void setHours(int hours) {
+    public void setHours(int hours) throws ValidationException {
+        if (days < 1 || hours > 24) {
+            throw new ValidationException("Invalid hours num: " + hours);
+        }
         this.hours = hours;
     }
 
@@ -62,20 +68,17 @@ public class TimeTableMembers implements Serializable
         List<Integer> subjectIds = new ArrayList<>(this.subjects.keySet());
 
         for (ETTTeacher ettTeacher : ettTeachers) {
-            try {
-                Teacher teacher = new Teacher(ettTeacher);
-                if(teacher.getSubjectsIdsList().size() == 0){
-                    throw new ValidationException("Teacher not teaching any subject");
-                }
-                for (Integer id : teacher.getSubjectsIdsList()){
-                    if(!subjectIds.contains(id)) {
-                        throw new ValidationException("Teacher subject id not in subjects");
-                    }
-                }
-                this.teachers.put(teacher.getId(),teacher);
-            } catch (ValidationException e) {
-                e.printStackTrace();
+
+            Teacher teacher = new Teacher(ettTeacher);
+            if (teacher.getSubjectsIdsList().size() == 0) {
+                throw new ValidationException("Teacher not teaching any subject");
             }
+            for (Integer id : teacher.getSubjectsIdsList()) {
+                if (!subjectIds.contains(id)) {
+                    throw new ValidationException("Teacher subject id not in subjects");
+                }
+            }
+            this.teachers.put(teacher.getId(), teacher);
         }
 
         List<Component> components = new ArrayList<>(this.teachers.values());

@@ -44,7 +44,11 @@ public class ProgramManager {
         while(!UserMenu.Commands.EXIT.getStatus()){
             UserMenu menu = new UserMenu();
             menu.getUserInput();
-            runCommand();
+            try {
+                runCommand();
+            }catch (Exception e){
+
+            }
         }
         this.exitProgram();
 
@@ -261,14 +265,14 @@ public class ProgramManager {
         for(int TeacherIndex=0; TeacherIndex<timeTableSolution.getList().size(); TeacherIndex++){
             isValidTable=true;
             do{
-                 teacherID = timeTableSolution.getList().get(TeacherIndex).getTeacherId();
-                 if(teacherID==-1)
-                     TeacherIndex++;
+                teacherID = timeTableSolution.getList().get(TeacherIndex).getTeacherId();
+                if(teacherID==-1)
+                    TeacherIndex++;
             }while (teacherID==-1);
 
             System.out.println(String.format("\nTeacher ID: %s", teacherID));
 
-            Solution TeacherSolution= getTeacherSolution(timeTableSolution,teacherID);
+            Solution TeacherSolution= getTeacherSolution(timeTableSolution, teacherID);
 
             for(int curHour=0; curHour<totalHours+1; curHour++){
                 for(int curDay=0; curDay<totalDays+1; curDay++){
@@ -295,8 +299,12 @@ public class ProgramManager {
             if(!isValidTable) {
                 System.out.println("************This Table Is Not Valid!!*********\n");
             }
-            while ((teacherID<timeTableSolution.getList().size()-1)&&(teacherID==timeTableSolution.getList().get(teacherID+1).getTeacherId())){
-                TeacherIndex++;
+            while (((TeacherIndex<timeTableSolution.getList().size()-1))){
+                if((teacherID==timeTableSolution.getList().get(TeacherIndex+1).getTeacherId())||(timeTableSolution.getList().get(TeacherIndex+1).getTeacherId())==-1)
+                    TeacherIndex++;
+                else{
+                    break;
+                }
             }
         }
     }

@@ -1,6 +1,8 @@
 package UI.models;
 
-public class Lesson {
+import java.io.Serializable;
+
+public class Lesson implements Serializable {
     private int classId;
     private int teacherId;
     private int subjectId;

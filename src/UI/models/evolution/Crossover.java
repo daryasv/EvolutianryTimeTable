@@ -4,7 +4,9 @@ import UI.models.LessonSortType;
 import engine.models.ICrossoverData;
 import schema.models.ETTCrossover;
 
-public class Crossover implements ICrossoverData
+import java.io.Serializable;
+
+public class Crossover implements ICrossoverData , Serializable
 {
     private LessonSortType name;
     private int cuttingPoints;

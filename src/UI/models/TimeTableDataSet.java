@@ -56,12 +56,22 @@ public class TimeTableDataSet implements EvolutionDataSet<Lesson>, Serializable 
         int randomTuplesNum = rand.nextInt(Math.abs(mutation.getMaxTupples()));
         int maxOptions = this.timeTableMembers.getDays() * this.timeTableMembers.getHours();
         int minOptions = this.timeTableMembers.getDays();
-        Solution<Lesson> rndSol = getRandomSolution();
+
         for(int i=0; i<randomTuplesNum && child.getList().size() <maxOptions && child.getList().size() > minOptions ;i++) {
             if (isPositive) {
-                child.getList().add(rndSol.getList().get(i));
+                Optional<Lesson> lesson = child.getList().stream().filter(p->p.getSubjectId() == -1).findFirst();
+                int subjectIdx = rand.nextInt(this.timeTableMembers.getSubjects().size());
+                int teacherIdx = rand.nextInt(this.timeTableMembers.getTeachers().size());
+                lesson.ifPresent(value -> {
+                    value.setSubjectId(this.timeTableMembers.getSubjects().get(subjectIdx).getId());
+                    value.setSubjectId(this.timeTableMembers.getTeachers().get(teacherIdx).getId());
+                });
             } else {
-                child.getList().remove(i);
+                Optional<Lesson> lesson = child.getList().stream().filter(p->p.getSubjectId() != -1).findFirst();
+                lesson.ifPresent(value -> {
+                    value.setSubjectId(-1);
+                    value.setTeacherId(-1);
+                });
             }
         }
     }

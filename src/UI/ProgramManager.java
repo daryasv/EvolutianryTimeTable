@@ -14,7 +14,10 @@ import schema.models.ETTDescriptor;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import java.io.File;
+import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +33,7 @@ public class ProgramManager {
     Evolutionary<Lesson> evolutionary = null;
 
     public static enum systemSetting{
-        IS_FILE_LOADED(false),SOLUTION_FOUND(true);
+        IS_FILE_LOADED(false),SOLUTION_FOUND(false);
         boolean status;
         systemSetting(boolean status){
             this.status=status;
@@ -74,28 +77,37 @@ public class ProgramManager {
                 runAlgorithm(generations, interval);
             } else if (UserMenu.Commands.SHOW_BEST_SOLUTION.getStatus()) {
                 UserMenu.Commands.SHOW_BEST_SOLUTION.setStatus(false);
-                int totalDays = timeTable.getTimeTableMembers().getDays();
-                int totalHours = timeTable.getTimeTableMembers().getHours();
-                printSolution(totalDays, totalHours);
-
-
+                printSolution();
             } else if (UserMenu.Commands.SHOW_ALGORITHM_PROC.getStatus()) {
                 UserMenu.Commands.SHOW_ALGORITHM_PROC.setStatus(false);
                 if (evolutionary != null)
                     printAlgorithmProgress();
                 else
                     System.out.println("NO ALGORITHM RUN YET");
+            }else if(UserMenu.Commands.SAVE.getStatus()){
+                UserMenu.Commands.SAVE.setStatus(false);
+                saveSystemFile();
+            }else if(UserMenu.Commands.LOAD.getStatus()){
+                UserMenu.Commands.LOAD.setStatus(false);
+                loadSavedSystemFile();
             }
         }catch (ValidationException e){
             System.out.println(e.getMessage());
         }
     }
+
     private void loadXMLFile() throws ValidationException {
         Scanner sc = new Scanner(System.in);
         FILE_NAME = sc.nextLine();
         try{
             //load xml file into ETT classes
             File file = new File(FILE_NAME);
+            if(!file.exists()){
+                throw new ValidationException("File not exists");
+            }
+            if(!FILE_NAME.endsWith(".xml")){
+                throw new ValidationException("File not xml");
+            }
             JAXBContext jaxbContext = JAXBContext.newInstance(ETTDescriptor.class);
             Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
             ETTDescriptor descriptor = (ETTDescriptor) jaxbUnmarshaller.unmarshal(file);
@@ -105,7 +117,7 @@ public class ProgramManager {
 
         } catch (JAXBException e) {
             systemSetting.IS_FILE_LOADED.status=false;
-            System.out.println("failed to load file, please try again");
+            System.out.println("Failed to parse xml");
         }
     }
 
@@ -116,6 +128,7 @@ public class ProgramManager {
             timeTable.setGenerationsInterval(interval);
             evolutionary.run(timeTable);
             timeTableSolution = evolutionary.getGlobalBestSolution().getSolution();
+            systemSetting.SOLUTION_FOUND.status=true;
         }
     }
 
@@ -124,13 +137,13 @@ public class ProgramManager {
         evolutionEngineDataSet = new EvolutionConfig(descriptor.getETTEvolutionEngine());
     }
 
-    public void printSolution(int totalDays, int totalHours){
-
+    public void printSolution() throws ValidationException {
+        
         if(checkIfFileLoaded()){
             printBestSolutionDetails();
             if(UserMenu.Commands.PRINT_RAW.getStatus()){
                 UserMenu.Commands.PRINT_RAW.setStatus(false);
-                timeTableSolution= timeTable.sort(timeTableSolution,LessonSortType.DayTimeOriented.name);
+               timeTableSolution= timeTable.sort(timeTableSolution,LessonSortType.DayTimeOriented.name);
                 printRaw();
             }
             else if(UserMenu.Commands.PRINT_PER_CLASS.getStatus()){
@@ -141,7 +154,7 @@ public class ProgramManager {
             else if (UserMenu.Commands.PRINT_PER_TEACHER.getStatus()){
                 UserMenu.Commands.PRINT_PER_TEACHER.setStatus(false);
                 timeTableSolution= timeTable.sort(timeTableSolution,LessonSortType.TEACHER_ORIENTED.name);
-                //1  printPerTeacher();
+                printPerTeacher();
             }
             else{
                 System.out.println("unknown printing type");
@@ -149,13 +162,14 @@ public class ProgramManager {
         }
 
     }
+
     public void reviewRules(){
         System.out.println("\nRule's:\n");
         HashMap<IRule, Double> rulesFitness =evolutionary.getGlobalBestSolution().getRulesFitness();
         for (Map.Entry<IRule, Double> entry : rulesFitness.entrySet()){
             System.out.println(String.format("Rule name: %s ", entry.getKey().getName()));
             if(entry.getKey().isHard())
-                System.out.println("Rule type: hard");
+              System.out.println("Rule type: hard");
             else{
                 System.out.println("Rule type: soft");
             }
@@ -163,15 +177,19 @@ public class ProgramManager {
         }
     }
 
-    public void printBestSolutionDetails(){
-        double fitnessValue =evolutionary.getGlobalBestSolution().getFitness();
-        double softRulesAVG = evolutionary.getGlobalBestSolution().getSoftRulesAvg();
-        double hardRulesAVG = evolutionary.getGlobalBestSolution().getHardRulesAvg();
-        System.out.println("\nSolution's Details:\n");
-        System.out.println(String.format("The fitness value of this solution is: %,.2f", fitnessValue));
-        reviewRules();
-        System.out.println(String.format("The soft rules avg is: %,.1f", softRulesAVG));
-        System.out.println(String.format("The hard rule4s avg is: %,.1f\n", hardRulesAVG));
+    public void printBestSolutionDetails() throws ValidationException {
+        if(evolutionary != null && evolutionary.getGlobalBestSolution() != null) {
+            double fitnessValue = evolutionary.getGlobalBestSolution().getFitness();
+            double softRulesAVG = evolutionary.getGlobalBestSolution().getSoftRulesAvg();
+            double hardRulesAVG = evolutionary.getGlobalBestSolution().getHardRulesAvg();
+            System.out.println("\nSolution's Details:\n");
+            System.out.println(String.format("The fitness value of this solution is: %,.2f", fitnessValue));
+            reviewRules();
+            System.out.println(String.format("The soft rules avg is: %,.1f", softRulesAVG));
+            System.out.println(String.format("The hard rules avg is: %,.1f\n", hardRulesAVG));
+        }else {
+            throw new ValidationException("ERROR - no algorithm ran yet");
+        }
     }
 
     public static boolean checkIfSolutionFound(){
@@ -196,70 +214,16 @@ public class ProgramManager {
             int subject =timeTableSolution.getList().get(i).getSubjectId();
             int day =timeTableSolution.getList().get(i).getDay();
             int hour =timeTableSolution.getList().get(i).getHour();
-            if(teacher!=-1)
+            if(teacher!=-1&&subject!=-1)
                 System.out.println(String.format("Day:%d, hour:%d, classID:%d, teacherID:%d, subject:%d",day,hour, classId, teacher,subject));
         }
     }
-    private void printPerClass()
-    {
-        int totalDays= timeTable.getTimeTableMembers().getDays();
-        int totalHours= timeTable.getTimeTableMembers().getHours();
 
-        for(int classIndex=0; classIndex<timeTableSolution.getList().size(); classIndex++){
-            int classID = timeTableSolution.getList().get(classIndex).getClassId();
-            printClassStatus(classID);
-            Solution classSolution= getClassSolution(classID);
-            for(int curHour=0; curHour<totalHours+1; curHour++){
-                for(int curDay=0; curDay<totalDays+1; curDay++){
-                    Solution DayHourSol=  getDayHourSolution(classSolution,curDay,curHour);
-                    if((curDay==0)&&(curHour!=0)){
-                        printLesson(DayHourSol, curHour,"Hour");
-                    }
-                    else if((curDay!=0)&&(curHour==0)){
-                        printLesson(DayHourSol, curDay,"Day");
-                    }
-                    else{
-                        printLesson(DayHourSol, classID,"Teacher");
-                    }
-                }
-                System.out.printf("\n----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n");
-            }
-
-            while ((classIndex<timeTableSolution.getList().size()-1)&&(classID==timeTableSolution.getList().get(classIndex+1).getClassId())){
-                classIndex++;
-            }
-        }
-    }
 
     private void printClassStatus(int classID){
         System.out.println(String.format("\nClass ID: %s", classID));
     }
 
-    private void printPerTeacher(){
-        int totalDays= timeTable.getTimeTableMembers().getDays();
-        int totalHours= timeTable.getTimeTableMembers().getHours();
-        for(int TeacherIndex=0; TeacherIndex<timeTableSolution.getList().size(); TeacherIndex++){
-            int teacherID = timeTableSolution.getList().get(TeacherIndex).getTeacherId();
-            Solution TeacherSolution= getClassSolution(teacherID);
-            for(int curHour=0; curHour<totalHours+1; curHour++){
-                for(int curDay=0; curDay<totalDays+1; curDay++){
-                    Solution DayHourSol=  getDayHourSolution(TeacherSolution,curDay,curHour);
-                    if((curDay==0)&&(curHour!=0)){
-                        printLesson(DayHourSol, curHour,"Hour");
-                    }
-                    else if((curDay!=0)&&(curHour==0)){
-                        printLesson(DayHourSol, curDay,"Day");
-                    }
-                    else{
-                        printLesson(DayHourSol, teacherID,"Class");
-                    }
-                }
-            }
-            while (teacherID==timeTableSolution.getList().get(TeacherIndex+1).getTeacherId()){
-                TeacherIndex++;
-            }
-        }
-    }
 
     public Solution<Lesson> getClassSolution(int classId){
         Solution<Lesson> solutionPerClass= new Solution<Lesson>();
@@ -289,36 +253,155 @@ public class ProgramManager {
         }
         return solutionPerTime;
     }
-    public void printLesson(Solution<Lesson> lesson, int ID, String type){
-        if(lesson.getList().size()==0){
-            if(type.equals("Day")){
-                System.out.printf(String.format("|%s: %d                      |", type,ID));
+
+    private void printPerTeacher(){
+
+        int totalDays= timeTable.getTimeTableMembers().getDays();
+        int totalHours= timeTable.getTimeTableMembers().getHours();
+        boolean isValidTable=true;
+        int teacherID;
+
+        for(int TeacherIndex=0; TeacherIndex<timeTableSolution.getList().size(); TeacherIndex++){
+            isValidTable=true;
+            do{
+                 teacherID = timeTableSolution.getList().get(TeacherIndex).getTeacherId();
+                 if(teacherID==-1)
+                     TeacherIndex++;
+            }while (teacherID==-1);
+
+            System.out.println(String.format("\nTeacher ID: %s", teacherID));
+
+            Solution TeacherSolution= getTeacherSolution(teacherID);
+
+            for(int curHour=0; curHour<totalHours+1; curHour++){
+                for(int curDay=0; curDay<totalDays+1; curDay++){
+                    Solution DayHourSol=  getDayHourSolution(TeacherSolution,curDay,curHour);
+                    if(DayHourSol.getList().size()>1) {
+                        isValidTable = false;
+                    }
+
+                    if((curDay==0)&&(curHour!=0)){
+                        printLesson(DayHourSol, curHour,"Hour");
+                    }
+                    else if(((curDay==0)&&(curHour==0))){
+                        System.out.printf("%-9s","");
+                    }
+                    else if((curDay!=0)&&(curHour==0)){
+                        printLesson(DayHourSol, curDay,"Day");
+                    }
+                    else{
+                        printLesson(DayHourSol, teacherID,"Class");
+                    }
+                }
+                System.out.printf("\n------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n");
             }
-            else if(type.equals("Hour")){
-                System.out.printf(String.format("|%s: %d                     |", type,ID));
+            if(!isValidTable) {
+                System.out.println("************This Table Is Not Valid!!*********\n");
             }
-            else{
-                System.out.printf("|                            |");
+            while ((teacherID<timeTableSolution.getList().size()-1)&&(teacherID==timeTableSolution.getList().get(teacherID+1).getTeacherId())){
+                TeacherIndex++;
             }
         }
-        for(int i=0; i<lesson.getList().size(); i++){
-            if((lesson.getList().get(i).getSubjectId()==-1)||(lesson.getList().get(i).getTeacherId()==-1)){
-                if(lesson.getList().size()>1){
-                    ;
+    }
+
+    private void printPerClass()
+    {
+        int totalDays= timeTable.getTimeTableMembers().getDays();
+        int totalHours= timeTable.getTimeTableMembers().getHours();
+        boolean isValidTable=true;
+
+        for(int classIndex=0; classIndex<timeTableSolution.getList().size(); classIndex++){
+            isValidTable=true;
+            int classID = timeTableSolution.getList().get(classIndex).getClassId();
+            printClassStatus(classID);
+
+            Solution classSolution= getClassSolution(classID);
+            for(int curHour=0; curHour<totalHours+1; curHour++){
+                for(int curDay=0; curDay<totalDays+1; curDay++){
+
+
+                    Solution DayHourSol=  getDayHourSolution(classSolution,curDay,curHour);
+
+                    if(DayHourSol.getList().size()>1){
+                        isValidTable=false;
+                    }
+                    if((curDay==0)&&(curHour!=0)){
+                        printLesson(DayHourSol, curHour,"Hour");
+                    }
+                    else if(((curDay==0)&&(curHour==0))){
+                        System.out.printf("%-9s","");
+                    }
+                    else if((curDay!=0)&&(curHour==0)){
+                        printLesson(DayHourSol, curDay,"Day");
+                    }
+                    else{
+                        printLesson(DayHourSol, classID,"Teacher");
+                    }
+
                 }
-                else{
-                    System.out.printf("|                            |");
-                }
+                System.out.printf("\n------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n");
+            }
+
+            if(!isValidTable){
+                System.out.println("************This Table Is Not Valid!!*********\n");
+            }
+            while ((classIndex<timeTableSolution.getList().size()-1)&&(classID==timeTableSolution.getList().get(classIndex+1).getClassId())){
+                classIndex++;
+            }
+        }
+    }
+    public void printLesson(Solution<Lesson> lesson, int ID, String type){
+
+        System.out.printf(String.format("%s","|"));
+        boolean isValidLesson=true;
+        if(lesson.getList().size()==0){
+            String msg="";
+            if((type.equals("Day"))||(type.equals("Hour"))){
+                 msg = String.format("%s: %d", type,ID);
             }
             else{
-                if(type=="Teacher"){
-                    System.out.printf(String.format("|%s: %d Subject: %d       |",type,lesson.getList().get(i).getTeacherId(),lesson.getList().get(i).getSubjectId()));
-                }
-                else if(type=="Class"){
-                    System.out.printf(String.format("|%s: %d Subject: %d       |",type,lesson.getList().get(i).getClassId(),lesson.getList().get(i).getSubjectId()));
-                }
-
+                isValidLesson=false;
             }
+            if(type.equals("Hour")){
+                System.out.printf("%-8s",msg);
+            }
+            else{
+                System.out.printf("%-70s",msg);
+            }
+        }
+        else{
+            String msg="";
+            String allLessons="";
+            for(int i=0; i<lesson.getList().size(); i++){
+                msg="";
+                if((lesson.getList().get(i).getSubjectId()==-1)||(lesson.getList().get(i).getTeacherId()==-1)){
+                    if(lesson.getList().size()>1){
+                        msg="-1";
+                    }
+                }
+                else{
+                    if(type=="Teacher"){
+                        msg=String.format("%s: %d Subject: %d ",type,lesson.getList().get(i).getTeacherId(),lesson.getList().get(i).getSubjectId());
+
+                    }
+                    else if(type=="Class"){
+                        msg=String.format("%s: %d Subject: %d ",type,lesson.getList().get(i).getClassId(),lesson.getList().get(i).getSubjectId());
+
+                    }
+
+                }
+                if(!msg.equals("-1")){
+                    if((lesson.getList().size()>1)&&(i!=0)){
+                        allLessons+=",";
+                    }
+                    allLessons+=msg;
+                }
+            }
+            if(isValidLesson)
+                System.out.printf("%-70s",allLessons);
+        }
+        if(isValidLesson){
+            System.out.printf(String.format("%s","|"));
         }
     }
 
@@ -364,23 +447,23 @@ public class ProgramManager {
 
     private void printGrades(HashMap<Integer, Grade> grades,HashMap<Integer, Subject> subjects){
         System.out.println("-Grades-");
-        for(Map.Entry<Integer, Grade> entry : grades.entrySet()){
-            System.out.println(String.format("\nGrade ID:%d", entry.getKey()));
+    for(Map.Entry<Integer, Grade> entry : grades.entrySet()){
+    System.out.println(String.format("\nGrade ID:%d", entry.getKey()));
 
-            for(Map.Entry<Integer, Integer> required : entry.getValue().getRequirements().entrySet()){
-                System.out.printf(String.format("Subject ID:%d, name: %s ", required.getKey(),subjects.get(required.getKey()).getName()));
-                System.out.println(String.format(", required hours:%d", required.getValue()));
-            }
+    for(Map.Entry<Integer, Integer> required : entry.getValue().getRequirements().entrySet()){
+        System.out.printf(String.format("Subject ID:%d, name: %s ", required.getKey(),subjects.get(required.getKey()).getName()));
+        System.out.println(String.format(", required hours:%d", required.getValue()));
+    }
 
-        }
+}
 
-        System.out.println("\n");
+    System.out.println("\n");
     }
     private void printRules(List<Rule> rules){
         System.out.println("-Rules-");
         for(int i=0; i<rules.size();i++){
             if(rules.get(i).isHard())
-                System.out.println(String.format("rule name:%s, type:Hard", rules.get(i).getName()));
+                 System.out.println(String.format("rule name:%s, type:Hard", rules.get(i).getName()));
             else{
                 System.out.println(String.format("rule name:%s, type:Soft", rules.get(i).getName()));
             }
@@ -397,8 +480,8 @@ public class ProgramManager {
     private void printCrossoverDetails(){
         System.out.println("\n-Crossover-");
         String crossoverType= evolutionEngineDataSet.getCrossover().getName().name;
-        int cuttingPoints= evolutionEngineDataSet.getCrossover().getCuttingPoints();
-        System.out.println(String.format("Crossover type:%s, num of cutting points:%d",crossoverType,cuttingPoints));
+       int cuttingPoints= evolutionEngineDataSet.getCrossover().getCuttingPoints();
+       System.out.println(String.format("Crossover type:%s, num of cutting points:%d",crossoverType,cuttingPoints));
     }
 
     private void printAlgorithmProgress() {
@@ -407,17 +490,78 @@ public class ProgramManager {
         SolutionFitness<Lesson> currSolution = null;
         SolutionFitness<Lesson> prevSolution = null;
         System.out.println("START: SHOW ALGORITHM PROCESS (EVERY " + genInterval + "GENERATIONS) :");
+        DecimalFormat f = new DecimalFormat("#0.0");
         for (int i = 0; i < allSolutions.size(); i++) {
             currSolution = allSolutions.get(i);
-            if (prevSolution == null) {
-                System.out.println("In Generation #1 Best Fitness is " + (currSolution.getFitness()) + "");
-            } else {
-                double fitnessDiff = prevSolution.getFitness() - currSolution.getFitness();
-                System.out.println("In Generation #" + (i * genInterval) + " Best Fitness is " + (currSolution.getFitness()) + "," +
-                        ", Distance of " + (fitnessDiff) + "from the previous.");
+            double fitnessDiff = 0;
+            if (prevSolution != null) {
+                fitnessDiff = prevSolution.getFitness() - currSolution.getFitness();
             }
+            System.out.println("In Generation #" + ((i * genInterval) + genInterval) + " Best Fitness is " + (f.format(currSolution.getFitness())) + "," +
+                    " Distance of " + (f.format(fitnessDiff)) + " from the previous.");
+
             prevSolution = currSolution;
         }
         System.out.println("END: SHOW ALGORITHM PROCESS");
     }
+
+    private void saveSystemFile() throws ValidationException {
+        Scanner sc = new Scanner(System.in);
+        String uri = sc.nextLine();
+
+        //load xml file into ETT classes
+        Path path = Paths.get(uri);
+        if (!path.isAbsolute()) {
+            throw new ValidationException("ERROR - failed to load system file");
+        }
+
+        FileOutputStream fileOut = null;
+        try {
+            fileOut = new FileOutputStream(path.toFile().getAbsolutePath() + "/test.tt");
+            ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
+            objectOut.writeObject(timeTable);
+            objectOut.writeObject(evolutionary.getGlobalBestSolution());
+            objectOut.writeObject(evolutionary.getBestSolutions());
+            objectOut.close();
+        }
+        catch (IOException e) {
+            throw new ValidationException("ERROR - failed to parse file");
+        }
+
+        System.out.println("File saved Successfully!\n");
+    }
+
+    private void loadSavedSystemFile() throws ValidationException {
+        Scanner sc = new Scanner(System.in);
+        String filePath = sc.nextLine();
+
+        //load xml file into ETT classes
+        File file = new File(filePath);
+        if (!file.exists()) {
+            throw new ValidationException("ERROR - failed to load system file");
+        }
+        if(!file.getAbsoluteFile().toString().endsWith(".tt")){
+            throw new ValidationException("ERROR - bad file format");
+        }
+
+        try {
+            FileInputStream fi = new FileInputStream(file);
+            ObjectInputStream oi = new ObjectInputStream(fi);
+            // Read objects
+            TimeTableDataSet loadTimeTable = (TimeTableDataSet) oi.readObject();
+            SolutionFitness<Lesson> solution = (SolutionFitness<Lesson>) oi.readObject();
+            List<SolutionFitness<Lesson>> bestSolutions = (List<SolutionFitness<Lesson>>) oi.readObject();
+
+            evolutionary = new Evolutionary<>();
+            timeTable = loadTimeTable;
+
+
+        }
+        catch (IOException | ClassNotFoundException e) {
+            throw new ValidationException("ERROR - failed to parse file");
+        }
+        systemSetting.IS_FILE_LOADED.status = true;
+        System.out.println("File Loaded Successfully!\n");
+    }
+
 }

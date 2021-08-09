@@ -43,8 +43,7 @@ public class EvolutionConfig implements Serializable
         return crossover;
     }
 
-    //TODO : validation
-    public void setCrossover(ETTCrossover ettCrossover) {
+    public void setCrossover(ETTCrossover ettCrossover) throws ValidationException {
         this.crossover = new Crossover(ettCrossover);
     }
 
@@ -52,8 +51,7 @@ public class EvolutionConfig implements Serializable
         return mutations;
     }
 
-    //TODO : validation
-    public void setMutations(List<ETTMutation> ettMutations) {
+    public void setMutations(List<ETTMutation> ettMutations) throws ValidationException {
         this.mutations = new ArrayList<>();
         for (ETTMutation ettMutation: ettMutations) {
             mutations.add(new Mutation(ettMutation));

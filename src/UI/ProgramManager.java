@@ -18,19 +18,15 @@ import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
 public class ProgramManager {
     TimeTableDataSet timeTable;
     EvolutionConfig evolutionEngineDataSet;
-    List<Solution<Lesson>> population;
-    Solution<Lesson> timeTableSolution;
-    Evolutionary<Lesson> evolutionary = null;
+    SolutionFitness<Lesson> globalBestSolution;
+    List<SolutionFitness<Lesson>> bestSolutions;
 
     public static enum systemSetting{
         IS_FILE_LOADED(false),SOLUTION_FOUND(false);
@@ -80,7 +76,7 @@ public class ProgramManager {
                 printSolution();
             } else if (UserMenu.Commands.SHOW_ALGORITHM_PROC.getStatus()) {
                 UserMenu.Commands.SHOW_ALGORITHM_PROC.setStatus(false);
-                if (evolutionary != null)
+                if (bestSolutions != null)
                     printAlgorithmProgress();
                 else
                     System.out.println("NO ALGORITHM RUN YET");
@@ -123,11 +119,12 @@ public class ProgramManager {
 
     private void runAlgorithm(int generations,int interval) throws ValidationException {
         if(checkIfFileLoaded()) {
-            evolutionary = new Evolutionary();
+            Evolutionary evolutionary = new Evolutionary();
             timeTable.setGenerations(generations);
             timeTable.setGenerationsInterval(interval);
             evolutionary.run(timeTable);
-            timeTableSolution = evolutionary.getGlobalBestSolution().getSolution();
+            globalBestSolution = evolutionary.getGlobalBestSolution();
+            bestSolutions = evolutionary.getBestSolutions();
             systemSetting.SOLUTION_FOUND.status=true;
         }
     }
@@ -143,18 +140,18 @@ public class ProgramManager {
             printBestSolutionDetails();
             if(UserMenu.Commands.PRINT_RAW.getStatus()){
                 UserMenu.Commands.PRINT_RAW.setStatus(false);
-               timeTableSolution= timeTable.sort(timeTableSolution,LessonSortType.DayTimeOriented.name);
-                printRaw();
+                Solution<Lesson> timeTableSolution = timeTable.sort(globalBestSolution.getSolution(),LessonSortType.DayTimeOriented.name);
+                printRaw(timeTableSolution);
             }
             else if(UserMenu.Commands.PRINT_PER_CLASS.getStatus()){
                 UserMenu.Commands.PRINT_PER_CLASS.setStatus(false);
-                timeTableSolution= timeTable.sort(timeTableSolution,LessonSortType.CLASS_ORIENTED.name);
-                printPerClass();
+                Solution<Lesson> timeTableSolution = timeTable.sort(globalBestSolution.getSolution(),LessonSortType.CLASS_ORIENTED.name);
+                printPerClass(timeTableSolution);
             }
             else if (UserMenu.Commands.PRINT_PER_TEACHER.getStatus()){
                 UserMenu.Commands.PRINT_PER_TEACHER.setStatus(false);
-                timeTableSolution= timeTable.sort(timeTableSolution,LessonSortType.TEACHER_ORIENTED.name);
-                printPerTeacher();
+                Solution<Lesson> timeTableSolution = timeTable.sort(globalBestSolution.getSolution(),LessonSortType.TEACHER_ORIENTED.name);
+                printPerTeacher(timeTableSolution);
             }
             else{
                 System.out.println("unknown printing type");
@@ -163,9 +160,9 @@ public class ProgramManager {
 
     }
 
-    public void reviewRules(){
+    private void reviewRules(){
         System.out.println("\nRule's:\n");
-        HashMap<IRule, Double> rulesFitness =evolutionary.getGlobalBestSolution().getRulesFitness();
+        HashMap<IRule, Double> rulesFitness = globalBestSolution.getRulesFitness();
         for (Map.Entry<IRule, Double> entry : rulesFitness.entrySet()){
             System.out.println(String.format("Rule name: %s ", entry.getKey().getName()));
             if(entry.getKey().isHard())
@@ -178,10 +175,10 @@ public class ProgramManager {
     }
 
     public void printBestSolutionDetails() throws ValidationException {
-        if(evolutionary != null && evolutionary.getGlobalBestSolution() != null) {
-            double fitnessValue = evolutionary.getGlobalBestSolution().getFitness();
-            double softRulesAVG = evolutionary.getGlobalBestSolution().getSoftRulesAvg();
-            double hardRulesAVG = evolutionary.getGlobalBestSolution().getHardRulesAvg();
+        if(globalBestSolution !=null) {
+            double fitnessValue = globalBestSolution.getFitness();
+            double softRulesAVG = globalBestSolution.getSoftRulesAvg();
+            double hardRulesAVG = globalBestSolution.getHardRulesAvg();
             System.out.println("\nSolution's Details:\n");
             System.out.println(String.format("The fitness value of this solution is: %,.2f", fitnessValue));
             reviewRules();
@@ -207,7 +204,7 @@ public class ProgramManager {
         System.out.println("There is no file loaded in the system\n");
         return false;
     }
-    private void printRaw(){
+    private void printRaw(Solution<Lesson> timeTableSolution){
         for(int i=0; i< timeTableSolution.getList().size(); i++){
             int classId = timeTableSolution.getList().get(i).getClassId();
             int teacher =timeTableSolution.getList().get(i).getTeacherId();
@@ -225,7 +222,7 @@ public class ProgramManager {
     }
 
 
-    public Solution<Lesson> getClassSolution(int classId){
+    private Solution<Lesson> getClassSolution(Solution<Lesson> timeTableSolution, int classId){
         Solution<Lesson> solutionPerClass= new Solution<Lesson>();
         for(int i=0; i<timeTableSolution.getList().size(); i++){
             if(timeTableSolution.getList().get(i).getClassId()==classId){
@@ -235,7 +232,7 @@ public class ProgramManager {
         return solutionPerClass;
     }
 
-    public Solution<Lesson> getTeacherSolution(int teacherId){
+    public Solution<Lesson> getTeacherSolution(Solution<Lesson> timeTableSolution, int teacherId){
         Solution<Lesson> solutionPerTeacher= new Solution<Lesson>();
         for(int i=0; i<timeTableSolution.getList().size(); i++){
             if(timeTableSolution.getList().get(i).getTeacherId()==teacherId){
@@ -254,7 +251,7 @@ public class ProgramManager {
         return solutionPerTime;
     }
 
-    private void printPerTeacher(){
+    private void printPerTeacher(Solution<Lesson> timeTableSolution){
 
         int totalDays= timeTable.getTimeTableMembers().getDays();
         int totalHours= timeTable.getTimeTableMembers().getHours();
@@ -271,7 +268,7 @@ public class ProgramManager {
 
             System.out.println(String.format("\nTeacher ID: %s", teacherID));
 
-            Solution TeacherSolution= getTeacherSolution(teacherID);
+            Solution TeacherSolution= getTeacherSolution(timeTableSolution,teacherID);
 
             for(int curHour=0; curHour<totalHours+1; curHour++){
                 for(int curDay=0; curDay<totalDays+1; curDay++){
@@ -304,48 +301,45 @@ public class ProgramManager {
         }
     }
 
-    private void printPerClass()
+    private void printPerClass(Solution<Lesson> timeTableSolution)
     {
         int totalDays= timeTable.getTimeTableMembers().getDays();
         int totalHours= timeTable.getTimeTableMembers().getHours();
         boolean isValidTable=true;
 
-        for(int classIndex=0; classIndex<timeTableSolution.getList().size(); classIndex++){
-            isValidTable=true;
+        for(int classIndex=0; classIndex<timeTableSolution.getList().size(); classIndex++) {
+            isValidTable = true;
             int classID = timeTableSolution.getList().get(classIndex).getClassId();
             printClassStatus(classID);
 
-            Solution classSolution= getClassSolution(classID);
-            for(int curHour=0; curHour<totalHours+1; curHour++){
-                for(int curDay=0; curDay<totalDays+1; curDay++){
+            Solution classSolution = getClassSolution(timeTableSolution, classID);
+            for (int curHour = 0; curHour < totalHours + 1; curHour++) {
+                for (int curDay = 0; curDay < totalDays + 1; curDay++) {
 
 
-                    Solution DayHourSol=  getDayHourSolution(classSolution,curDay,curHour);
+                    Solution DayHourSol = getDayHourSolution(classSolution, curDay, curHour);
 
-                    if(DayHourSol.getList().size()>1){
-                        isValidTable=false;
+                    if (DayHourSol.getList().size() > 1) {
+                        isValidTable = false;
                     }
-                    if((curDay==0)&&(curHour!=0)){
-                        printLesson(DayHourSol, curHour,"Hour");
-                    }
-                    else if(((curDay==0)&&(curHour==0))){
-                        System.out.printf("%-9s","");
-                    }
-                    else if((curDay!=0)&&(curHour==0)){
-                        printLesson(DayHourSol, curDay,"Day");
-                    }
-                    else{
-                        printLesson(DayHourSol, classID,"Teacher");
+                    if ((curDay == 0) && (curHour != 0)) {
+                        printLesson(DayHourSol, curHour, "Hour");
+                    } else if (((curDay == 0) && (curHour == 0))) {
+                        System.out.printf("%-9s", "");
+                    } else if ((curDay != 0) && (curHour == 0)) {
+                        printLesson(DayHourSol, curDay, "Day");
+                    } else {
+                        printLesson(DayHourSol, classID, "Teacher");
                     }
 
                 }
                 System.out.printf("\n------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n");
             }
 
-            if(!isValidTable){
+            if (!isValidTable) {
                 System.out.println("************This Table Is Not Valid!!*********\n");
             }
-            while ((classIndex<timeTableSolution.getList().size()-1)&&(classID==timeTableSolution.getList().get(classIndex+1).getClassId())){
+            while ((classIndex < timeTableSolution.getList().size() - 1) && (classID == timeTableSolution.getList().get(classIndex + 1).getClassId())) {
                 classIndex++;
             }
         }
@@ -413,7 +407,7 @@ public class ProgramManager {
         HashMap<Integer, Teacher> teachers= timeTable.getTimeTableMembers().getTeachers();
         HashMap<Integer, Grade> grades = timeTable.getTimeTableMembers().getGrades();
         List<Rule> rules = timeTable.getTimeTableMembers().getRules();
-        String selectionType = evolutionEngineDataSet.getSelection().getType().name;
+        String selectionType = evolutionEngineDataSet.getSelection().getType().toString();
         int populationCount= evolutionEngineDataSet.getInitialPopulation();
         System.out.println("-Subjects-");
         for(Map.Entry<Integer, Subject > entry : subjects.entrySet()){
@@ -486,7 +480,7 @@ public class ProgramManager {
 
     private void printAlgorithmProgress() {
         int genInterval = timeTable.getGenerationInterval();
-        List<SolutionFitness<Lesson>> allSolutions = evolutionary.getBestSolutions();
+        List<SolutionFitness<Lesson>> allSolutions = new ArrayList<>(bestSolutions);
         SolutionFitness<Lesson> currSolution = null;
         SolutionFitness<Lesson> prevSolution = null;
         System.out.println("START: SHOW ALGORITHM PROCESS (EVERY " + genInterval + "GENERATIONS) :");
@@ -517,11 +511,12 @@ public class ProgramManager {
 
         FileOutputStream fileOut = null;
         try {
-            fileOut = new FileOutputStream(path.toFile().getAbsolutePath() + "/test.tt");
+            fileOut = new FileOutputStream(path.toFile().getAbsolutePath() + (path.toFile().getAbsolutePath().endsWith("/") ? "" : "/") + "logs.tt");
             ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
             objectOut.writeObject(timeTable);
-            objectOut.writeObject(evolutionary.getGlobalBestSolution());
-            objectOut.writeObject(evolutionary.getBestSolutions());
+            objectOut.writeObject(evolutionEngineDataSet);
+            objectOut.writeObject(globalBestSolution);
+            objectOut.writeObject(bestSolutions);
             objectOut.close();
         }
         catch (IOException e) {
@@ -549,12 +544,14 @@ public class ProgramManager {
             ObjectInputStream oi = new ObjectInputStream(fi);
             // Read objects
             TimeTableDataSet loadTimeTable = (TimeTableDataSet) oi.readObject();
+            EvolutionConfig evolutionConfig = (EvolutionConfig) oi.readObject();
             SolutionFitness<Lesson> solution = (SolutionFitness<Lesson>) oi.readObject();
             List<SolutionFitness<Lesson>> bestSolutions = (List<SolutionFitness<Lesson>>) oi.readObject();
 
-            evolutionary = new Evolutionary<>();
-            timeTable = loadTimeTable;
-
+            this.timeTable = loadTimeTable;
+            this.evolutionEngineDataSet = evolutionConfig;
+            this.globalBestSolution = solution;
+            this.bestSolutions = bestSolutions;
 
         }
         catch (IOException | ClassNotFoundException e) {

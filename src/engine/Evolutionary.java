@@ -25,6 +25,20 @@ public class Evolutionary<T> {
         int hardRulesWeight = dataSet.getHardRulesWeight();
         int generations = dataSet.getGenerations();
         int generationInterval = dataSet.getGenerationInterval();
+
+        if(generations == 0){
+            System.out.println("Generations count can't be 0");
+            return;
+        }
+        if(generationInterval == 0){
+            System.out.println("Generations count can't be 0");
+            return;
+        }
+        if(generations < generationInterval){
+            System.out.println("generationInterval cant be bigger then generations");
+            return;
+        }
+
         int genCounter=0;
 
         System.out.println("Evolutionary Engine starts !");

@@ -31,7 +31,7 @@ public class UserMenu
             return this.commandVal;
         }
     }
-    private final String openingMsg= "please enter your command:";
+    private final String openingMsg= "PLEASE ENTER YOUR COMMAND:";
 
     private void printMenu()
     {
@@ -45,16 +45,15 @@ public class UserMenu
     }
     public void getUserInput() {
         printMenu();
+        System.out.println("YOUR CHOICE: ");
         Scanner sc = new Scanner(System.in);
         String userInput = sc.nextLine();
         if (userInput.equals(Commands.LOAD_TABLE_DETAILS.commandVal)) {
             Commands.LOAD_TABLE_DETAILS.isActive=true;
-            System.out.println("please enter your file's path:\n");
+            System.out.println("ENTER FILE'S PATH: \n");
 
         } else if (userInput.equals(Commands.SHOW_TABLE_SETTINGS.commandVal)) {
-            if(ProgramManager.checkIfFileLoaded()){
-                Commands.SHOW_TABLE_SETTINGS.isActive=true;
-            }
+            Commands.SHOW_TABLE_SETTINGS.isActive=true;
 
         } else if (userInput.equals( Commands.RUN_ALGORITHM.commandVal)) {
             Commands.RUN_ALGORITHM.isActive=true;
@@ -63,7 +62,7 @@ public class UserMenu
         else if (userInput.equals(Commands.SHOW_BEST_SOLUTION.commandVal)) {
           if(ProgramManager.checkIfFileLoaded()&&(ProgramManager.checkIfSolutionFound())) {
               Commands.SHOW_BEST_SOLUTION.isActive = true;
-              System.out.println("Select a printing option\n");
+              System.out.println("SELECT PRINTING OPTION:\n");
               System.out.println(String.format("Press (%s) to print as a raw", Commands.PRINT_RAW.commandVal));
               System.out.println(String.format("Press (%s) to print per a class", Commands.PRINT_PER_CLASS.commandVal));
               System.out.println(String.format("Press (%s) to print per a teacher", Commands.PRINT_PER_TEACHER.commandVal));
@@ -75,7 +74,7 @@ public class UserMenu
               else if (userInput.equals(Commands.PRINT_PER_TEACHER.commandVal))
                   Commands.PRINT_PER_TEACHER.isActive = true;
               else
-                  System.out.println("unknown command");
+                  System.out.println("ERROR : UNKNOWN COMMAND");
 
           }
           }
@@ -87,7 +86,7 @@ public class UserMenu
               Commands.EXIT.isActive=true;
           }
           else{
-              System.out.println("invalid command, please try again:\n");
+              System.out.println("ERROR: INVALID COMMAND. Please try again:\n");
           }
 
           }

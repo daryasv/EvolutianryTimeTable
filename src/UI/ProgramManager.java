@@ -111,11 +111,12 @@ public class ProgramManager {
             ETTDescriptor descriptor = (ETTDescriptor) jaxbUnmarshaller.unmarshal(file);
             updateDataSets(descriptor);
             systemSetting.IS_FILE_LOADED.status = true;
-            System.out.println("File Loaded Successfully!\n");
+            System.out.println("FILES LOADED SUCCESSFULLY\n");
 
         } catch (JAXBException e) {
             systemSetting.IS_FILE_LOADED.status = false;
-            System.out.println("failed to load file, please try again");
+            //TODO - do description showed to client from exception?
+            System.out.println("ERROR: FAILED TO LOAD FILE, ERROR DESCRIPTION: ......\n");
         }
     }
 
@@ -170,7 +171,7 @@ public class ProgramManager {
                 timeTableSolution = timeTable.sort(timeTableSolution, LessonSortType.TEACHER_ORIENTED.name);
                 printPerTeacher();
             } else {
-                System.out.println("unknown printing type");
+                System.out.println("ERROR: UNKNOWN PRINTING TYPE");
             }
         }
     }
@@ -194,18 +195,18 @@ public class ProgramManager {
         double fitnessValue = evolutionary.getGlobalBestSolution().getFitness();
         double softRulesAVG = evolutionary.getGlobalBestSolution().getSoftRulesAvg();
         double hardRulesAVG = evolutionary.getGlobalBestSolution().getHardRulesAvg();
-        System.out.println("\nSolution's Details:\n");
+        System.out.println("\nBEST SOLUTION'S DETAILS: \n");
         System.out.println(String.format("The fitness value of this solution is: %,.2f", fitnessValue));
         reviewRules();
         System.out.println(String.format("The soft rules avg is: %,.1f", softRulesAVG));
-        System.out.println(String.format("The hard rule4s avg is: %,.1f\n", hardRulesAVG));
+        System.out.println(String.format("The hard rules avg is: %,.1f\n", hardRulesAVG));
     }
 
     public static boolean checkIfSolutionFound() {
         if (systemSetting.SOLUTION_FOUND.status) {
             return true;
         }
-        System.out.println("solution has not found\n");
+        System.out.println("ERROR: SOLUTION HAS NOT FOUND\n");
         return false;
     }
 
@@ -213,7 +214,7 @@ public class ProgramManager {
         if (systemSetting.IS_FILE_LOADED.status) {
             return true;
         }
-        System.out.println("There is no file loaded in the system\n");
+        System.out.println("ERROR: THERE IS NO FILE LOADED IN THE SYSTEM\n");
         return false;
     }
 
@@ -345,7 +346,7 @@ public class ProgramManager {
 
 
     public void printSystemDetailes() {
-        System.out.println("Time Table Details:");
+        System.out.println("TIME TABLE DETAILS: ");
         HashMap<Integer, Subject> subjects = timeTable.getTimeTableMembers().getSubjects();
         HashMap<Integer, Teacher> teachers = timeTable.getTimeTableMembers().getTeachers();
         HashMap<Integer, Grade> grades = timeTable.getTimeTableMembers().getGrades();

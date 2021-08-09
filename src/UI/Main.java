@@ -6,6 +6,7 @@ import UI.models.TimeTableDataSet;
 import UI.models.evolution.EvolutionConfig;
 import engine.Evolutionary;
 import engine.models.Solution;
+import engine.models.SolutionFitness;
 import schema.models.ETTDescriptor;
 
 import javax.xml.bind.JAXBContext;
@@ -20,9 +21,9 @@ public class Main {
     public static final String FILE_NAME = "src/resources/EX1-small.xml";
 
     public static void main(String[] args) {
-        ProgramManager programInstance = new ProgramManager();
-        programInstance.manageProgram();
-//        test();
+        //ProgramManager programInstance = new ProgramManager();
+        //programInstance.manageProgram();
+        test();
 
     }
 
@@ -38,17 +39,23 @@ public class Main {
             try {
                 Evolutionary evolutionary = new Evolutionary();
 
-                TimeTableDataSet timeTable = new TimeTableDataSet(descriptor, 10000, 1000);
+                TimeTableDataSet timeTable = new TimeTableDataSet(descriptor, 100, 10);
                 evolutionary.run(timeTable);
 
                 FileOutputStream fileOut = new FileOutputStream("test.tt");
                 ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
+                objectOut.writeObject(timeTable);
+                objectOut.writeObject(evolutionary.getGlobalBestSolution());
+                objectOut.writeObject(evolutionary.getBestSolutions());
                 objectOut.close();
 
                 FileInputStream fi = new FileInputStream(new File("test.tt"));
                 ObjectInputStream oi = new ObjectInputStream(fi);
                 // Read objects
                 TimeTableDataSet loadTimeTable = (TimeTableDataSet) oi.readObject();
+                //List<SolutionFitness<Lesson>> bestSolutions = (List<SolutionFitness<Lesson>>) oi.readObject();
+                SolutionFitness<Lesson> solution = (SolutionFitness<Lesson>) oi.readObject();
+
                 oi.close();
                 fi.close();
 

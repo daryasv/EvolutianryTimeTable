@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ETT-Descriptor xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../schema/ETT-V1.xsd">
+<ETT-Descriptor xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../schema/ETT-V2.xsd">
 	<ETT-TimeTable days="4" hours="5">
 		<ETT-Teachers>
 			<ETT-Teacher id="1">
@@ -86,7 +86,9 @@
 	</ETT-TimeTable>
 	<ETT-EvolutionEngine>
 		<ETT-InitialPopulation size="200"/>
-		<ETT-Selection type="Truncation" configuration="TopPercent=10"/>
+		<ETT-Selection type="Truncation" configuration="TopPercent=10">
+			<ETT-Elitism>5</ETT-Elitism>
+		</ETT-Selection>
 		<ETT-Crossover name="DayTimeOriented" cutting-points="2"/>
 		<ETT-Mutations>
 			<ETT-Mutation name="Flipping" probability="0.3" configuration="MaxTupples=3,Component=T"/>

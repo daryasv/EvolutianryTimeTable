@@ -11,10 +11,21 @@ public class Selection implements ISelectionData , Serializable
 {
     private SelectionType type;
     private int value;
+    private int elitism;
 
     public Selection(ETTSelection ettSelection) throws ValidationException {
         setType(ettSelection.getType());
         setValue(ettSelection.getConfiguration());
+        setElitism(ettSelection.getETTElitism());
+    }
+
+    private void setElitism(Integer ettElitism) {
+        //TODO: check elitism not more then poplulation
+        if(ettElitism == null){
+            elitism = 0;
+        }else{
+            elitism = ettElitism;
+        }
     }
 
     public SelectionType getType() {
@@ -36,6 +47,11 @@ public class Selection implements ISelectionData , Serializable
     @Override
     public int getValue() {
         return value;
+    }
+
+    @Override
+    public int getElitismCount() {
+        return elitism;
     }
 
     public void setValue(String configuration) throws ValidationException {

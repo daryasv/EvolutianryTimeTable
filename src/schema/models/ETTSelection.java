@@ -4,6 +4,7 @@ package schema.models;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
@@ -17,11 +18,15 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType>
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+ *       &lt;all>
+ *         &lt;element name="ETT-Elitism" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/>
+ *       &lt;/all>
  *       &lt;attribute name="type" use="required">
  *         &lt;simpleType>
  *           &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
  *             &lt;enumeration value="Truncation"/>
  *             &lt;enumeration value="RouletteWheel"/>
+ *             &lt;enumeration value="Tournament"/>
  *           &lt;/restriction>
  *         &lt;/simpleType>
  *       &lt;/attribute>
@@ -34,14 +39,42 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "")
+@XmlType(name = "", propOrder = {
+
+})
 @XmlRootElement(name = "ETT-Selection")
 public class ETTSelection {
 
+    @XmlElement(name = "ETT-Elitism")
+    protected Integer ettElitism;
     @XmlAttribute(name = "type", required = true)
     protected String type;
     @XmlAttribute(name = "configuration")
     protected String configuration;
+
+    /**
+     * Gets the value of the ettElitism property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Integer }
+     *     
+     */
+    public Integer getETTElitism() {
+        return ettElitism;
+    }
+
+    /**
+     * Sets the value of the ettElitism property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Integer }
+     *     
+     */
+    public void setETTElitism(Integer value) {
+        this.ettElitism = value;
+    }
 
     /**
      * Gets the value of the type property.

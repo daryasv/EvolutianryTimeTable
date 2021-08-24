@@ -313,6 +313,7 @@ public class TimeTableDataSet implements EvolutionDataSet<Lesson>, Serializable 
                 }
                 return (1 - (fails / teacherDays.keySet().size())) * 100;
             case Sequentiality:
+
                 break;
             default:
                 break;

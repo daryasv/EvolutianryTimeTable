@@ -289,6 +289,31 @@ public class TimeTableDataSet implements EvolutionDataSet<Lesson>, Serializable 
                     totalSubjectsExpect += grade.getRequirements().size();
                 }
                 return (1 - (fails / totalSubjectsExpect)) * 100;
+            case DayOffTeacher:
+                List<Integer> days = new ArrayList<>();
+                HashMap<Integer, List<Integer>> teacherDays = new HashMap<>();
+                for (Lesson l : lessons) {
+                    int id = l.getTeacherId();
+                    int day = l.getDay();
+                    if (!days.contains(day)) {
+                        days.add(day);
+                    }
+                    if (!teacherDays.containsKey(l.getTeacherId())) {
+                        teacherDays.put(id,new ArrayList<>());
+                    }
+                    if (!teacherDays.get(id).contains(day)) {
+                        teacherDays.get(id).add(day);
+                    }
+                }
+                int totalDays = days.size();
+                for (int key: teacherDays.keySet()) {
+                    if(teacherDays.get(key).size() == totalDays){
+                        fails++;
+                    }
+                }
+                return (1 - (fails / teacherDays.keySet().size())) * 100;
+            case Sequentiality:
+                break;
             default:
                 break;
         }

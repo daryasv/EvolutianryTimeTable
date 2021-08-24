@@ -86,7 +86,7 @@
 	</ETT-TimeTable>
 	<ETT-EvolutionEngine>
 		<ETT-InitialPopulation size="200"/>
-		<ETT-Selection type="Truncation" configuration="TopPercent=10">
+		<ETT-Selection type="RouletteWheel">
 			<ETT-Elitism>5</ETT-Elitism>
 		</ETT-Selection>
 		<ETT-Crossover name="DayTimeOriented" cutting-points="2"/>

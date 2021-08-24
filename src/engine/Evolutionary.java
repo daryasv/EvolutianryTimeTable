@@ -121,19 +121,34 @@ public class Evolutionary<T> {
     private SelectionResult<T> getSelectionSolutions(List<SolutionFitness<T>> map, ISelectionData selectionData) {
         List<SolutionFitness<T>> list = new ArrayList<>(map);
         List<SolutionFitness<T>> elites = new ArrayList<>();
-        //desc sort -> z to a
-        list.sort((obj01, obj02) -> obj02.compareTo(obj01));
 
         if(selectionData.getElitismCount() > 0){
+            list.sort((obj01, obj02) -> obj02.compareTo(obj01));
             int toPull = Math.min(selectionData.getElitismCount(), list.size());
             elites = new ArrayList<>(list.subList(0,toPull));
             list = list.subList(toPull,list.size());
         }
 
         if(selectionData.getType() == SelectionType.Truncation){
+            list.sort((obj01, obj02) -> obj02.compareTo(obj01));
             double value = selectionData.getValue();
             int numToPull = (int)((value / 100) * list.size());
             list = list.subList(0,numToPull);
+        } else if(selectionData.getType() == SelectionType.RouletteWheel){
+            List<SolutionFitness<T>> selected = new ArrayList<>();
+            list.sort(SolutionFitness::compareTo);
+            WeightedRandom<SolutionFitness<T>> weightedRandom = new WeightedRandom<>();
+            for (SolutionFitness<T> solutionFitness:list){
+                weightedRandom.addEntry(solutionFitness,solutionFitness.getFitness());
+            }
+            for(int i=0;i<list.size();i++){
+                SolutionFitness<T> rnd = weightedRandom.getRandom();
+                if(rnd !=null) {
+                    selected.add(weightedRandom.getRandom());
+                }
+            }
+            selected.sort((obj01, obj02) -> obj02.compareTo(obj01));
+            list = selected;
         }
 
         list.addAll(elites);

@@ -55,11 +55,13 @@ public class Selection implements ISelectionData , Serializable
     }
 
     public void setValue(String configuration) throws ValidationException {
-        if(configuration == null || !configuration.contains("=")){
-            throw new ValidationException("Invalid selection config");
+        if(configuration != null) {
+            if (!configuration.contains("=")) {
+                throw new ValidationException("Invalid selection config");
+            }
+            int value = Integer.parseInt(configuration.split("=")[1]);
+            setTopPercent(value);
         }
-        int value = Integer.parseInt(configuration.split("=")[1]);
-        setTopPercent(value);
     }
 
     public void setTopPercent(int value) throws ValidationException {

@@ -223,7 +223,7 @@ public class TimeTableDataSet implements EvolutionDataSet<Lesson>, Serializable 
                 for (Lesson lesson : lessons) {
                     if (lesson.getSubjectId() != -1) {
                         Teacher teacher = timeTableMembers.getTeachers().get(lesson.getTeacherId());
-                        if (teacher!=null) {
+                        if (teacher != null) {
                             if (!teacher.getSubjectsIdsList().contains(lesson.getSubjectId())) {
                                 fails++;
                             }
@@ -277,7 +277,7 @@ public class TimeTableDataSet implements EvolutionDataSet<Lesson>, Serializable 
                         }
 
                         //check on actual if there is subjects that not relevant to the class
-                        for(Integer subjectId: hoursByClass.get(gradeId).keySet()) {
+                        for (Integer subjectId : hoursByClass.get(gradeId).keySet()) {
                             if (!grade.getRequirements().containsKey(subjectId)) {
                                 fails++;
                                 totalSubjectsExpect++;
@@ -299,22 +299,49 @@ public class TimeTableDataSet implements EvolutionDataSet<Lesson>, Serializable 
                         days.add(day);
                     }
                     if (!teacherDays.containsKey(l.getTeacherId())) {
-                        teacherDays.put(id,new ArrayList<>());
+                        teacherDays.put(id, new ArrayList<>());
                     }
                     if (!teacherDays.get(id).contains(day)) {
                         teacherDays.get(id).add(day);
                     }
                 }
                 int totalDays = days.size();
-                for (int key: teacherDays.keySet()) {
-                    if(teacherDays.get(key).size() == totalDays){
+                for (int key : teacherDays.keySet()) {
+                    if (teacherDays.get(key).size() == totalDays) {
                         fails++;
                     }
                 }
                 return (1 - (fails / teacherDays.keySet().size())) * 100;
             case Sequentiality:
-
-                break;
+                int maxHours = Integer.parseInt(rule.getConfiguration().split("=")[1]);
+                int classSubjects = 0;
+                HashMap<Integer, Map.Entry<Integer, Integer>> lastSubjectByClass = new HashMap<>();
+                int day = 0;
+                for (Lesson l : lessons) {
+                    if (day != l.getDay()) {
+                        for (Integer subjectId : lastSubjectByClass.keySet()) {
+                            if (subjectId != -1 && lastSubjectByClass.get(subjectId).getValue() > maxHours) {
+                                fails++;
+                            }
+                            classSubjects++;
+                        }
+                        lastSubjectByClass = new HashMap<>();
+                    }
+                    int hours = 1;
+                    if (lastSubjectByClass.containsKey(l.getClassId())) {
+                        if (lastSubjectByClass.get(l.getClassId()).getKey() == l.getSubjectId()) {
+                            hours += lastSubjectByClass.get(l.getClassId()).getValue();
+                        } else {
+                            if (lastSubjectByClass.get(l.getClassId()).getKey() != -1 &&
+                                    lastSubjectByClass.get(l.getClassId()).getValue() > maxHours) {
+                                fails++;
+                            }
+                            classSubjects++;
+                        }
+                    }
+                    lastSubjectByClass.put(l.getClassId(), new AbstractMap.SimpleEntry<>(l.getSubjectId(), hours));
+                }
+                return (1 - (fails / classSubjects)) * 100;
             default:
                 break;
         }

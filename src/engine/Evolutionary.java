@@ -160,14 +160,15 @@ public class Evolutionary<T> {
     {
         int cuttingPoints = dataSet.getCrossoverData().getCuttingPoints();
         String operator = dataSet.getCrossoverData().getSortOperator();
+        String orientation = dataSet.getCrossoverData().getOrientation();
         Solution<T> child1 = new Solution<>();
         child1.setList(new ArrayList<>());
         Solution<T> child2 = new Solution<>();
         child2.setList(new ArrayList<>());
 
         //sort parents
-        parent1 = dataSet.sort(parent1,operator);
-        parent2 = dataSet.sort(parent2,operator);
+        parent1 = dataSet.sort(parent1,operator,orientation);
+        parent2 = dataSet.sort(parent2,operator,orientation);
 
         //get random cutting points
         int listLength = parent1.getList().size();

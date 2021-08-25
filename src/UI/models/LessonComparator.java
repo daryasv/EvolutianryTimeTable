@@ -28,15 +28,12 @@ public class LessonComparator implements Comparator<Lesson> {
                     }
                 }
                 break;
-
             case CLASS_ORIENTED:
                 compare = lesson1.getClassId() - lesson2.getClassId();
                 break;
-
             case TEACHER_ORIENTED:
                 compare = lesson1.getTeacherId() - lesson2.getTeacherId();
                 break;
-
             default:
                 break;
         }

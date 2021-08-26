@@ -47,17 +47,18 @@ public class Evolutionary<T> {
         List<Solution<T>> populationList = generatePopulation(populationSize, dataSet);
         //fitness
         List<SolutionFitness<T>> solutionsFitnessMap = fitnessEvaluation(populationList, rules, hardRulesWeight, dataSet);
+
         //Selection
-        List<SolutionFitness<T>> selectionSolutions = getSelectionSolutions(solutionsFitnessMap, dataSet.getSelectionData());
+        SelectionResult<T> selectionSolutions = getSelectionSolutions(solutionsFitnessMap, dataSet.getSelectionData());
 
         while(!isEndOfEvolution(genCounter,generations))
         {
-            List<Solution<T>> newGeneration = new ArrayList<>();
+            List<Solution<T>> newGeneration = selectionSolutions.getEliteSolutions().stream().map(SolutionFitness::getSolution).collect(Collectors.toList());
             //make selectionSolutions into parents solution
-            List<Solution<T>> parentSolutions = selectionSolutions.stream().map(SolutionFitness::getSolution).collect(Collectors.toList());
+            List<Solution<T>> parentSolutions = selectionSolutions.getSelectionSolutions().stream().map(SolutionFitness::getSolution).collect(Collectors.toList());
 
             //create new generation - children in size of population
-            for (int i = 0; i < populationSize;) {
+            for (int i = 0; i < populationSize - newGeneration.size();) {
                 //pick 2 parents
                 Solution<T> parent1 = getRandomSolution(parentSolutions);
                 Solution<T> parent2 = getRandomSolution(parentSolutions);
@@ -78,7 +79,6 @@ public class Evolutionary<T> {
                 }
             }
 
-
             for (int i=0; i< dataSet.getMutations().size();i++) {
                 IMutation<T> mutation = dataSet.getMutations().get(i);
                 List<Integer> changed = new ArrayList<>();
@@ -93,19 +93,19 @@ public class Evolutionary<T> {
                     }
                 }
             }
-
+            //generation created
             populationList = newGeneration;
             genCounter++;
-            //generation created
 
             //Fitness
             solutionsFitnessMap = fitnessEvaluation(populationList, rules, hardRulesWeight, dataSet);
             //Selection
             selectionSolutions = getSelectionSolutions(solutionsFitnessMap, dataSet.getSelectionData());
 
-            SolutionFitness<T> bestGenSolution = selectionSolutions.get(0);
-            if(globalBestSolution == null || bestGenSolution.compareTo(globalBestSolution) > 0)
+            SolutionFitness<T> bestGenSolution = selectionSolutions.getSelectionSolutions().get(0);
+            if(globalBestSolution == null || bestGenSolution.compareTo(globalBestSolution) > 0) {
                 globalBestSolution = bestGenSolution;
+            }
 
             //printing interval every #generationInterva generations
             if(genCounter % generationInterval == 0)
@@ -118,32 +118,57 @@ public class Evolutionary<T> {
         }
     }
 
-    private List<SolutionFitness<T>> getSelectionSolutions(List<SolutionFitness<T>> map, ISelectionData selectionData) {
+    private SelectionResult<T> getSelectionSolutions(List<SolutionFitness<T>> map, ISelectionData selectionData) {
         List<SolutionFitness<T>> list = new ArrayList<>(map);
-        //desc sort -> z to a
-        list.sort((obj01, obj02) -> obj02.compareTo(obj01));
+        List<SolutionFitness<T>> elites = new ArrayList<>();
+
+        if(selectionData.getElitismCount() > 0){
+            list.sort((obj01, obj02) -> obj02.compareTo(obj01));
+            int toPull = Math.min(selectionData.getElitismCount(), list.size());
+            elites = new ArrayList<>(list.subList(0,toPull));
+            list = list.subList(toPull,list.size());
+        }
 
         if(selectionData.getType() == SelectionType.Truncation){
+            list.sort((obj01, obj02) -> obj02.compareTo(obj01));
             double value = selectionData.getValue();
             int numToPull = (int)((value / 100) * list.size());
             list = list.subList(0,numToPull);
+        } else if(selectionData.getType() == SelectionType.RouletteWheel){
+            List<SolutionFitness<T>> selected = new ArrayList<>();
+            list.sort(SolutionFitness::compareTo);
+            WeightedRandom<SolutionFitness<T>> weightedRandom = new WeightedRandom<>();
+            for (SolutionFitness<T> solutionFitness:list){
+                weightedRandom.addEntry(solutionFitness,solutionFitness.getFitness());
+            }
+            for(int i=0;i<list.size();i++){
+                SolutionFitness<T> rnd = weightedRandom.getRandom();
+                if(rnd !=null) {
+                    selected.add(weightedRandom.getRandom());
+                }
+            }
+            selected.sort((obj01, obj02) -> obj02.compareTo(obj01));
+            list = selected;
         }
 
-        return list;
+        list.addAll(elites);
+
+        return new SelectionResult<T>(elites,list);
     }
 
     private List<Solution<T>> crossover(EvolutionDataSet<T> dataSet, Solution<T> parent1, Solution<T> parent2)
     {
         int cuttingPoints = dataSet.getCrossoverData().getCuttingPoints();
         String operator = dataSet.getCrossoverData().getSortOperator();
+        String orientation = dataSet.getCrossoverData().getOrientation();
         Solution<T> child1 = new Solution<>();
         child1.setList(new ArrayList<>());
         Solution<T> child2 = new Solution<>();
         child2.setList(new ArrayList<>());
 
         //sort parents
-        parent1 = dataSet.sort(parent1,operator);
-        parent2 = dataSet.sort(parent2,operator);
+        parent1 = dataSet.sort(parent1,operator,orientation);
+        parent2 = dataSet.sort(parent2,operator,orientation);
 
         //get random cutting points
         int listLength = parent1.getList().size();

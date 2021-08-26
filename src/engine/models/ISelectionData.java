@@ -4,4 +4,6 @@ public interface ISelectionData {
     SelectionType getType();
 
     int getValue();
+
+    int getElitismCount();
 }

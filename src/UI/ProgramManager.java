@@ -144,17 +144,17 @@ public class ProgramManager {
             printBestSolutionDetails();
             if(UserMenu.Commands.PRINT_RAW.getStatus()){
                 UserMenu.Commands.PRINT_RAW.setStatus(false);
-                Solution<Lesson> timeTableSolution = timeTable.sort(globalBestSolution.getSolution(),LessonSortType.DayTimeOriented.name);
+                Solution<Lesson> timeTableSolution = timeTable.sort(globalBestSolution.getSolution(),LessonSortType.DayTimeOriented.name,null);
                 printRaw(timeTableSolution);
             }
             else if(UserMenu.Commands.PRINT_PER_CLASS.getStatus()){
                 UserMenu.Commands.PRINT_PER_CLASS.setStatus(false);
-                Solution<Lesson> timeTableSolution = timeTable.sort(globalBestSolution.getSolution(),LessonSortType.CLASS_ORIENTED.name);
+                Solution<Lesson> timeTableSolution = timeTable.sort(globalBestSolution.getSolution(),LessonSortType.CLASS_ORIENTED.name,null);
                 printPerClass(timeTableSolution);
             }
             else if (UserMenu.Commands.PRINT_PER_TEACHER.getStatus()){
                 UserMenu.Commands.PRINT_PER_TEACHER.setStatus(false);
-                Solution<Lesson> timeTableSolution = timeTable.sort(globalBestSolution.getSolution(),LessonSortType.TEACHER_ORIENTED.name);
+                Solution<Lesson> timeTableSolution = timeTable.sort(globalBestSolution.getSolution(),LessonSortType.TEACHER_ORIENTED.name,null);
                 printPerTeacher(timeTableSolution);
             }
             else{

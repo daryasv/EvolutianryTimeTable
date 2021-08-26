@@ -11,10 +11,12 @@ public class Crossover implements ICrossoverData , Serializable
 {
     private LessonSortType name;
     private int cuttingPoints;
+    private String orientation;
 
     public Crossover(ETTCrossover ettCrossover) throws ValidationException {
         setName(ettCrossover);
         setCuttingPoints(ettCrossover);
+        setOrientation(ettCrossover.getConfiguration());
     }
 
     public LessonSortType getName() {
@@ -35,6 +37,16 @@ public class Crossover implements ICrossoverData , Serializable
     @Override
     public String getSortOperator() {
         return name.toString();
+    }
+
+    @Override
+    public String getOrientation() {
+        return null;
+    }
+
+    public void setOrientation(String orientation) {
+        //todo: validate
+        this.orientation = orientation;
     }
 
     public void setCuttingPoints(ETTCrossover ettCrossover) throws ValidationException {

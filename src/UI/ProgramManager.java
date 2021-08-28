@@ -430,9 +430,8 @@ public class ProgramManager {
         System.out.println(String.format("selection type:%s", selectionType));
         printMutationDetails();
         printCrossoverDetails();
-
-
     }
+
     private void printTeachers(HashMap<Integer, Teacher> teachers,HashMap<Integer, Subject> subjects){
         System.out.println("-Teachers-");
         for(Map.Entry<Integer, Teacher > entry : teachers.entrySet()){

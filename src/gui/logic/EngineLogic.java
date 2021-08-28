@@ -1,15 +1,18 @@
 package gui.logic;
 
+import UI.ProgramManager;
 import UI.ValidationException;
 import UI.models.Lesson;
 import UI.models.TimeTableDataSet;
 import UI.models.evolution.EvolutionConfig;
+import engine.Evolutionary;
 import engine.models.SolutionFitness;
 import gui.components.main.EttController;
 import gui.components.main.HistogramController;
 import gui.components.main.UIAdapter;
 import gui.logic.tasks.histogram.CalculateHistogramsTask;
 import gui.logic.tasks.metadata.CollectMetadataTask;
+import gui.tasks.evolutinary.RunEvolutionaryTask;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.concurrent.Task;
 import schema.models.ETTDescriptor;
@@ -74,4 +77,17 @@ public class EngineLogic {
         evolutionEngineDataSet = new EvolutionConfig(descriptor.getETTEvolutionEngine());
     }
 
+    public void runEvolutionary(int generations,int interval) {
+        RunEvolutionaryTask runEvolutionaryTask = new RunEvolutionaryTask(timeTable,evolutionEngineDataSet,generations,interval);
+        //controller.bindTaskToUIComponents(runEvolutionaryTask, );
+
+        new Thread(runEvolutionaryTask).start();
+
+    }
+
+    //todo
+    public void printXmlSettings(Consumer<String> xmlSettingsDelegate){
+      StringBuilder sbXmlEttSettings = new StringBuilder();
+
+    }
 }

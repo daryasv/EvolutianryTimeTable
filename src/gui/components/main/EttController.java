@@ -1,15 +1,24 @@
 package gui.components.main;
 
 import UI.ValidationException;
+import gui.common.Utils;
 import gui.logic.EngineLogic;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.util.Optional;
 
 public class EttController {
 
@@ -17,19 +26,26 @@ public class EttController {
 //    @FXML Button openFileButton;
 //    @FXML Button clearButton;
     @FXML Label filePathLabel;
+    @FXML ChoiceBox<String> endConditionBox;
+    @FXML TextField endConditionLimitTextField;
+    @FXML TextField generationsJumpTextField;
+    @FXML Button runEvolutionaryButton;
+    @FXML ProgressBar taskProgressBar;
+    @FXML Label progressPercentLabel;
 
     private SimpleStringProperty selectedFileProperty;
-
-
+    public static final ObservableList<String> endConditions = FXCollections.observableArrayList("Generations","Fitness","Time");
+    private SimpleBooleanProperty isEndConditionSelected;
+    private SimpleIntegerProperty generationsJump;
 
     private EngineLogic engineLogic;
     private Stage primaryStage;
 
-
     public EttController() {
         //initialize
         selectedFileProperty = new SimpleStringProperty();
-
+        isEndConditionSelected = new SimpleBooleanProperty(false);
+        generationsJump = new SimpleIntegerProperty();
     }
 
     public void setEngineLogic(EngineLogic engineLogic) {
@@ -44,6 +60,18 @@ public class EttController {
     @FXML
     private void initialize() {
         filePathLabel.textProperty().bind(selectedFileProperty);
+        endConditionBox.setItems(endConditions);
+        endConditionLimitTextField.disableProperty().bind(isEndConditionSelected.not());
+        generationsJumpTextField.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue,
+                                String newValue) {
+                if (!newValue.matches("\\d*")) {
+                    String value = newValue.replaceAll("[^\\d]", "");
+                    generationsJumpTextField.setText(value);
+                }
+            }
+        });
     }
 
     @FXML
@@ -81,5 +109,52 @@ public class EttController {
     @FXML
     public void showXmlSettingsButtonAction(){
 
+    }
+
+    @FXML
+    public void onEndConditionSelect(){
+        System.out.println(endConditionBox.getValue());
+        isEndConditionSelected.set(true);
+    }
+
+
+    @FXML
+    public void runEvolutionaryButton(){
+        Integer interval = Utils.tryParse(generationsJumpTextField.textProperty().getValue());
+        if(interval != null){
+            //todo: get generations num
+            engineLogic.runEvolutionary(1000,interval);
+        }
+
+    }
+
+    public void bindTaskToUIComponents(Task<Boolean> aTask, Runnable onFinish) {
+        // task message
+        //taskMessageLabel.textProperty().bind(aTask.messageProperty());
+
+        // task progress bar
+        taskProgressBar.progressProperty().bind(aTask.progressProperty());
+
+        // task percent label
+        progressPercentLabel.textProperty().bind(
+                Bindings.concat(
+                        Bindings.format(
+                                "%.0f",
+                                Bindings.multiply(
+                                        aTask.progressProperty(),
+                                        100)),
+                        " %"));
+
+        // task cleanup upon finish
+        aTask.valueProperty().addListener((observable, oldValue, newValue) -> {
+            onTaskFinished(Optional.ofNullable(onFinish));
+        });
+    }
+
+    public void onTaskFinished(Optional<Runnable> onFinish) {
+        //this.taskMessageLabel.textProperty().unbind();
+        this.progressPercentLabel.textProperty().unbind();
+        this.taskProgressBar.progressProperty().unbind();
+        onFinish.ifPresent(Runnable::run);
     }
 }

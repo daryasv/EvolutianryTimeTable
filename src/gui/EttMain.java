@@ -1,8 +1,11 @@
 package gui;
 
+import gui.common.EttResourcesConstants;
+import gui.components.main.EttController;
 import gui.components.main.HistogramController;
 import gui.common.HistogramResourcesConstants;
 import gui.logic.BusinessLogic;
+import gui.logic.EngineLogic;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -12,7 +15,7 @@ import org.fxmisc.cssfx.CSSFX;
 
 import java.net.URL;
 
-public class TasksMain extends Application {
+public class EttMain extends Application {
 
     /*
     all long text files are books downloaded from
@@ -27,18 +30,18 @@ public class TasksMain extends Application {
         FXMLLoader loader = new FXMLLoader();
 
         // load main fxml
-        URL mainFXML = getClass().getResource(HistogramResourcesConstants.MAIN_FXML_RESOURCE_IDENTIFIER);
+        URL mainFXML = getClass().getResource(EttResourcesConstants.MAIN_FXML_RESOURCE_IDENTIFIER);
         loader.setLocation(mainFXML);
         BorderPane root = loader.load();
 
         // wire up controller
-        HistogramController histogramController = loader.getController();
-        BusinessLogic businessLogic = new BusinessLogic(histogramController);
-        histogramController.setPrimaryStage(primaryStage);
-        histogramController.setBusinessLogic(businessLogic);
+        EttController ettController = loader.getController();
+        EngineLogic businessLogic = new EngineLogic(ettController);
+        ettController.setPrimaryStage(primaryStage);
+        ettController.setEngineLogic(businessLogic);
 
         // set stage
-        primaryStage.setTitle("HistogramS");
+        primaryStage.setTitle("ETT");
         Scene scene = new Scene(root, 1050, 600);
         primaryStage.setScene(scene);
         primaryStage.show();

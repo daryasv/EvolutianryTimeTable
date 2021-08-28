@@ -21,7 +21,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="850.0" maxWidth="-Infinity" minHeight="500.0" minWidth="-Infinity" prefHeight="850.0" prefWidth="794.0" stylesheets="@mainHistogram.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane maxHeight="850.0" maxWidth="-Infinity" minHeight="500.0" minWidth="-Infinity" prefHeight="850.0" prefWidth="794.0" stylesheets="@mainHistogram.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.components.main.EttController">
    <top>
       <Label prefHeight="52.0" prefWidth="314.0" text="Evolutinary Time Table" BorderPane.alignment="CENTER">
          <font>
@@ -55,6 +55,7 @@
                         <Insets left="10.0" />
                      </HBox.margin>
                   </Label>
+                  <Label fx:id="filePathLabel" prefHeight="17.0" prefWidth="668.0" text="Label" />
                </children>
             </HBox>
             <TitledPane animated="false" prefHeight="179.0" prefWidth="770.0" text="XML Settings">
@@ -114,7 +115,7 @@
             </Pane>
             <FlowPane alignment="BASELINE_RIGHT" prefHeight="61.0" prefWidth="794.0">
                <children>
-                  <Button fx:id="calculateHistogramButton" alignment="CENTER_RIGHT" contentDisplay="RIGHT" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#calculateHistogramAction" pickOnBounds="false" prefHeight="40.0" prefWidth="148.0" text="Run Evolution" textAlignment="CENTER" textFill="#0f5712">
+                  <Button fx:id="calculateHistogramButton" alignment="CENTER" contentDisplay="CENTER" maxWidth="1.7976931348623157E308" mnemonicParsing="false" pickOnBounds="false" prefHeight="44.0" prefWidth="202.0" text="Run Evolution" textAlignment="CENTER" textFill="#0f5712">
                      <font>
                         <Font size="20.0" />
                      </font>

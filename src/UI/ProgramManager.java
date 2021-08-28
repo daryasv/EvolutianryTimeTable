@@ -409,6 +409,8 @@ public class ProgramManager {
 
 
 
+
+
     public void printSystemDetails(){
         System.out.println("\n***Time Table Details***\n");
         HashMap<Integer, Subject> subjects = timeTable.getTimeTableMembers().getSubjects();

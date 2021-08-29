@@ -6,6 +6,7 @@ import gui.logic.EngineLogic;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -23,20 +24,45 @@ import java.util.Optional;
 public class EttController {
 
 
-//    @FXML Button openFileButton;
-//    @FXML Button clearButton;
+    @FXML Button openXmlBtn;
+    @FXML Button clearXmlBtn;
     @FXML Label filePathLabel;
+    @FXML TextArea timeTableSettingsTextArea;
+
+    @FXML TextField initPopulationTextField;
+    @FXML ChoiceBox<String> selectionCBox;
+    @FXML TextField elitismSizeTextFiled;
+    @FXML ChoiceBox<String> crossoverCBox;
+    @FXML TextField cuttingPointsTextFiled;
+    @FXML ChoiceBox<String> crossoverOrientationCBox;
+
+    @FXML Label mutation1NameLabel;
+    @FXML TextField probability1TextField;
+    @FXML TextField maxTupples1TextField;
+    @FXML ChoiceBox<String> mutation1ComponentCBox;
+    @FXML Label mutation2NameLabel;
+    @FXML TextField probability2TextField;
+    @FXML TextField maxTupples2TextField;
+    @FXML ChoiceBox<String> mutation2ComponentCBox;
+
     @FXML ChoiceBox<String> endConditionBox;
     @FXML TextField endConditionLimitTextField;
     @FXML TextField generationsJumpTextField;
     @FXML Button runEvolutionaryButton;
     @FXML ProgressBar taskProgressBar;
     @FXML Label progressPercentLabel;
+    @FXML Button pauseBtn;
 
+    private SimpleStringProperty timeTableSettings;
     private SimpleStringProperty selectedFileProperty;
     public static final ObservableList<String> endConditions = FXCollections.observableArrayList("Generations","Fitness","Time");
     private SimpleBooleanProperty isEndConditionSelected;
     private SimpleIntegerProperty generationsJump;
+
+    public static final ObservableList<String> selectionMethod = FXCollections.observableArrayList("Truncation","Roulete Wheel");
+    public static final ObservableList<String> crossoverMethod = FXCollections.observableArrayList("Day Time Oriented","Aspect Oreiented");
+    public static final ObservableList<String> crossoverOrientation = FXCollections.observableArrayList("Teacher","Grade");
+    public static final ObservableList<String> mutationComponent = FXCollections.observableArrayList("D","H", "T", "S", "G");
 
     private EngineLogic engineLogic;
     private Stage primaryStage;
@@ -46,6 +72,7 @@ public class EttController {
         selectedFileProperty = new SimpleStringProperty();
         isEndConditionSelected = new SimpleBooleanProperty(false);
         generationsJump = new SimpleIntegerProperty();
+        timeTableSettings = new SimpleStringProperty();
     }
 
     public void setEngineLogic(EngineLogic engineLogic) {
@@ -62,6 +89,15 @@ public class EttController {
         filePathLabel.textProperty().bind(selectedFileProperty);
         endConditionBox.setItems(endConditions);
         endConditionLimitTextField.disableProperty().bind(isEndConditionSelected.not());
+        //todo: load initial selection fron xml + disable until pause btn pushed (for the next 5 lines)
+        selectionCBox.setItems(selectionMethod);
+        crossoverCBox.setItems(crossoverMethod);
+        crossoverOrientationCBox.setItems(crossoverOrientation);
+        //todo: create mutations only if needed (can be q or 2 or 0)
+        mutation1ComponentCBox.setItems(mutationComponent);
+        mutation2ComponentCBox.setItems(mutationComponent);
+
+        timeTableSettingsTextArea.textProperty().bind(timeTableSettings);
         generationsJumpTextField.textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue,
@@ -91,6 +127,7 @@ public class EttController {
         try {
             engineLogic.loadXmlFile(absolutePath);
             selectedFileProperty.set(absolutePath);
+            engineLogic.printTimeTableXmlSettings(timeTableSettings::set);
 //            isFileSelected.set(true);
         } catch (ValidationException e) {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);

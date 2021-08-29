@@ -22,6 +22,8 @@ public class TableController {
     @FXML
     private Label ValidTableLable;
 
+    private boolean isValidTable;
+
     private void insetDataToTable(String data, int tableGridRow, int tableGridCol){
         Label label=new Label(data);
         gridTable.add(label, tableGridRow, tableGridCol);
@@ -39,7 +41,7 @@ public class TableController {
             }
     }
 
-    private void buildTable(String typeTitle, String typeIdTitle, List<String> tableContentLst, int totalDays, int totalHours, boolean validTable) {
+    private void buildTable(String typeTitle, int typeIdTitle, List<String> tableContentLst, int totalDays, int totalHours) {
         int contentLstIndex=0;
         createDaysInTable(totalDays);
         createHoursInTable(totalHours);
@@ -50,45 +52,64 @@ public class TableController {
                     contentLstIndex++;
                 }
             }
-        ValidTableLable.setText(String.format("This Table is %s valid",validTable? "" :"Not" ));
+        ValidTableLable.setText(String.format("This Table is %s valid",isValidTable? "" :"Not" ));
         }
 
-/*
-    public void showTacherTable(int teacherId, Solution bestSolution, int totalDays, int totalHours){
-        boolean isValidTable=true;
-        List<Lesson> lessonsPerTeacher= getTeacherSolution(bestSolution, teacherId);
-        List<String> lessonsToAdd= new ArrayList<String>();
 
-        for(int day=0; day<totalDays; day++){
-            for(int hour=0; hour<totalHours; hour++){
-
-            }
+    public void showTable(String objectType, int objectId, Solution bestSolution, int totalDays, int totalHours){
+        List<String> lessonsToAdd = new ArrayList<>();
+        if(objectType.equals("Teacher")){
+            lessonsToAdd= getLessonsContent("Class", objectId, bestSolution, totalDays, totalHours);
         }
-    }
+        else if (objectType.equals("Class")){
+            lessonsToAdd= getLessonsContent("Teacher", objectId, bestSolution, totalDays, totalHours);
+        }
+        buildTable(objectType, objectId,lessonsToAdd,totalDays,totalHours);
+        }
 
-    private List<String> getLessonsContent(int typeTableId, Solution <Lesson> allLessons, int totalDays, int totalHours){
-        boolean isValidTable=true;
+
+    private List<String> getLessonsContent(String objectType, int typeTableId, Solution <Lesson> allLessons, int totalDays, int totalHours){
+        isValidTable=true;
         String lessonsContent="";
+        String lesson;
         List<String> lessonsToAdd= new ArrayList<String>();
-        List<Lesson> lessonsPerTeacher= getTeacherSolution(allLessons, typeTableId);
+        Solution <Lesson> lessonsPerTeacher= getTeacherSolution(allLessons, typeTableId);
         List<Lesson> dayHourSolution= new ArrayList<Lesson>();
-        List<String> myList = new ArrayList<>();
-        for(int day=0; day<totalDays; day++){
-            for(int hour=0; hour<totalHours; hour++){
-                dayHourSolution=getDayHourSolution(lessonsPerTeacher, day, hour);
-            }
-        }
+        List<String> lessonsData = new ArrayList<>();
+        for(int day=1; day<totalDays; day++) {
+            for (int hour = 1; hour < totalHours; hour++) {
+                lesson="";
+                dayHourSolution = getDayHourSolution(lessonsPerTeacher, day, hour);
+                if(dayHourSolution.size()==0){
+                    lessonsContent =" ";
+                }
+                if (dayHourSolution.size() > 1) isValidTable = false;
+                for (int i = 0; i < dayHourSolution.size(); i++) {
+                    lessonsContent = "";
+                    if (objectType.equals("Teacher")) {
+                        lesson = String.format("%s: %d Subject: %d ", objectType, dayHourSolution.get(i).getTeacherId(), dayHourSolution.get(i).getSubjectId());
 
-        return myList;
+                    } else if (objectType.equals("Class")) {
+                        lesson = String.format("%s: %d Subject: %d ", objectType, dayHourSolution.get(i).getClassId(), dayHourSolution.get(i).getSubjectId());
+
+                    }
+                    if(i>1) lessonsContent+="\n";
+                    lessonsContent += lesson;
+                    }
+                lessonsData.add(lessonsContent);
+                }
+            }
+        return lessonsData;
     }
 
-*/
+
 
     public List<Lesson> getDayHourSolution(Solution<Lesson> solution,int day, int hour){
         Solution<Lesson> solutionPerTime= new Solution<Lesson>();
         for(int i=0; i<solution.getList().size(); i++){
             if((solution.getList().get(i).getDay()==day)&&(solution.getList().get(i).getHour()==hour)){
-                solutionPerTime.getList().add(solution.getList().get(i));
+                if(solution.getList().get(i).getTeacherId()!=-1&&solution.getList().get(i).getClassId()!=-1)
+                     solutionPerTime.getList().add(solution.getList().get(i));
             }
         }
         return solutionPerTime.getList();
@@ -104,14 +125,13 @@ public class TableController {
         return solutionPerClass.getList();
     }
 
-    public List<Lesson> getTeacherSolution(Solution<Lesson> timeTableSolution, int teacherId){
+    public Solution <Lesson> getTeacherSolution(Solution<Lesson> timeTableSolution, int teacherId){
         Solution<Lesson> solutionPerTeacher= new Solution<Lesson>();
         for(int i=0; i<timeTableSolution.getList().size(); i++){
             if(timeTableSolution.getList().get(i).getTeacherId()==teacherId){
                 solutionPerTeacher.getList().add(timeTableSolution.getList().get(i));
             }
         }
-        return solutionPerTeacher.getList();
+        return solutionPerTeacher;
     }
-
 }

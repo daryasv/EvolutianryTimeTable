@@ -9,6 +9,7 @@ import engine.Evolutionary;
 import engine.models.IRule;
 import engine.models.Solution;
 import engine.models.SolutionFitness;
+import gui.components.table.TableController;
 import schema.models.ETTDescriptor;
 
 import javax.xml.bind.JAXBContext;
@@ -130,6 +131,8 @@ public class ProgramManager {
             globalBestSolution = evolutionary.getGlobalBestSolution();
             bestSolutions = evolutionary.getBestSolutions();
             systemSetting.SOLUTION_FOUND.status=true;
+           // TableController test = new TableController();
+            //test.showTable("Teacher", 2 , globalBestSolution.getSolution(),timeTable.getTimeTableMembers().getDays(), timeTable.getTimeTableMembers().getHours() );
         }
     }
 

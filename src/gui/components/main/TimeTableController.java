@@ -23,8 +23,11 @@ public class TimeTableController {
             Node table = loader.load();
 
             TableController tableController = loader.getController();
-           // tableController.buildTable(typeTitle,typeIdTitle, tableContent, totalDays, TotalHours, validtable);
 
+            //call according user selection parameters
+           // tableController.showTable(....)
+
+            //add to flow pane
            // tableTimeFlowPane.getChildren().add(table);
 
         } catch (IOException e) {

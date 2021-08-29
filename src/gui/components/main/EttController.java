@@ -123,7 +123,9 @@ public class EttController {
         Integer interval = Utils.tryParse(generationsJumpTextField.textProperty().getValue());
         if(interval != null){
             //todo: get generations num
-            engineLogic.runEvolutionary(1000,interval);
+            engineLogic.runEvolutionary(1000,interval, () -> {
+
+            });
         }
 
     }

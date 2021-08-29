@@ -4,6 +4,7 @@ import engine.models.*;
 
 import java.text.DecimalFormat;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class Evolutionary<T> {
@@ -19,7 +20,11 @@ public class Evolutionary<T> {
         return globalBestSolution;
     }
 
-    public void run(EvolutionDataSet<T> dataSet)
+    public void run(EvolutionDataSet<T> dataSet){
+        this.run(dataSet,null);
+    }
+
+    public void run(EvolutionDataSet<T> dataSet,EngineProgressInterface engineProgress)
     {
         int populationSize = dataSet.getPopulationSize();
         List<IRule> rules = dataSet.getRules();
@@ -114,6 +119,9 @@ public class Evolutionary<T> {
                 DecimalFormat f = new DecimalFormat("##.0");
                 System.out.println("EVOLUTIONARY ENGINE STATUS: Generation: "+(genCounter)+
                                     ", Best Fitness On Generation: "+(f.format(bestGenSolution.getFitness())));
+            }
+            if(engineProgress != null){
+                engineProgress.update(genCounter,generations);
             }
         }
     }

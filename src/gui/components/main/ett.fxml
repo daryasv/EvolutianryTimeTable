@@ -91,7 +91,7 @@
             </Pane>
             <FlowPane alignment="BASELINE_RIGHT" prefHeight="61.0" prefWidth="794.0">
                <children>
-                  <Button fx:id="runEvolutionaryButton" alignment="CENTER" contentDisplay="CENTER" maxWidth="1.7976931348623157E308" mnemonicParsing="false" pickOnBounds="false" prefHeight="44.0" prefWidth="202.0" text="Run Evolution" textAlignment="CENTER" textFill="#0f5712">
+                  <Button onAction="#runEvolutionaryButton" alignment="CENTER" contentDisplay="CENTER" maxWidth="1.7976931348623157E308" mnemonicParsing="false" pickOnBounds="false" prefHeight="44.0" prefWidth="202.0" text="Run Evolution" textAlignment="CENTER" textFill="#0f5712">
                      <font>
                         <Font size="20.0" />
                      </font>

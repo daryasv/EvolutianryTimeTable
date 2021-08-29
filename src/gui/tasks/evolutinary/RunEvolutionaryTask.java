@@ -4,6 +4,7 @@ import UI.models.Lesson;
 import UI.models.TimeTableDataSet;
 import UI.models.evolution.EvolutionConfig;
 import engine.Evolutionary;
+import engine.models.EngineProgressInterface;
 import engine.models.SolutionFitness;
 import gui.common.HistogramsUtils;
 import gui.components.main.UIAdapter;
@@ -39,13 +40,12 @@ public class RunEvolutionaryTask extends Task<Boolean> {
     protected Boolean call() throws Exception {
 
         try {
-
             //updateMessage("Fetching file...");
             updateProgress(0,1);
             Evolutionary<Lesson> evolutionary = new Evolutionary<>();
             timeTable.setGenerations(1000);
             timeTable.setGenerationsInterval(10);
-            evolutionary.run(timeTable);
+            evolutionary.run(timeTable,this::updateProgress);
             globalBestSolution = evolutionary.getGlobalBestSolution();
             bestSolutions = evolutionary.getBestSolutions();
             // update in UI
@@ -53,7 +53,6 @@ public class RunEvolutionaryTask extends Task<Boolean> {
 //            Platform.runLater(
 //                    () -> totalWordsDelegate.accept(totalWords)
 //            );
-
             updateMessage("Done...");
         } catch (Exception e) {
             e.printStackTrace();

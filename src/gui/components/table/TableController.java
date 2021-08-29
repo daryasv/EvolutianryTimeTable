@@ -108,7 +108,7 @@ public class TableController {
         Solution<Lesson> solutionPerTime= new Solution<Lesson>();
         for(int i=0; i<solution.getList().size(); i++){
             if((solution.getList().get(i).getDay()==day)&&(solution.getList().get(i).getHour()==hour)){
-                if(solution.getList().get(i).getTeacherId()!=-1&&solution.getList().get(i).getClassId()!=-1)
+                if(solution.getList().get(i).getTeacherId()!=-1&&solution.getList().get(i).getSubjectId()!=-1)
                      solutionPerTime.getList().add(solution.getList().get(i));
             }
         }

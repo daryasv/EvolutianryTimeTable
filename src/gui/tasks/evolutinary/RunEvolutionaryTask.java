@@ -4,6 +4,7 @@ import UI.models.Lesson;
 import UI.models.TimeTableDataSet;
 import UI.models.evolution.EvolutionConfig;
 import engine.Evolutionary;
+import engine.models.EndCondition;
 import engine.models.EngineProgressInterface;
 import engine.models.SolutionFitness;
 import gui.common.HistogramsUtils;
@@ -28,11 +29,14 @@ public class RunEvolutionaryTask extends Task<Boolean> {
 
     private int generations;
     private int interval;
+    private EndCondition.EndConditionType endConditionType;
+    private int limit;
 
-    public RunEvolutionaryTask(TimeTableDataSet timeTable, EvolutionConfig config,int generations,int interval ) {
+    public RunEvolutionaryTask(TimeTableDataSet timeTable, EvolutionConfig config, String endCondition,int limit,int interval) {
         this.timeTable = timeTable;
         this.evolutionEngineDataSet = config;
-        this.generations = generations;
+        this.endConditionType = EndCondition.EndConditionType.valueOfLabel(endCondition);
+        this.limit = limit;
         this.interval = interval;
     }
 
@@ -43,16 +47,22 @@ public class RunEvolutionaryTask extends Task<Boolean> {
             //updateMessage("Fetching file...");
             updateProgress(0,1);
             Evolutionary<Lesson> evolutionary = new Evolutionary<>();
-            timeTable.setGenerations(1000);
-            timeTable.setGenerationsInterval(10);
-            evolutionary.run(timeTable,this::updateProgress);
+
+            EndCondition endCondition = new EndCondition() {
+                @Override
+                public EndConditionType getEndCondition() {
+                    return endConditionType;
+                }
+
+                @Override
+                public int getLimit() {
+                    return limit;
+                }
+            };
+            timeTable.setGenerationsInterval(interval);
+            evolutionary.run(timeTable,endCondition,this::updateProgress);
             globalBestSolution = evolutionary.getGlobalBestSolution();
             bestSolutions = evolutionary.getBestSolutions();
-            // update in UI
-            //todo: update current generations + current best fitness
-//            Platform.runLater(
-//                    () -> totalWordsDelegate.accept(totalWords)
-//            );
             updateMessage("Done...");
         } catch (Exception e) {
             e.printStackTrace();

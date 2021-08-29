@@ -5,6 +5,7 @@ import UI.models.Lesson;
 import UI.models.TimeTableDataSet;
 import UI.models.evolution.EvolutionConfig;
 import engine.Evolutionary;
+import engine.models.EndCondition;
 import engine.models.Solution;
 import engine.models.SolutionFitness;
 import schema.models.ETTDescriptor;
@@ -40,7 +41,18 @@ public class Main {
                 Evolutionary evolutionary = new Evolutionary();
 
                 TimeTableDataSet timeTable = new TimeTableDataSet(descriptor, 100, 10);
-                evolutionary.run(timeTable);
+                EndCondition endCondition = new EndCondition() {
+                    @Override
+                    public EndConditionType getEndCondition() {
+                        return EndConditionType.Generations;
+                    }
+
+                    @Override
+                    public int getLimit() {
+                        return 100;
+                    }
+                };
+                evolutionary.run(timeTable,endCondition);
 
                 FileOutputStream fileOut = new FileOutputStream("test.tt");
                 ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);

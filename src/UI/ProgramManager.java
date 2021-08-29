@@ -6,6 +6,7 @@ import UI.models.TimeTableDataSet;
 import UI.models.evolution.EvolutionConfig;
 import UI.models.timeTable.*;
 import engine.Evolutionary;
+import engine.models.EndCondition;
 import engine.models.IRule;
 import engine.models.Solution;
 import engine.models.SolutionFitness;
@@ -124,9 +125,19 @@ public class ProgramManager {
     private void runAlgorithm(int generations,int interval) throws ValidationException {
         if(checkIfFileLoaded()) {
             Evolutionary evolutionary = new Evolutionary();
-            timeTable.setGenerations(generations);
             timeTable.setGenerationsInterval(interval);
-            evolutionary.run(timeTable);
+            EndCondition endCondition = new EndCondition() {
+                @Override
+                public EndConditionType getEndCondition() {
+                    return EndConditionType.Generations;
+                }
+
+                @Override
+                public int getLimit() {
+                    return generations;
+                }
+            };
+            evolutionary.run(timeTable,endCondition);
             globalBestSolution = evolutionary.getGlobalBestSolution();
             bestSolutions = evolutionary.getBestSolutions();
             systemSetting.SOLUTION_FOUND.status=true;

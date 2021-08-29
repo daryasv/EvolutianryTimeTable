@@ -17,6 +17,7 @@ import javafx.scene.control.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import javax.rmi.CORBA.Util;
 import java.io.File;
 import java.util.Optional;
 
@@ -93,11 +94,7 @@ public class EttController {
             selectedFileProperty.set(absolutePath);
 //            isFileSelected.set(true);
         } catch (ValidationException e) {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Invalid XML");
-            alert.setHeaderText("Looks like the xml is invalid.");
-            alert.setContentText(e.getMessage());
-            alert.showAndWait();
+            ShowError(e.getMessage());
         }
     }
 
@@ -120,14 +117,34 @@ public class EttController {
 
     @FXML
     public void runEvolutionaryButton(){
+        String endCondition = endConditionBox.getValue();
+        if(endConditionBox.getValue() == null){
+            ShowError("Please choose end condition");
+            return;
+        }
+        Integer limit = Utils.tryParse(endConditionLimitTextField.textProperty().getValue());
+        if(limit == null){
+            ShowError("Please add end condition limit");
+            return;
+        }
         Integer interval = Utils.tryParse(generationsJumpTextField.textProperty().getValue());
-        if(interval != null){
-            //todo: get generations num
-            engineLogic.runEvolutionary(1000,interval, () -> {
-
-            });
+        if(interval == null){
+            ShowError("Invalid interval time");
+            return;
         }
 
+        engineLogic.runEvolutionary(endCondition,limit,interval, () -> {
+
+        });
+
+
+    }
+
+    private void ShowError(String message){
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Something went wrong");
+        alert.setHeaderText(message);
+        alert.showAndWait();
     }
 
     public void bindTaskToUIComponents(Task<Boolean> aTask, Runnable onFinish) {

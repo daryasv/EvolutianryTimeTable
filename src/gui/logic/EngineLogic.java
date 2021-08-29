@@ -77,8 +77,8 @@ public class EngineLogic {
         evolutionEngineDataSet = new EvolutionConfig(descriptor.getETTEvolutionEngine());
     }
 
-    public void runEvolutionary(int generations,int interval, Runnable onFinish) {
-        RunEvolutionaryTask runEvolutionaryTask = new RunEvolutionaryTask(timeTable,evolutionEngineDataSet,generations,interval);
+    public void runEvolutionary(String endCondition, int limit, int interval, Runnable onFinish) {
+        RunEvolutionaryTask runEvolutionaryTask = new RunEvolutionaryTask(timeTable,evolutionEngineDataSet,endCondition,limit,interval);
         controller.bindTaskToUIComponents(runEvolutionaryTask, onFinish );
 
         new Thread(runEvolutionaryTask).start();

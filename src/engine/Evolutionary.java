@@ -20,30 +20,16 @@ public class Evolutionary<T> {
         return globalBestSolution;
     }
 
-    public void run(EvolutionDataSet<T> dataSet){
-        this.run(dataSet,null);
+    public void run(EvolutionDataSet<T> dataSet,EndCondition endCondition){
+        this.run(dataSet,endCondition,null);
     }
 
-    public void run(EvolutionDataSet<T> dataSet,EngineProgressInterface engineProgress)
+    public void run(EvolutionDataSet<T> dataSet,EndCondition endCondition,EngineProgressInterface engineProgress)
     {
         int populationSize = dataSet.getPopulationSize();
         List<IRule> rules = dataSet.getRules();
         int hardRulesWeight = dataSet.getHardRulesWeight();
-        int generations = dataSet.getGenerations();
         int generationInterval = dataSet.getGenerationInterval();
-
-        if(generations == 0){
-            System.out.println("Generations count can't be 0");
-            return;
-        }
-        if(generationInterval == 0){
-            System.out.println("Generations count can't be 0");
-            return;
-        }
-        if(generations < generationInterval){
-            System.out.println("generationInterval cant be bigger then generations");
-            return;
-        }
 
         int genCounter=0;
 
@@ -54,15 +40,14 @@ public class Evolutionary<T> {
         List<SolutionFitness<T>> solutionsFitnessMap = fitnessEvaluation(populationList, rules, hardRulesWeight, dataSet);
         //Selection
         List<SolutionFitness<T>> selectionSolutions = getSelectionSolutions(solutionsFitnessMap, dataSet.getSelectionData());
-
-        while(!isEndOfEvolution(genCounter,generations))
-        {
+        globalBestSolution = selectionSolutions.get(0);
+        while(!isEndOfEvolution(endCondition,genCounter,globalBestSolution.getFitness())) {
             List<Solution<T>> newGeneration = new ArrayList<>();
             //make selectionSolutions into parents solution
             List<Solution<T>> parentSolutions = selectionSolutions.stream().map(SolutionFitness::getSolution).collect(Collectors.toList());
 
             //create new generation - children in size of population
-            for (int i = 0; i < populationSize;) {
+            for (int i = 0; i < populationSize; ) {
                 //pick 2 parents
                 Solution<T> parent1 = getRandomSolution(parentSolutions);
                 Solution<T> parent2 = getRandomSolution(parentSolutions);
@@ -77,24 +62,24 @@ public class Evolutionary<T> {
                 newGeneration.add(children.get(0));
                 i++;
                 //in case of odd population size, will not enter the if
-                if(i<populationSize) {
+                if (i < populationSize) {
                     newGeneration.add(children.get(1));
                     i++;
                 }
             }
 
 
-            for (int i=0; i< dataSet.getMutations().size();i++) {
+            for (int i = 0; i < dataSet.getMutations().size(); i++) {
                 IMutation<T> mutation = dataSet.getMutations().get(i);
                 List<Integer> changed = new ArrayList<>();
 
-                int total = (int)(populationSize * mutation.getProbability());
-                for (int j =0;j<total;){
+                int total = (int) (populationSize * mutation.getProbability());
+                for (int j = 0; j < total; ) {
                     int rndSol = getRandomSolutionIndex(newGeneration);
-                    if(!changed.contains(rndSol)){
+                    if (!changed.contains(rndSol)) {
                         changed.add(rndSol);
                         j++;
-                        dataSet.mutation(newGeneration.get(rndSol),mutation);
+                        dataSet.mutation(newGeneration.get(rndSol), mutation);
                     }
                 }
             }
@@ -109,19 +94,25 @@ public class Evolutionary<T> {
             selectionSolutions = getSelectionSolutions(solutionsFitnessMap, dataSet.getSelectionData());
 
             SolutionFitness<T> bestGenSolution = selectionSolutions.get(0);
-            if(globalBestSolution == null || bestGenSolution.compareTo(globalBestSolution) > 0)
+            if (globalBestSolution == null || bestGenSolution.compareTo(globalBestSolution) > 0)
                 globalBestSolution = bestGenSolution;
 
             //printing interval every #generationInterva generations
-            if(genCounter % generationInterval == 0)
-            {
+            if (genCounter % generationInterval == 0) {
                 bestSolutions.add(bestGenSolution);
                 DecimalFormat f = new DecimalFormat("##.0");
-                System.out.println("EVOLUTIONARY ENGINE STATUS: Generation: "+(genCounter)+
-                                    ", Best Fitness On Generation: "+(f.format(bestGenSolution.getFitness())));
+                System.out.println("EVOLUTIONARY ENGINE STATUS: Generation: " + (genCounter) +
+                        ", Best Fitness On Generation: " + (f.format(bestGenSolution.getFitness())));
             }
-            if(engineProgress != null){
-                engineProgress.update(genCounter,generations);
+            if (engineProgress != null) {
+                switch (endCondition.getEndCondition()) {
+                    case Generations:
+                        engineProgress.update(genCounter, endCondition.getLimit());
+                        break;
+                    case Fitness:
+                        engineProgress.update(1,0);
+                        break;
+                }
             }
         }
     }
@@ -247,9 +238,17 @@ public class Evolutionary<T> {
         return solutionFitness;
     }
 
-    public boolean isEndOfEvolution(int generationCounter,int evolutionGenerationNumber)
-    {
-        return generationCounter >= evolutionGenerationNumber;
+    public boolean isEndOfEvolution(EndCondition endCondition,int generationCounter,double fitness) {
+        int limit = endCondition.getLimit();
+        switch (endCondition.getEndCondition()) {
+            case Generations:
+                return generationCounter >= limit;
+            case Fitness:
+                return fitness >= limit;
+            case Time:
+                return true;
+        }
+        return true;
     }
 
 }

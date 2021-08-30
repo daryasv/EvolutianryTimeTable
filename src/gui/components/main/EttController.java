@@ -1,12 +1,12 @@
 package gui.components.main;
 
 import UI.ValidationException;
+import UI.models.evolution.EvolutionConfig;
 import gui.common.Utils;
 import gui.logic.EngineLogic;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -15,15 +15,17 @@ import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-import javax.rmi.CORBA.Util;
 import java.io.File;
 import java.util.Optional;
 
 public class EttController {
 
+
+    @FXML Pane evolutionSettingsPane;
 
     @FXML Button openXmlBtn;
     @FXML Button clearXmlBtn;
@@ -58,12 +60,13 @@ public class EttController {
     private SimpleStringProperty selectedFileProperty;
     public static final ObservableList<String> endConditions = FXCollections.observableArrayList("Generations","Fitness","Time");
     private SimpleBooleanProperty isEndConditionSelected;
+    private SimpleBooleanProperty isFileLoaded;
     private SimpleIntegerProperty generationsJump;
 
-    public static final ObservableList<String> selectionMethod = FXCollections.observableArrayList("Truncation","Roulete Wheel");
-    public static final ObservableList<String> crossoverMethod = FXCollections.observableArrayList("Day Time Oriented","Aspect Oreiented");
-    public static final ObservableList<String> crossoverOrientation = FXCollections.observableArrayList("Teacher","Grade");
-    public static final ObservableList<String> mutationComponent = FXCollections.observableArrayList("D","H", "T", "S", "G");
+    public static final ObservableList<String> selectionMethods = FXCollections.observableArrayList("Truncation","Roulete Wheel");
+    public static final ObservableList<String> crossoverMethods = FXCollections.observableArrayList("Day Time Oriented","Aspect Oreiented");
+    public static final ObservableList<String> crossoverOrientations = FXCollections.observableArrayList("Teacher","Grade");
+    public static final ObservableList<String> mutationComponents = FXCollections.observableArrayList("D","H", "T", "S", "G");
 
     private EngineLogic engineLogic;
     private Stage primaryStage;
@@ -72,6 +75,7 @@ public class EttController {
         //initialize
         selectedFileProperty = new SimpleStringProperty();
         isEndConditionSelected = new SimpleBooleanProperty(false);
+        isFileLoaded = new SimpleBooleanProperty(false);
         generationsJump = new SimpleIntegerProperty();
         timeTableSettings = new SimpleStringProperty();
     }
@@ -87,16 +91,20 @@ public class EttController {
 
     @FXML
     private void initialize() {
+
+        //todo : for rest of the panes
+        evolutionSettingsPane.disableProperty().bind(isFileLoaded.not());
+
         filePathLabel.textProperty().bind(selectedFileProperty);
         endConditionBox.setItems(endConditions);
         endConditionLimitTextField.disableProperty().bind(isEndConditionSelected.not());
         //todo: load initial selection fron xml + disable until pause btn pushed (for the next 5 lines)
-        selectionCBox.setItems(selectionMethod);
-        crossoverCBox.setItems(crossoverMethod);
-        crossoverOrientationCBox.setItems(crossoverOrientation);
+        selectionCBox.setItems(selectionMethods);
+        crossoverCBox.setItems(crossoverMethods);
+        crossoverOrientationCBox.setItems(crossoverOrientations);
         //todo: create mutations only if needed (can be q or 2 or 0)
-        mutation1ComponentCBox.setItems(mutationComponent);
-        mutation2ComponentCBox.setItems(mutationComponent);
+        mutation1ComponentCBox.setItems(mutationComponents);
+        mutation2ComponentCBox.setItems(mutationComponents);
 
         timeTableSettingsTextArea.textProperty().bind(timeTableSettings);
         generationsJumpTextField.textProperty().addListener(new ChangeListener<String>() {
@@ -129,10 +137,18 @@ public class EttController {
             engineLogic.loadXmlFile(absolutePath);
             selectedFileProperty.set(absolutePath);
             engineLogic.printTimeTableXmlSettings(timeTableSettings::set);
-//            isFileSelected.set(true);
+            setEvolutionConfig(engineLogic.getEvolutionEngineDataSet());
+            isFileLoaded.set(true);
         } catch (ValidationException e) {
             ShowError(e.getMessage());
         }
+    }
+
+    //todo complete
+    private void setEvolutionConfig(EvolutionConfig evolutionConfig)
+    {
+        initPopulationTextField.textProperty().set(String.valueOf(evolutionConfig.getInitialPopulation()));
+        selectionCBox.setValue(evolutionConfig.getSelection().getType().name);
     }
 
     @FXML
@@ -171,10 +187,7 @@ public class EttController {
         }
 
         engineLogic.runEvolutionary(endCondition,limit,interval, () -> {
-
         });
-
-
     }
 
     private void ShowError(String message){

@@ -51,6 +51,10 @@ public class EngineLogic {
         totalWords = -1;
     }
 
+    public EvolutionConfig getEvolutionEngineDataSet() {
+        return evolutionEngineDataSet;
+    }
+
     public SimpleStringProperty fileNameProperty() {
         return this.fileName;
     }
@@ -90,7 +94,6 @@ public class EngineLogic {
 
     }
 
-    //todo
     public void printTimeTableXmlSettings(Consumer<String> timeTableSettingsDelegate) {
         StringBuilder sbXmlEttSettings = new StringBuilder();
         HashMap<Integer, Subject> subjects = timeTable.getTimeTableMembers().getSubjects();

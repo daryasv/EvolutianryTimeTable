@@ -236,7 +236,7 @@
                   <Label layoutX="73.0" layoutY="53.0" text="Progress Bar " />
                   <ProgressBar fx:id="taskProgressBar" layoutX="152.0" layoutY="49.0" prefHeight="25.0" prefWidth="509.0" progress="0.0" />
                   <Button layoutX="452.0" layoutY="83.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="209.0" text="SHOW BEST SOLUTION" textFill="#2314cd" />
-                  <Button fx:id="pauseBtn" layoutX="335.0" layoutY="127.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="124.0" text="Pause" textFill="#dd0e0e">
+                  <Button fx:id="pauseBtn" onAction="#pauseAlgorithm" layoutX="335.0" layoutY="127.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="124.0" text="Pause" textFill="#dd0e0e">
                      <font>
                         <Font size="18.0" />
                      </font>

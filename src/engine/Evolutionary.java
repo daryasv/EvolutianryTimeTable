@@ -9,8 +9,19 @@ import java.util.stream.Collectors;
 
 public class Evolutionary<T> {
 
-     List<SolutionFitness<T>> bestSolutions = new ArrayList<>();
-     SolutionFitness<T> globalBestSolution = null;
+     List<SolutionFitness<T>> bestSolutions;
+     SolutionFitness<T> globalBestSolution;
+     int genCounter;
+     private boolean isStopped;
+     private int lastTime;
+
+    public Evolutionary() {
+        bestSolutions = new ArrayList<>();
+        globalBestSolution = null;
+        genCounter = 0;
+        isStopped = false;
+        lastTime = 0;
+    }
 
     public List<SolutionFitness<T>> getBestSolutions() {
         return bestSolutions;
@@ -26,12 +37,15 @@ public class Evolutionary<T> {
 
     public void run(EvolutionDataSet<T> dataSet,EndCondition endCondition,EngineProgressInterface engineProgress)
     {
-        int populationSize = dataSet.getPopulationSize();
-        List<IRule> rules = dataSet.getRules();
-        int hardRulesWeight = dataSet.getHardRulesWeight();
-        int generationInterval = dataSet.getGenerationInterval();
+        final int populationSize = dataSet.getPopulationSize();
+        final List<IRule> rules = dataSet.getRules();
+        final int hardRulesWeight = dataSet.getHardRulesWeight();
+        final int generationInterval = dataSet.getGenerationInterval();
+        long startTime = System.currentTimeMillis() - (lastTime * 1000L);
+        long endTime   = System.currentTimeMillis();
+        long totalTime = (endTime - startTime) / 1000 ;
 
-        int genCounter=0;
+        isStopped = false;
 
         System.out.println("Evolutionary Engine starts !");
         //generate population
@@ -43,7 +57,7 @@ public class Evolutionary<T> {
 
         SelectionResult<T> selectionSolutions = getSelectionSolutions(solutionsFitnessMap, dataSet.getSelectionData());
 
-        while(!isEndOfEvolution(endCondition,genCounter,globalBestSolution.getFitness()))
+        while(!isStopped && !isEndOfEvolution(endCondition,genCounter,globalBestSolution.getFitness(),totalTime))
         {
             List<Solution<T>> newGeneration = selectionSolutions.getEliteSolutions().stream().map(SolutionFitness::getSolution).collect(Collectors.toList());
 
@@ -109,16 +123,24 @@ public class Evolutionary<T> {
                 System.out.println("EVOLUTIONARY ENGINE STATUS: Generation: " + (genCounter) +
                         ", Best Fitness On Generation: " + (f.format(bestGenSolution.getFitness())));
             }
+            endTime = System.currentTimeMillis();
+            totalTime = (endTime - startTime) / 1000;
             if (engineProgress != null) {
                 switch (endCondition.getEndCondition()) {
                     case Generations:
                         engineProgress.update(genCounter, endCondition.getLimit());
                         break;
                     case Fitness:
-                        engineProgress.update(1,0);
+                        engineProgress.update(-1,0);
+                        break;
+                    case Time:
+                        engineProgress.update((int) totalTime, endCondition.getLimit());
                         break;
                 }
             }
+        }
+        if(isStopped){
+            lastTime = (int) ((endTime - startTime) / 1000);
         }
     }
 
@@ -267,7 +289,7 @@ public class Evolutionary<T> {
         return solutionFitness;
     }
 
-    public boolean isEndOfEvolution(EndCondition endCondition,int generationCounter,double fitness) {
+    public boolean isEndOfEvolution(EndCondition endCondition,int generationCounter,double fitness, long totalTime) {
         int limit = endCondition.getLimit();
         switch (endCondition.getEndCondition()) {
             case Generations:
@@ -275,9 +297,12 @@ public class Evolutionary<T> {
             case Fitness:
                 return fitness >= limit;
             case Time:
-                return true;
+                return totalTime >= limit;
         }
         return true;
     }
 
+    public void stop() {
+        isStopped = true;
+    }
 }

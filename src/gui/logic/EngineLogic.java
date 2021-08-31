@@ -1,24 +1,20 @@
 package gui.logic;
 
-import UI.ProgramManager;
 import UI.ValidationException;
-import UI.models.Lesson;
 import UI.models.TimeTableDataSet;
 import UI.models.evolution.EvolutionConfig;
 import UI.models.timeTable.Grade;
 import UI.models.timeTable.Rule;
 import UI.models.timeTable.Subject;
 import UI.models.timeTable.Teacher;
-import engine.Evolutionary;
-import engine.models.SolutionFitness;
 import gui.components.main.EttController;
-import gui.components.main.HistogramController;
-import gui.components.main.UIAdapter;
-import gui.logic.tasks.histogram.CalculateHistogramsTask;
-import gui.logic.tasks.metadata.CollectMetadataTask;
+import gui.tasks.evolutinary.EvolutionaryTaskMembers;
 import gui.tasks.evolutinary.RunEvolutionaryTask;
+import javafx.application.Platform;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.concurrent.Task;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import schema.models.ETTDescriptor;
 
 import javax.xml.bind.JAXBContext;
@@ -28,36 +24,39 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Consumer;
 
 public class EngineLogic {
-    TimeTableDataSet timeTable;
-    EvolutionConfig evolutionEngineDataSet;
-    SolutionFitness<Lesson> globalBestSolution;
-    List<SolutionFitness<Lesson>> bestSolutions;
+    EvolutionaryTaskMembers evolutionaryMembers;
 
     private SimpleStringProperty fileName;
+    private SimpleBooleanProperty isPaused;
     private EttController controller;
 
     //todo: remove
     private long totalWords;
-    private Task<Boolean> currentRunningTask;
+    private RunEvolutionaryTask currentRunningTask;
+
 
 
     public EngineLogic(EttController controller) {
         this.fileName = new SimpleStringProperty();
+        this.isPaused = new SimpleBooleanProperty(false);
         this.controller = controller;
         totalWords = -1;
+        evolutionaryMembers = new EvolutionaryTaskMembers();
     }
 
     public EvolutionConfig getEvolutionEngineDataSet() {
-        return evolutionEngineDataSet;
+        return evolutionaryMembers.getEvolutionEngineDataSet();
     }
 
     public SimpleStringProperty fileNameProperty() {
         return this.fileName;
     }
+    public SimpleBooleanProperty getIsPaused() {
+        return this.isPaused;
+}
 
     public void loadXmlFile(String absolutePath) throws ValidationException {
         try{
@@ -82,24 +81,39 @@ public class EngineLogic {
     }
 
     private void updateDataSets(ETTDescriptor descriptor) throws ValidationException {
-        timeTable = new TimeTableDataSet(descriptor);
-        evolutionEngineDataSet = new EvolutionConfig(descriptor.getETTEvolutionEngine());
+        evolutionaryMembers.setTimeTable(new TimeTableDataSet(descriptor));
+        evolutionaryMembers.setEvolutionEngineDataSet(new EvolutionConfig(descriptor.getETTEvolutionEngine()));
     }
 
     public void runEvolutionary(String endCondition, int limit, int interval, Runnable onFinish) {
-        RunEvolutionaryTask runEvolutionaryTask = new RunEvolutionaryTask(timeTable,evolutionEngineDataSet,endCondition,limit,interval);
-        controller.bindTaskToUIComponents(runEvolutionaryTask, onFinish );
+        if (!isPaused.getValue()) {
+            evolutionaryMembers.reset();
+        }
+        currentRunningTask = new RunEvolutionaryTask(evolutionaryMembers, endCondition, limit, interval);
+        controller.bindTaskToUIComponents(currentRunningTask, onFinish);
+        new Thread(currentRunningTask).start();
 
-        new Thread(runEvolutionaryTask).start();
+        currentRunningTask.setOnSucceeded(new EventHandler() {
 
+            @Override
+            public void handle(Event event) {
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        evolutionaryMembers = currentRunningTask.getEvolutionaryTaskMembers();
+                    }
+                });
+            }
+        });
     }
 
     public void printTimeTableXmlSettings(Consumer<String> timeTableSettingsDelegate) {
         StringBuilder sbXmlEttSettings = new StringBuilder();
-        HashMap<Integer, Subject> subjects = timeTable.getTimeTableMembers().getSubjects();
-        HashMap<Integer, Teacher> teachers = timeTable.getTimeTableMembers().getTeachers();
-        HashMap<Integer, Grade> grades = timeTable.getTimeTableMembers().getGrades();
-        List<Rule> rules = timeTable.getTimeTableMembers().getRules();
+
+        HashMap<Integer, Subject> subjects = evolutionaryMembers.getTimeTable().getTimeTableMembers().getSubjects();
+        HashMap<Integer, Teacher> teachers = evolutionaryMembers.getTimeTable().getTimeTableMembers().getTeachers();
+        HashMap<Integer, Grade> grades = evolutionaryMembers.getTimeTable().getTimeTableMembers().getGrades();
+        List<Rule> rules = evolutionaryMembers.getTimeTable().getTimeTableMembers().getRules();
 
         sbXmlEttSettings.append(toStringSubjects(subjects));
         sbXmlEttSettings.append("\n");
@@ -179,5 +193,10 @@ public class EngineLogic {
         sbRules.append("\n");
         return sbRules;
     }
+
+    public void pause(){
+        currentRunningTask.stopAlgo();
+    }
+
 
 }

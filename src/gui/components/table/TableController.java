@@ -85,7 +85,6 @@ public class TableController {
                 }
                 if (dayHourSolution.size() > 1) isValidTable = false;
                 for (int i = 0; i < dayHourSolution.size(); i++) {
-                    lessonsContent = "";
                     if (objectType.equals("Teacher")) {
                         lesson = String.format("%s: %d Subject: %d ", objectType, dayHourSolution.get(i).getTeacherId(), dayHourSolution.get(i).getSubjectId());
 
@@ -93,10 +92,11 @@ public class TableController {
                         lesson = String.format("%s: %d Subject: %d ", objectType, dayHourSolution.get(i).getClassId(), dayHourSolution.get(i).getSubjectId());
 
                     }
-                    if(i>1) lessonsContent+="\n";
+                    if(i>=1) lessonsContent+="\n";
                     lessonsContent += lesson;
                     }
                 lessonsData.add(lessonsContent);
+                lessonsContent = "";
                 }
             }
         return lessonsData;

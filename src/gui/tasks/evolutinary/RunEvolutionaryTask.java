@@ -46,7 +46,9 @@ public class RunEvolutionaryTask extends Task<Boolean> {
     @Override
     protected Boolean call() throws Exception {
         try {
-            updateProgress(0,1);
+            if(evolutionaryTaskMembers.getEvolutionary().getGlobalBestSolution() == null){
+                updateProgress(0,1);
+            }
             evolutionaryTaskMembers.getTimeTable().setGenerationsInterval(interval);
             evolutionaryTaskMembers.getEvolutionary().run(evolutionaryTaskMembers.getTimeTable(),endCondition,this::updateProgress);
             evolutionaryTaskMembers.setGlobalBestSolution(evolutionaryTaskMembers.getEvolutionary().getGlobalBestSolution());

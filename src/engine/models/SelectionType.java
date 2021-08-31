@@ -5,7 +5,8 @@ import UI.models.timeTable.RuleType;
 import java.io.Serializable;
 
 public enum SelectionType implements Serializable {
-    Truncation("Truncation");
+    Truncation("Truncation"),
+    RouletteWheel("RouletteWheel");
 
     public String name;
     SelectionType(String name) {

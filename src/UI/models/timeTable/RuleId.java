@@ -4,7 +4,9 @@ public enum RuleId {
     TeacherIsHuman("TeacherIsHuman"),
     Singularity("Singularity"),
     Knowledgeable("Knowledgeable"),
-    Satisfactory("Satisfactory");
+    Satisfactory("Satisfactory"),
+    Sequentiality("Sequentiality"),
+    DayOffTeacher("DayOffTeacher");
 
     public String name;
     RuleId(String name) {

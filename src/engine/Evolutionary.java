@@ -56,7 +56,7 @@ public class Evolutionary<T> {
         //Selection
 
         SelectionResult<T> selectionSolutions = getSelectionSolutions(solutionsFitnessMap, dataSet.getSelectionData());
-
+        globalBestSolution = selectionSolutions.getEliteSolutions().get(0);
         while(!isStopped && !isEndOfEvolution(endCondition,genCounter,globalBestSolution.getFitness(),totalTime))
         {
             List<Solution<T>> newGeneration = selectionSolutions.getEliteSolutions().stream().map(SolutionFitness::getSolution).collect(Collectors.toList());

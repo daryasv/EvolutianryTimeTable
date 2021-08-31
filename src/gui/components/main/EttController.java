@@ -20,15 +20,20 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.util.Objects;
 import java.util.Optional;
 
 public class EttController {
 
-
     @FXML Pane evolutionSettingsPane;
+    @FXML Pane evolutionProgressPane;
+    @FXML Pane evolutionConditionsPane;
+    @FXML TitledPane timeTableSettingsTPane;
 
     @FXML Button openXmlBtn;
     @FXML Button clearXmlBtn;
+    @FXML Button runEvolutionBtn;
+
     @FXML Label filePathLabel;
     @FXML TextArea timeTableSettingsTextArea;
 
@@ -51,35 +56,38 @@ public class EttController {
     @FXML ChoiceBox<String> endConditionBox;
     @FXML TextField endConditionLimitTextField;
     @FXML TextField generationsJumpTextField;
-    @FXML Button runEvolutionaryButton;
     @FXML ProgressBar taskProgressBar;
     @FXML Label progressPercentLabel;
     @FXML Button pauseBtn;
 
     private SimpleStringProperty timeTableSettings;
     private SimpleStringProperty selectedFileProperty;
-    public static final ObservableList<String> endConditions = FXCollections.observableArrayList("Generations","Fitness","Time");
     private SimpleBooleanProperty isEndConditionSelected;
     private SimpleBooleanProperty isFileLoaded;
-    private SimpleIntegerProperty generationsJump;
+    private  SimpleBooleanProperty isEvolutionRunning;
+    private SimpleBooleanProperty isPaused;
+    private SimpleBooleanProperty isCrossoverAspectOriented;
 
+
+    public static final ObservableList<String> endConditions = FXCollections.observableArrayList("Generations","Fitness","Time");
     public static final ObservableList<String> selectionMethods = FXCollections.observableArrayList("Truncation","Roulete Wheel");
-    public static final ObservableList<String> crossoverMethods = FXCollections.observableArrayList("Day Time Oriented","Aspect Oreiented");
+    public static final ObservableList<String> crossoverMethods = FXCollections.observableArrayList("DayTimeOriented","AspectOreiented");
     public static final ObservableList<String> crossoverOrientations = FXCollections.observableArrayList("Teacher","Grade");
     public static final ObservableList<String> mutationComponents = FXCollections.observableArrayList("D","H", "T", "S", "G");
 
     private EngineLogic engineLogic;
     private Stage primaryStage;
-    private SimpleBooleanProperty isPaused;
 
     public EttController() {
         //initialize
         selectedFileProperty = new SimpleStringProperty();
+        timeTableSettings = new SimpleStringProperty();
+
         isEndConditionSelected = new SimpleBooleanProperty(false);
         isFileLoaded = new SimpleBooleanProperty(false);
-        generationsJump = new SimpleIntegerProperty();
-        timeTableSettings = new SimpleStringProperty();
+        isEvolutionRunning = new SimpleBooleanProperty(false);
         isPaused = new SimpleBooleanProperty(false);
+        isCrossoverAspectOriented = new SimpleBooleanProperty(false);
     }
 
     public void setEngineLogic(EngineLogic engineLogic) {
@@ -95,8 +103,11 @@ public class EttController {
     @FXML
     private void initialize() {
 
-        //todo : for rest of the panes
         evolutionSettingsPane.disableProperty().bind(isFileLoaded.not());
+        timeTableSettingsTPane.disableProperty().bind(isFileLoaded.not());
+        clearXmlBtn.disableProperty().bind(isFileLoaded.not());
+        evolutionProgressPane.disableProperty().bind(isFileLoaded.not());
+        evolutionConditionsPane.disableProperty().bind(isFileLoaded.not());
 
         filePathLabel.textProperty().bind(selectedFileProperty);
         endConditionBox.setItems(endConditions);
@@ -152,6 +163,19 @@ public class EttController {
     {
         initPopulationTextField.textProperty().set(String.valueOf(evolutionConfig.getInitialPopulation()));
         selectionCBox.setValue(evolutionConfig.getSelection().getType().name);
+        //elitismSizeTextFiled.textProperty().set(String.valueOf(evolutionConfig.)); //todo: add to evolution config get elitism
+        crossoverCBox.setValue(evolutionConfig.getCrossover().getName().name);
+        cuttingPointsTextFiled.textProperty().set(String.valueOf(evolutionConfig.getCrossover().getCuttingPoints()));
+        if(Objects.equals(crossoverCBox.getValue(), "AspectOreiented"))
+        {
+            isCrossoverAspectOriented.set(true);
+            crossoverOrientationCBox.setValue(evolutionConfig.getCrossover().getSortOperator());
+        }
+        else
+        {
+            isCrossoverAspectOriented.set(false);
+            crossoverOrientationCBox.disableProperty().bind(isCrossoverAspectOriented.not());
+        }
     }
 
     @FXML
@@ -169,7 +193,6 @@ public class EttController {
         System.out.println(endConditionBox.getValue());
         isEndConditionSelected.set(true);
     }
-
 
     @FXML
     public void runEvolutionaryButton(){
@@ -189,16 +212,20 @@ public class EttController {
             return;
         }
 
+        isPaused.set(false);
+        isEvolutionRunning.set(true);
+        runEvolutionBtn.disableProperty().bind(isPaused.not());
+
         engineLogic.runEvolutionary(endCondition,limit,interval, () -> {
         });
 
         isPaused.set(false);
     }
 
-    @FXML
-    public void pauseAlgorithm(){
-        isPaused.set(true);
+    public void pauseEvolution()
+    {
         engineLogic.pause();
+        isPaused.set(true);
     }
 
     private void ShowError(String message){

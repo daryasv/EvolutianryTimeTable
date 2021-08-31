@@ -70,6 +70,7 @@ public class EttController {
 
     private EngineLogic engineLogic;
     private Stage primaryStage;
+    private SimpleBooleanProperty isPaused;
 
     public EttController() {
         //initialize
@@ -78,11 +79,13 @@ public class EttController {
         isFileLoaded = new SimpleBooleanProperty(false);
         generationsJump = new SimpleIntegerProperty();
         timeTableSettings = new SimpleStringProperty();
+        isPaused = new SimpleBooleanProperty(false);
     }
 
     public void setEngineLogic(EngineLogic engineLogic) {
         this.engineLogic = engineLogic;
         engineLogic.fileNameProperty().bind(selectedFileProperty);
+        engineLogic.getIsPaused().bind(isPaused);
     }
 
     public void setPrimaryStage(Stage primaryStage) {
@@ -188,6 +191,14 @@ public class EttController {
 
         engineLogic.runEvolutionary(endCondition,limit,interval, () -> {
         });
+
+        isPaused.set(false);
+    }
+
+    @FXML
+    public void pauseAlgorithm(){
+        isPaused.set(true);
+        engineLogic.pause();
     }
 
     private void ShowError(String message){

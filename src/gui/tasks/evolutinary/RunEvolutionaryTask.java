@@ -22,47 +22,35 @@ import java.util.function.Consumer;
 
 public class RunEvolutionaryTask extends Task<Boolean> {
 
-    TimeTableDataSet timeTable;
-    EvolutionConfig evolutionEngineDataSet;
-    SolutionFitness<Lesson> globalBestSolution;
-    List<SolutionFitness<Lesson>> bestSolutions;
-
-    private int generations;
+    EvolutionaryTaskMembers evolutionaryTaskMembers;
+    EndCondition endCondition;
     private int interval;
-    private EndCondition.EndConditionType endConditionType;
-    private int limit;
 
-    public RunEvolutionaryTask(TimeTableDataSet timeTable, EvolutionConfig config, String endCondition,int limit,int interval) {
-        this.timeTable = timeTable;
-        this.evolutionEngineDataSet = config;
-        this.endConditionType = EndCondition.EndConditionType.valueOfLabel(endCondition);
-        this.limit = limit;
+    public RunEvolutionaryTask(EvolutionaryTaskMembers evolutionaryTaskMembers, String endConditionType,int limit,int interval) {
+        this.evolutionaryTaskMembers = evolutionaryTaskMembers;
+        EndCondition.EndConditionType endConditionTypeEnum = EndCondition.EndConditionType.valueOfLabel(endConditionType);
         this.interval = interval;
+        endCondition = new EndCondition() {
+            @Override
+            public EndConditionType getEndCondition() {
+                return endConditionTypeEnum;
+            }
+
+            @Override
+            public int getLimit() {
+                return limit;
+            }
+        };
     }
 
     @Override
     protected Boolean call() throws Exception {
-
         try {
-            //updateMessage("Fetching file...");
             updateProgress(0,1);
-            Evolutionary<Lesson> evolutionary = new Evolutionary<>();
-
-            EndCondition endCondition = new EndCondition() {
-                @Override
-                public EndConditionType getEndCondition() {
-                    return endConditionType;
-                }
-
-                @Override
-                public int getLimit() {
-                    return limit;
-                }
-            };
-            timeTable.setGenerationsInterval(interval);
-            evolutionary.run(timeTable,endCondition,this::updateProgress);
-            globalBestSolution = evolutionary.getGlobalBestSolution();
-            bestSolutions = evolutionary.getBestSolutions();
+            evolutionaryTaskMembers.getTimeTable().setGenerationsInterval(interval);
+            evolutionaryTaskMembers.getEvolutionary().run(evolutionaryTaskMembers.getTimeTable(),endCondition,this::updateProgress);
+            evolutionaryTaskMembers.setGlobalBestSolution(evolutionaryTaskMembers.getEvolutionary().getGlobalBestSolution());
+            evolutionaryTaskMembers.setBestSolutions(evolutionaryTaskMembers.getEvolutionary().getBestSolutions());
             updateMessage("Done...");
         } catch (Exception e) {
             e.printStackTrace();
@@ -71,4 +59,11 @@ public class RunEvolutionaryTask extends Task<Boolean> {
         return Boolean.TRUE;
     }
 
+    public void stopAlgo(){
+        evolutionaryTaskMembers.getEvolutionary().stop();
+    }
+
+    public EvolutionaryTaskMembers getEvolutionaryTaskMembers(){
+        return this.evolutionaryTaskMembers;
+    }
 }

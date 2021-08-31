@@ -51,6 +51,10 @@ public class EngineLogic {
         totalWords = -1;
     }
 
+    public SolutionFitness<Lesson> getGlobalBestSolution() {
+        return globalBestSolution;
+    }
+
     public EvolutionConfig getEvolutionEngineDataSet() {
         return evolutionEngineDataSet;
     }

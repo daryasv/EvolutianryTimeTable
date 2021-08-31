@@ -24,6 +24,8 @@ import java.util.Scanner;
 import java.util.function.Consumer;
 
 public class BusinessLogic {
+
+
     TimeTableDataSet timeTable;
     EvolutionConfig evolutionEngineDataSet;
     SolutionFitness<Lesson> globalBestSolution;
@@ -47,7 +49,9 @@ public class BusinessLogic {
         return this.fileName;
     }
 
-
+    public TimeTableDataSet getTimeTable() {
+        return timeTable;
+    }
 
     public void collectMetadata(Consumer<Long> totalWordsDelegate, Consumer<Long> totalLinesDelegate, Runnable onFinish) {
 

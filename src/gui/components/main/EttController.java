@@ -241,14 +241,13 @@ public class EttController {
             return;
         }
 
-        isPaused.set(false);
-        isEvolutionRunning.set(true);
-        runEvolutionBtn.disableProperty().bind(isPaused.not());
-
         engineLogic.runEvolutionary(endCondition,limit,interval, () -> {
         });
 
+        isEvolutionRunning.set(true);
         isPaused.set(false);
+        runEvolutionBtn.disableProperty().bind(isPaused.not());
+
     }
 
     public void pauseEvolution()

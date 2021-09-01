@@ -304,7 +304,12 @@ public class Evolutionary<T> {
         return true;
     }
 
+    public int getCurrentGeneration(){
+        return genCounter;
+    }
+
     public void stop() {
         isStopped = true;
     }
+
 }

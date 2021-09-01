@@ -200,9 +200,21 @@ public class EngineLogic {
         return sbRules;
     }
 
-    public void pause(){
+    public void stop(){
         currentRunningTask.stopAlgo();
     }
 
+    public void setBestSolutionFitness(Consumer<Double> fitnessDelegate){
+        if(currentRunningTask != null){
+            double fitness = currentRunningTask.getEvolutionaryTaskMembers().getGlobalBestSolution().getFitness();
+            fitnessDelegate.accept(fitness);
+        }
+    }
 
+    public void setCurrentGeneration(Consumer<Double> generationDelegate){
+        if(currentRunningTask != null){
+            double currentGeneration = currentRunningTask.getEvolutionaryTaskMembers().getEvolutionary().getCurrentGeneration();
+            generationDelegate.accept(currentGeneration);
+        }
+    }
 }

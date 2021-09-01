@@ -250,10 +250,17 @@ public class EttController {
 
     }
 
+    @FXML
     public void pauseEvolution()
     {
-        engineLogic.pause();
+        engineLogic.stop();
         isPaused.set(true);
+    }
+
+    @FXML
+    public void stopEvolution()
+    {
+        engineLogic.stop();
     }
 
     private void ShowError(String message){

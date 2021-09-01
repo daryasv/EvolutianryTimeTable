@@ -9,11 +9,13 @@ import java.util.stream.Collectors;
 
 public class Evolutionary<T> {
 
+    final int TIME_INTERVAL = 1000 * 60;
      List<SolutionFitness<T>> bestSolutions;
      SolutionFitness<T> globalBestSolution;
      int genCounter;
      private boolean isStopped;
      private int lastTime;
+
 
     public Evolutionary() {
         bestSolutions = new ArrayList<>();
@@ -41,9 +43,9 @@ public class Evolutionary<T> {
         final List<IRule> rules = dataSet.getRules();
         final int hardRulesWeight = dataSet.getHardRulesWeight();
         final int generationInterval = dataSet.getGenerationInterval();
-        long startTime = System.currentTimeMillis() - (lastTime * 1000L);
+        long startTime = System.currentTimeMillis() - ((long) lastTime * TIME_INTERVAL);
         long endTime   = System.currentTimeMillis();
-        long totalTime = (endTime - startTime) / 1000 ;
+        long totalTime = (endTime - startTime) / TIME_INTERVAL ;
 
         isStopped = false;
 
@@ -124,23 +126,23 @@ public class Evolutionary<T> {
                         ", Best Fitness On Generation: " + (f.format(bestGenSolution.getFitness())));
             }
             endTime = System.currentTimeMillis();
-            totalTime = (endTime - startTime) / 1000;
+            totalTime = (endTime - startTime) / TIME_INTERVAL;
             if (engineProgress != null) {
                 switch (endCondition.getEndCondition()) {
                     case Generations:
-                        engineProgress.update(genCounter, endCondition.getLimit());
+                        engineProgress.update(genCounter, (int)endCondition.getLimit());
                         break;
                     case Fitness:
                         engineProgress.update(-1,0);
                         break;
                     case Time:
-                        engineProgress.update((int) totalTime, endCondition.getLimit());
+                        engineProgress.update((int) totalTime, (int)endCondition.getLimit());
                         break;
                 }
             }
         }
         if(isStopped){
-            lastTime = (int) ((endTime - startTime) / 1000);
+            lastTime = (int) ((endTime - startTime) / TIME_INTERVAL);
         }
     }
 
@@ -290,7 +292,7 @@ public class Evolutionary<T> {
     }
 
     public boolean isEndOfEvolution(EndCondition endCondition,int generationCounter,double fitness, long totalTime) {
-        int limit = endCondition.getLimit();
+        double limit = endCondition.getLimit();
         switch (endCondition.getEndCondition()) {
             case Generations:
                 return generationCounter >= limit;

@@ -48,7 +48,7 @@ public class Main {
                     }
 
                     @Override
-                    public int getLimit() {
+                    public double getLimit() {
                         return 100;
                     }
                 };

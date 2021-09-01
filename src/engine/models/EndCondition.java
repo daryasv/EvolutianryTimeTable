@@ -31,5 +31,5 @@ public interface EndCondition {
 
     EndConditionType getEndCondition();
 
-    int getLimit();
+    double getLimit();
 }

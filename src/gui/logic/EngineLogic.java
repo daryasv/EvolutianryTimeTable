@@ -91,7 +91,7 @@ public class EngineLogic {
         evolutionaryMembers.setEvolutionEngineDataSet(new EvolutionConfig(descriptor.getETTEvolutionEngine()));
     }
 
-    public void runEvolutionary(String endCondition, int limit, int interval, Runnable onFinish) {
+    public void runEvolutionary(String endCondition, double limit, int interval, Runnable onFinish) {
         if (!isPaused.getValue()) {
             evolutionaryMembers.reset();
         }

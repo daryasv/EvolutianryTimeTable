@@ -230,7 +230,7 @@ public class EttController {
             ShowError("Please choose end condition");
             return;
         }
-        Integer limit = Utils.tryParse(endConditionLimitTextField.textProperty().getValue());
+        Double limit = Utils.tryParseDouble(endConditionLimitTextField.textProperty().getValue());
         if(limit == null){
             ShowError("Please add end condition limit");
             return;

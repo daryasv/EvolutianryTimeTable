@@ -133,7 +133,7 @@ public class ProgramManager {
                 }
 
                 @Override
-                public int getLimit() {
+                public double getLimit() {
                     return generations;
                 }
             };

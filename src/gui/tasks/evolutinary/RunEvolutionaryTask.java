@@ -26,7 +26,7 @@ public class RunEvolutionaryTask extends Task<Boolean> {
     EndCondition endCondition;
     private int interval;
 
-    public RunEvolutionaryTask(EvolutionaryTaskMembers evolutionaryTaskMembers, String endConditionType,int limit,int interval) {
+    public RunEvolutionaryTask(EvolutionaryTaskMembers evolutionaryTaskMembers, String endConditionType,double limit,int interval) {
         this.evolutionaryTaskMembers = evolutionaryTaskMembers;
         EndCondition.EndConditionType endConditionTypeEnum = EndCondition.EndConditionType.valueOfLabel(endConditionType);
         this.interval = interval;
@@ -37,7 +37,7 @@ public class RunEvolutionaryTask extends Task<Boolean> {
             }
 
             @Override
-            public int getLimit() {
+            public double getLimit() {
                 return limit;
             }
         };

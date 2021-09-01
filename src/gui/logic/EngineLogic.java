@@ -1,12 +1,14 @@
 package gui.logic;
 
 import UI.ValidationException;
+import UI.models.Lesson;
 import UI.models.TimeTableDataSet;
 import UI.models.evolution.EvolutionConfig;
 import UI.models.timeTable.Grade;
 import UI.models.timeTable.Rule;
 import UI.models.timeTable.Subject;
 import UI.models.timeTable.Teacher;
+import engine.models.SolutionFitness;
 import gui.components.main.EttController;
 import gui.tasks.evolutinary.EvolutionaryTaskMembers;
 import gui.tasks.evolutinary.RunEvolutionaryTask;
@@ -45,6 +47,10 @@ public class EngineLogic {
         this.controller = controller;
         totalWords = -1;
         evolutionaryMembers = new EvolutionaryTaskMembers();
+    }
+
+    public SolutionFitness<Lesson> getGlobalBestSolution() {
+        return evolutionaryMembers.getGlobalBestSolution();
     }
 
     public EvolutionConfig getEvolutionEngineDataSet() {

@@ -1,8 +1,15 @@
 package gui.components.main;
 
 import UI.ValidationException;
+import UI.models.Lesson;
 import UI.models.evolution.EvolutionConfig;
+import UI.models.timeTable.Grade;
+import UI.models.timeTable.Teacher;
+import engine.models.Solution;
+import gui.common.EttResourcesConstants;
 import gui.common.Utils;
+import gui.components.table.TableController;
+import gui.logic.BusinessLogic;
 import gui.logic.EngineLogic;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -13,14 +20,23 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.scene.layout.VBox;
 
 import java.io.File;
 import java.util.Objects;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 
 public class EttController {
@@ -60,14 +76,25 @@ public class EttController {
     @FXML Label progressPercentLabel;
     @FXML Button pauseBtn;
 
+    //dar's addition
+    @FXML private CheckBox rawCheckBox;
+    @FXML private CheckBox teacherViewCheckBox;
+    @FXML private CheckBox classViewCheckBox;
+    @FXML private MenuButton idsMenu;
+    @FXML private FlowPane flowPaneTables;
+    @FXML private Button showSolutionBtn;
+    @FXML private VBox solutionViewVbox;
+
     private SimpleStringProperty timeTableSettings;
     private SimpleStringProperty selectedFileProperty;
     private SimpleBooleanProperty isEndConditionSelected;
     private SimpleBooleanProperty isFileLoaded;
+
     private  SimpleBooleanProperty isEvolutionRunning;
     private SimpleBooleanProperty isPaused;
     private SimpleBooleanProperty isCrossoverAspectOriented;
 
+    private SimpleBooleanProperty isViewTypeSelected;
 
     public static final ObservableList<String> endConditions = FXCollections.observableArrayList("Generations","Fitness","Time");
     public static final ObservableList<String> selectionMethods = FXCollections.observableArrayList("Truncation","Roulete Wheel");
@@ -76,6 +103,7 @@ public class EttController {
     public static final ObservableList<String> mutationComponents = FXCollections.observableArrayList("D","H", "T", "S", "G");
 
     private EngineLogic engineLogic;
+    private BusinessLogic businessLogic;
     private Stage primaryStage;
 
     public EttController() {
@@ -108,6 +136,7 @@ public class EttController {
         clearXmlBtn.disableProperty().bind(isFileLoaded.not());
         evolutionProgressPane.disableProperty().bind(isFileLoaded.not());
         evolutionConditionsPane.disableProperty().bind(isFileLoaded.not());
+
 
         filePathLabel.textProperty().bind(selectedFileProperty);
         endConditionBox.setItems(endConditions);
@@ -235,6 +264,8 @@ public class EttController {
         alert.showAndWait();
     }
 
+
+
     public void bindTaskToUIComponents(Task<Boolean> aTask, Runnable onFinish) {
         // task message
         //taskMessageLabel.textProperty().bind(aTask.messageProperty());
@@ -256,6 +287,60 @@ public class EttController {
         aTask.valueProperty().addListener((observable, oldValue, newValue) -> {
             onTaskFinished(Optional.ofNullable(onFinish));
         });
+    }
+
+    @FXML
+    void showBestSolutionBtn() {
+        //need to change to check if algorithm finished
+        solutionViewVbox.setVisible(true);
+    }
+
+    @FXML
+    void IDSelected(MenuItem chosenId, String tableType){
+        chosenId.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent t) {
+                int totalDays=businessLogic.getTimeTable().getTimeTableMembers().getDays();
+                int totalHours=businessLogic.getTimeTable().getTimeTableMembers().getHours();
+               createTable(tableType, chosenId.toString(),totalDays,totalHours);
+            }
+        });
+    }
+    @FXML
+    void teacherSolutionSelected() {
+        HashMap<Integer, Teacher> teachers = businessLogic.getTimeTable().getTimeTableMembers().getTeachers();
+        for (Integer teacherID : teachers.keySet()){
+            MenuItem menuItem = new MenuItem(teacherID.toString());
+            IDSelected(menuItem, "Teacher");
+            idsMenu.getItems().add(menuItem);
+        }
+    }
+
+    @FXML
+    void classSolutionSelected() {
+        HashMap<Integer, Grade> grades = businessLogic.getTimeTable().getTimeTableMembers().getGrades();
+        for (Integer teacherID : grades.keySet()){
+            MenuItem menuItem = new MenuItem(grades.toString());
+            IDSelected(menuItem, "Class");
+            idsMenu.getItems().add(menuItem);
+        }
+    }
+
+    private void createTable(String typeTitle, String typeIdTitle, int totalDays, int totalHours) {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(EttResourcesConstants.TABLE_FXML_RESOURCE);
+            Node table = loader.load();
+            TableController tableController = loader.getController();
+
+            Solution<Lesson> bestSolution= engineLogic.getGlobalBestSolution().getSolution();
+            tableController.showTable(typeTitle,Integer.parseInt(typeIdTitle), bestSolution, totalDays, totalHours);
+
+            //add to flow pane
+            flowPaneTables.getChildren().add(table);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void onTaskFinished(Optional<Runnable> onFinish) {

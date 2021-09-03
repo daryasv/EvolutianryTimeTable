@@ -206,17 +206,28 @@ public class EngineLogic {
         currentRunningTask.stopAlgo();
     }
 
-    public void setBestSolutionFitness(Consumer<Double> fitnessDelegate){
+    public void getBestSolutionFitness(Consumer<Double> fitnessDelegate){
         if(currentRunningTask != null){
-            double fitness = currentRunningTask.getEvolutionaryTaskMembers().getGlobalBestSolution().getFitness();
-            fitnessDelegate.accept(fitness);
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    double fitness = currentRunningTask.getEvolutionaryTaskMembers().getEvolutionary().getGlobalBestSolution().getFitness();
+                    fitnessDelegate.accept(fitness);
+                }
+            });
         }
     }
 
-    public void setCurrentGeneration(Consumer<Double> generationDelegate){
+    public void getCurrentGeneration(Consumer<Integer> generationDelegate){
         if(currentRunningTask != null){
-            double currentGeneration = currentRunningTask.getEvolutionaryTaskMembers().getEvolutionary().getCurrentGeneration();
-            generationDelegate.accept(currentGeneration);
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    int currentGeneration = currentRunningTask.getEvolutionaryTaskMembers().getEvolutionary().getCurrentGeneration();
+                    generationDelegate.accept(currentGeneration);
+                }
+            });
+
         }
     }
 }

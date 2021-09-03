@@ -13,6 +13,7 @@ import gui.logic.BusinessLogic;
 import gui.logic.EngineLogic;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
@@ -79,6 +80,8 @@ public class EttController {
     @FXML ProgressBar taskProgressBar;
     @FXML Label progressPercentLabel;
     @FXML Button pauseBtn;
+    @FXML Label currentGenerationLabel;
+    @FXML Label bestFitnessLabel;
 
     //dar's addition
     @FXML private MenuButton idsMenu;
@@ -86,15 +89,18 @@ public class EttController {
     @FXML private VBox solutionViewVbox;
     @FXML private ScrollPane tableScrollPane;
     @FXML private RadioButton rawRadioBtn;
-   @FXML private ToggleGroup viewSolutionOption;
+    @FXML private ToggleGroup viewSolutionOption;
     @FXML private RadioButton teacherViewRadioBtn;
     @FXML private RadioButton classViewRadioBtn;
+
 
 
     private SimpleStringProperty timeTableSettings;
     private SimpleStringProperty selectedFileProperty;
     private SimpleBooleanProperty isEndConditionSelected;
     private SimpleBooleanProperty isFileLoaded;
+    private SimpleIntegerProperty currentGenerationProperty;
+    private SimpleDoubleProperty bestFitnessProperty;
 
     private  SimpleBooleanProperty isEvolutionRunning;
     private SimpleBooleanProperty isPaused;
@@ -124,6 +130,8 @@ public class EttController {
         isPaused = new SimpleBooleanProperty(false);
         isCrossoverAspectOriented = new SimpleBooleanProperty(false);
         isTableViewSelected= new SimpleBooleanProperty(false);
+        currentGenerationProperty = new SimpleIntegerProperty(0);
+        bestFitnessProperty = new SimpleDoubleProperty(0);
     }
 
     public void setEngineLogic(EngineLogic engineLogic) {
@@ -145,7 +153,8 @@ public class EttController {
         evolutionProgressPane.disableProperty().bind(isFileLoaded.not());
         evolutionConditionsPane.disableProperty().bind(isFileLoaded.not());
         idsMenu.disableProperty().bind(isTableViewSelected.not());
-
+        currentGenerationLabel.textProperty().bind(currentGenerationProperty.asString());
+        bestFitnessLabel.textProperty().bind(bestFitnessProperty.asString("%.1f"));
 
         filePathLabel.textProperty().bind(selectedFileProperty);
         endConditionBox.setItems(endConditions);
@@ -370,5 +379,11 @@ public class EttController {
         this.progressPercentLabel.textProperty().unbind();
         this.taskProgressBar.progressProperty().unbind();
         onFinish.ifPresent(Runnable::run);
+    }
+
+    @FXML
+    public void showCurrentData(){
+        engineLogic.getBestSolutionFitness(bestFitnessProperty::set);
+        engineLogic.getCurrentGeneration(currentGenerationProperty::set);
     }
 }

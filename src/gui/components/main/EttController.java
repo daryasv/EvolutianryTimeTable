@@ -38,6 +38,10 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.ToggleGroup;
+
 
 public class EttController {
 
@@ -77,13 +81,15 @@ public class EttController {
     @FXML Button pauseBtn;
 
     //dar's addition
-    @FXML private CheckBox rawCheckBox;
-    @FXML private CheckBox teacherViewCheckBox;
-    @FXML private CheckBox classViewCheckBox;
     @FXML private MenuButton idsMenu;
-    @FXML private FlowPane flowPaneTables;
     @FXML private Button showSolutionBtn;
     @FXML private VBox solutionViewVbox;
+    @FXML private ScrollPane tableScrollPane;
+    @FXML private RadioButton rawRadioBtn;
+   @FXML private ToggleGroup viewSolutionOption;
+    @FXML private RadioButton teacherViewRadioBtn;
+    @FXML private RadioButton classViewRadioBtn;
+
 
     private SimpleStringProperty timeTableSettings;
     private SimpleStringProperty selectedFileProperty;
@@ -93,6 +99,7 @@ public class EttController {
     private  SimpleBooleanProperty isEvolutionRunning;
     private SimpleBooleanProperty isPaused;
     private SimpleBooleanProperty isCrossoverAspectOriented;
+    private SimpleBooleanProperty isTableViewSelected;
 
     private SimpleBooleanProperty isViewTypeSelected;
 
@@ -116,6 +123,7 @@ public class EttController {
         isEvolutionRunning = new SimpleBooleanProperty(false);
         isPaused = new SimpleBooleanProperty(false);
         isCrossoverAspectOriented = new SimpleBooleanProperty(false);
+        isTableViewSelected= new SimpleBooleanProperty(false);
     }
 
     public void setEngineLogic(EngineLogic engineLogic) {
@@ -136,6 +144,7 @@ public class EttController {
         clearXmlBtn.disableProperty().bind(isFileLoaded.not());
         evolutionProgressPane.disableProperty().bind(isFileLoaded.not());
         evolutionConditionsPane.disableProperty().bind(isFileLoaded.not());
+        idsMenu.disableProperty().bind(isTableViewSelected.not());
 
 
         filePathLabel.textProperty().bind(selectedFileProperty);
@@ -301,19 +310,20 @@ public class EttController {
         solutionViewVbox.setVisible(true);
     }
 
-    @FXML
     void IDSelected(MenuItem chosenId, String tableType){
         chosenId.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent t) {
-                int totalDays=businessLogic.getTimeTable().getTimeTableMembers().getDays();
-                int totalHours=businessLogic.getTimeTable().getTimeTableMembers().getHours();
-               createTable(tableType, chosenId.toString(),totalDays,totalHours);
+                int totalDays=engineLogic.getTimeTableDataSet().getTimeTableMembers().getDays();
+                int totalHours=engineLogic.getTimeTableDataSet().getTimeTableMembers().getHours();
+               createTable(tableType, chosenId.getText(),totalDays,totalHours);
             }
         });
     }
     @FXML
     void teacherSolutionSelected() {
-        HashMap<Integer, Teacher> teachers = businessLogic.getTimeTable().getTimeTableMembers().getTeachers();
+        isTableViewSelected.setValue(true);
+        HashMap<Integer, Teacher> teachers =engineLogic.getTimeTableDataSet().getTimeTableMembers().getTeachers();
+        idsMenu.getItems().clear();
         for (Integer teacherID : teachers.keySet()){
             MenuItem menuItem = new MenuItem(teacherID.toString());
             IDSelected(menuItem, "Teacher");
@@ -322,10 +332,17 @@ public class EttController {
     }
 
     @FXML
+    void rawSolutionSelected(ActionEvent event) {
+        isTableViewSelected.setValue(false);
+    }
+
+    @FXML
     void classSolutionSelected() {
-        HashMap<Integer, Grade> grades = businessLogic.getTimeTable().getTimeTableMembers().getGrades();
-        for (Integer teacherID : grades.keySet()){
-            MenuItem menuItem = new MenuItem(grades.toString());
+        isTableViewSelected.setValue(true);
+        HashMap<Integer, Grade> grades = engineLogic.getTimeTableDataSet().getTimeTableMembers().getGrades();
+        idsMenu.getItems().clear();
+        for (Integer classID : grades.keySet()){
+            MenuItem menuItem = new MenuItem(classID.toString());
             IDSelected(menuItem, "Class");
             idsMenu.getItems().add(menuItem);
         }
@@ -339,10 +356,9 @@ public class EttController {
             TableController tableController = loader.getController();
 
             Solution<Lesson> bestSolution= engineLogic.getGlobalBestSolution().getSolution();
+            //add to scroll pane
+            tableScrollPane.setContent(table);
             tableController.showTable(typeTitle,Integer.parseInt(typeIdTitle), bestSolution, totalDays, totalHours);
-
-            //add to flow pane
-            flowPaneTables.getChildren().add(table);
 
         } catch (IOException e) {
             e.printStackTrace();

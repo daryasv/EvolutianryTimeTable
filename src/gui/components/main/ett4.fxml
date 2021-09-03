@@ -3,17 +3,15 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Accordion?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.RadioButton?>
-<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TitledPane?>
-<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.effect.Glow?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
@@ -85,7 +83,7 @@
                                           </TitledPane>
                                           <TitledPane animated="false" prefHeight="324.0" prefWidth="1156.0" text="Evolution Settings">
                                              <content>
-                                                <AnchorPane>
+                                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="367.0" prefWidth="1154.0">
                                                    <children>
                                                       <Pane fx:id="evolutionSettingsPane" layoutX="3.0" layoutY="1.0" prefHeight="283.0" prefWidth="1153.0">
                                                          <children>
@@ -209,6 +207,32 @@
                               </AnchorPane>
                               <AnchorPane>
                                  <children>
+                                    <Pane fx:id="evolutionProgressPane" prefHeight="186.0" prefWidth="1156.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                       <children>
+                                          <Label alignment="CENTER" contentDisplay="CENTER" layoutX="282.0" layoutY="14.0" prefHeight="18.0" prefWidth="230.0" text="Evolution Prosress" textAlignment="CENTER">
+                                             <font>
+                                                <Font size="17.0" />
+                                             </font>
+                                          </Label>
+                                          <Label layoutX="73.0" layoutY="53.0" text="Progress Bar " />
+                                          <ProgressBar fx:id="taskProgressBar" layoutX="152.0" layoutY="49.0" prefHeight="25.0" prefWidth="509.0" progress="0.0" />
+                                          <Button fx:id="showSolutionBtn" layoutX="452.0" layoutY="83.0" mnemonicParsing="false" onAction="#showBestSolutionBtn" prefHeight="27.0" prefWidth="209.0" text="SHOW BEST SOLUTION" textFill="#2314cd" />
+                                          <Button fx:id="pauseBtn" layoutX="335.0" layoutY="127.0" mnemonicParsing="false" onAction="#pauseEvolution" prefHeight="32.0" prefWidth="124.0" text="Pause" textFill="#dd0e0e">
+                                             <font>
+                                                <Font size="18.0" />
+                                             </font>
+                                          </Button>
+                                          <Label alignment="CENTER" contentDisplay="CENTER" layoutX="287.0" layoutY="88.0" text="Current Best Fitness " textAlignment="CENTER" />
+                                          <Label alignment="CENTER" contentDisplay="CENTER" layoutX="415.0" layoutY="88.0" text="0" textAlignment="CENTER" textFill="#3509e8" />
+                                          <Label alignment="CENTER" contentDisplay="CENTER" layoutX="267.0" layoutY="88.0" text="0" textAlignment="CENTER" textFill="#3509e8" />
+                                          <Label alignment="CENTER" contentDisplay="CENTER" layoutX="152.0" layoutY="88.0" text="Curret Generation" textAlignment="CENTER" />
+                                          <Label fx:id="progressPercentLabel" layoutX="672.0" layoutY="53.0" prefHeight="17.0" prefWidth="96.0" text="0%" />
+                                       </children>
+                                    </Pane>
+                                 </children>
+                              </AnchorPane>
+                              <AnchorPane>
+                                 <children>
                                     <Pane fx:id="evolutionConditionsPane" blendMode="SRC_ATOP" prefHeight="77.0" prefWidth="1156.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                        <children>
                                           <Label layoutX="14.0" layoutY="7.0" prefHeight="19.0" prefWidth="107.0" text="End Condition">
@@ -240,32 +264,7 @@
                                                 <Glow />
                                              </effect>
                                           </Button>
-                                       </children>
-                                    </Pane>
-                                 </children>
-                              </AnchorPane>
-                              <AnchorPane>
-                                 <children>
-                                    <Pane fx:id="evolutionProgressPane" prefHeight="186.0" prefWidth="1156.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                       <children>
-                                          <Label alignment="CENTER" contentDisplay="CENTER" layoutX="282.0" layoutY="14.0" prefHeight="18.0" prefWidth="230.0" text="Evolution Prosress" textAlignment="CENTER">
-                                             <font>
-                                                <Font size="17.0" />
-                                             </font>
-                                          </Label>
-                                          <Label layoutX="73.0" layoutY="53.0" text="Progress Bar " />
-                                          <ProgressBar fx:id="taskProgressBar" layoutX="152.0" layoutY="49.0" prefHeight="25.0" prefWidth="509.0" progress="0.0" />
-                                          <Button fx:id="showSolutionBtn" layoutX="452.0" layoutY="83.0" mnemonicParsing="false" onAction="#showBestSolutionBtn" prefHeight="27.0" prefWidth="209.0" text="SHOW BEST SOLUTION" textFill="#2314cd" />
-                                          <Button fx:id="pauseBtn" layoutX="335.0" layoutY="127.0" mnemonicParsing="false" onAction="#pauseEvolution" prefHeight="32.0" prefWidth="124.0" text="Pause" textFill="#dd0e0e">
-                                             <font>
-                                                <Font size="18.0" />
-                                             </font>
-                                          </Button>
-                                          <Label alignment="CENTER" contentDisplay="CENTER" layoutX="287.0" layoutY="88.0" text="Current Best Fitness " textAlignment="CENTER" />
-                                          <Label alignment="CENTER" contentDisplay="CENTER" layoutX="415.0" layoutY="88.0" text="0" textAlignment="CENTER" textFill="#3509e8" />
-                                          <Label alignment="CENTER" contentDisplay="CENTER" layoutX="267.0" layoutY="88.0" text="0" textAlignment="CENTER" textFill="#3509e8" />
-                                          <Label alignment="CENTER" contentDisplay="CENTER" layoutX="152.0" layoutY="88.0" text="Curret Generation" textAlignment="CENTER" />
-                                          <Label fx:id="progressPercentLabel" layoutX="672.0" layoutY="53.0" prefHeight="17.0" prefWidth="96.0" text="0%" />
+            
                                        </children>
                                     </Pane>
                                  </children>
@@ -276,33 +275,26 @@
                                  </children>
                               </AnchorPane>
                               <AnchorPane>
-                                 <VBox fx:id="solutionViewVbox" nodeOrientation="LEFT_TO_RIGHT" prefHeight="448.0" prefWidth="843.0" spacing="5.0" visible="false" BorderPane.alignment="CENTER">
-                                    <children>
-                                       <Label alignment="TOP_CENTER" contentDisplay="CENTER" text="View Options:" textAlignment="CENTER">
-                                          <font>
-                                             <Font size="25.0" />
-                                          </font>
-                                       </Label>
-                                       <HBox alignment="TOP_CENTER" prefHeight="28.0" prefWidth="843.0" spacing="50.0">
-                                          <children>
-                                             <RadioButton fx:id="rawRadioBtn" mnemonicParsing="false" onAction="#rawSolutionSelected" selected="true" text="view as a raw">
-                                                <toggleGroup>
-                                                   <ToggleGroup fx:id="viewSolutionOption" />
-                                                </toggleGroup>
-                                             </RadioButton>
-                                             <RadioButton fx:id="teacherViewRadioBtn" mnemonicParsing="false" onAction="#teacherSolutionSelected" text="teacher view" toggleGroup="$viewSolutionOption" />
-                                             <RadioButton fx:id="classViewRadioBtn" mnemonicParsing="false" onAction="#classSolutionSelected" text="class view" toggleGroup="$viewSolutionOption" />
-                                             <MenuButton fx:id="idsMenu" alignment="CENTER" mnemonicParsing="false" popupSide="TOP" text="select ID" />
-                                          </children>
-                                       </HBox>
-                                       <ScrollPane fx:id="tableScrollPane" prefHeight="200.0" prefWidth="200.0" />
-                                    </children>
-                                 </VBox>
+                                 <children>
+                                    <VBox fx:id="solutionViewVbox" prefHeight="196.0" prefWidth="1156.0" spacing="5.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                       <children>
+                                          <Label opacity="0.84" text="Solution view:">
+                                             <font>
+                                                <Font size="23.0" />
+                                             </font>
+                                          </Label>
+                                          <CheckBox fx:id="rawCheckBox" mnemonicParsing="false" text="raw solution" />
+                                          <CheckBox fx:id="teacherViewCheckBox" mnemonicParsing="false" onAction="#teacherSolutionSelected" text="teacher solution" />
+                                          <CheckBox fx:id="classViewCheckBox" mnemonicParsing="false" onAction="#classSolutionSelected" text="class solution" />
+                                          <MenuButton fx:id="idsMenu" mnemonicParsing="false" text="select ID" />
+                                          <FlowPane fx:id="flowPaneTables" prefHeight="200.0" prefWidth="200.0" />
+                                       </children>
+                                    </VBox>
+                                 </children>
                               </AnchorPane>
                            </children>
                         </VBox>
                      </children>
-
                   </AnchorPane>
                </content>
             </ScrollPane>

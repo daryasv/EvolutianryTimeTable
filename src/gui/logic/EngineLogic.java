@@ -57,6 +57,8 @@ public class EngineLogic {
         return evolutionaryMembers.getEvolutionEngineDataSet();
     }
 
+    public TimeTableDataSet getTimeTableDataSet(){return evolutionaryMembers.getTimeTable();}
+
     public SimpleStringProperty fileNameProperty() {
         return this.fileName;
     }

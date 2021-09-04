@@ -85,7 +85,7 @@
                                              <content>
                                                 <AnchorPane>
                                                    <children>
-                                                      <Pane layoutX="3.0" layoutY="1.0" prefWidth="1153.0">
+                                                      <Pane fx:id="evolutoinPane" layoutX="3.0" layoutY="1.0" prefWidth="1153.0">
                                                          <children>
                                                             <Label layoutX="14.0" layoutY="17.0" prefHeight="19.0" prefWidth="121.0" text="Initial Population">
                                                                <font>
@@ -97,7 +97,7 @@
                                                                   <Font size="15.0" />
                                                                </font>
                                                             </Label>
-                                                            <ChoiceBox fx:id="selectionCBox" onAction="#onSelectionChanged" layoutX="130.0" layoutY="50.0" prefHeight="29.0" prefWidth="148.0" />
+                                                            <ChoiceBox fx:id="selectionCBox" layoutX="130.0" layoutY="50.0" onAction="#onSelectionChanged" prefHeight="29.0" prefWidth="148.0" />
                                                             <Label layoutX="14.0" layoutY="91.0" prefHeight="19.0" prefWidth="107.0" text="Elitism Size">
                                                                <font>
                                                                   <Font size="15.0" />
@@ -108,7 +108,7 @@
                                                                   <Font size="15.0" />
                                                                </font>
                                                             </Label>
-                                                            <ChoiceBox fx:id="crossoverCBox" onAction="#onCrossoverChanged" layoutX="130.0" layoutY="124.0" prefHeight="29.0" prefWidth="150.0" />
+                                                            <ChoiceBox fx:id="crossoverCBox" layoutX="130.0" layoutY="124.0" onAction="#onCrossoverChanged" prefHeight="29.0" prefWidth="150.0" />
                                                             <TextField fx:id="elitismSizeTextFiled" layoutX="130.0" layoutY="87.0" prefHeight="29.0" prefWidth="149.0" />
                                                             <Label layoutX="294.0" layoutY="128.0" prefHeight="19.0" prefWidth="88.0" text="Cutting Points" />
                                                             <TextField fx:id="cuttingPointsTextFiled" layoutX="382.0" layoutY="125.0" prefHeight="25.0" prefWidth="45.0" />
@@ -139,7 +139,7 @@
                                                                   <Font size="15.0" />
                                                                </font>
                                                             </Label>
-                                                            <TextField fx:id="selectionPrecentTF"  disable="true" layoutX="417.0" layoutY="50.0" prefHeight="29.0" prefWidth="149.0" />
+                                                            <TextField fx:id="selectionPrecentTF" disable="true" layoutX="417.0" layoutY="50.0" prefHeight="29.0" prefWidth="149.0" />
                                                          </children>
                                                       </Pane>
                                                    </children>

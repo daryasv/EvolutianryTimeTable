@@ -96,6 +96,7 @@ public class EttController {
     @FXML Label bestFitnessLabel;
     @FXML GridPane mutationsGridPane;
     @FXML TextField selectionPrecentTF;
+    @FXML Pane evolutoinPane;
 
     //dar's addition
     @FXML private MenuButton idsMenu;
@@ -104,11 +105,6 @@ public class EttController {
     @FXML private ScrollPane tableScrollPane;
     @FXML private ScrollPane RulesDetailsScrollPane;
     @FXML private RadioButton rawRadioBtn;
-    @FXML private ToggleGroup viewSolutionOption;
-    @FXML private RadioButton teacherViewRadioBtn;
-    @FXML private RadioButton classViewRadioBtn;
-
-
 
     private SimpleStringProperty timeTableSettings;
     private SimpleStringProperty selectedFileProperty;
@@ -174,7 +170,6 @@ public class EttController {
         filePathLabel.textProperty().bind(selectedFileProperty);
         endConditionBox.setItems(endConditions);
         endConditionLimitTextField.disableProperty().bind(isEndConditionSelected.not());
-        //todo: load initial selection fron xml + disable until pause btn pushed (for the next 5 lines)
         selectionCBox.setItems(selectionMethods);
         crossoverCBox.setItems(crossoverMethods);
         crossoverOrientationCBox.setItems(crossoverOrientations);
@@ -206,7 +201,7 @@ public class EttController {
         showSolutionBtn.disableProperty().bind(isEvolutionRunning.or(isPaused));
         RulesDetailsScrollPane.visibleProperty().bind(showResults);
         solutionViewVbox.visibleProperty().bind(showResults);
-
+        evolutoinPane.disableProperty().bind(isEvolutionRunning);
     }
 
     @FXML

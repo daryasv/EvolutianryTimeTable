@@ -25,7 +25,7 @@ public interface EvolutionDataSet<T> {
 
     void mutation(Solution <T> child,IMutation<T> mutation);
 
-    Solution<T> sort(Solution<T> solution, String operator);
+    Solution<T> sort(Solution<T> solution, String operator,String configuration);
 
     ISelectionData getSelectionData();
 

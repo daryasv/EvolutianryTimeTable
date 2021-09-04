@@ -194,8 +194,8 @@ public class Evolutionary<T> {
         child2.setList(new ArrayList<>());
 
         //sort parents
-        parent1 = dataSet.sort(parent1,operator);
-        parent2 = dataSet.sort(parent2,operator);
+        parent1 = dataSet.sort(parent1,operator,dataSet.getCrossoverData().getConfiguration());
+        parent2 = dataSet.sort(parent2,operator,dataSet.getCrossoverData().getConfiguration());
 
         //get random cutting points
         int listLength = parent1.getList().size();

@@ -9,8 +9,10 @@ import java.io.Serializable;
 
 public class Crossover implements ICrossoverData , Serializable
 {
+
     private LessonSortType name;
     private int cuttingPoints;
+    private CrossoverConfigurationType configuration;
 
     public Crossover(){
 
@@ -18,6 +20,7 @@ public class Crossover implements ICrossoverData , Serializable
     public Crossover(ETTCrossover ettCrossover) throws ValidationException {
         setName(ettCrossover);
         setCuttingPoints(ettCrossover);
+        setConfiguration(ettCrossover);
     }
 
     public LessonSortType getName() {
@@ -56,4 +59,27 @@ public class Crossover implements ICrossoverData , Serializable
         }
     }
 
+    public String getConfiguration() {
+        return configuration.toString();
+    }
+
+    public void setConfiguration(ETTCrossover ettCrossover) throws ValidationException {
+        String configuration = null;
+        if(ettCrossover.getConfiguration().contains("Orientation=")) {
+            configuration = ettCrossover.getConfiguration().replace("Orientation=","");
+        }
+        setConfiguration(configuration);
+
+    }
+
+    public void setConfiguration(String configuration) throws ValidationException {
+        if(name == LessonSortType.AspectOriented) {
+            CrossoverConfigurationType config = CrossoverConfigurationType.valueOfLabel(configuration);
+            if(config != null) {
+                this.configuration = config;
+            }else{
+                throw new ValidationException("Invalid crossover configuration");
+            }
+        }
+    }
 }

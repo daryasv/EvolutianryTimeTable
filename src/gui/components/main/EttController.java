@@ -124,7 +124,7 @@ public class EttController {
     public static final ObservableList<String> endConditions = FXCollections.observableArrayList("Generations","Fitness","Time");
     public static final ObservableList<String> selectionMethods = FXCollections.observableArrayList("Truncation","RouletteWheel");
     public static final ObservableList<String> crossoverMethods = FXCollections.observableArrayList("DayTimeOriented","AspectOriented");
-    public static final ObservableList<String> crossoverOrientations = FXCollections.observableArrayList("TeacherOriented","ClassOriented");
+    public static final ObservableList<String> crossoverOrientations = FXCollections.observableArrayList("TEACHER","CLASS");
     public static final ObservableList<String> mutationComponents = FXCollections.observableArrayList("D","H", "T", "S", "C");
 
     private EngineLogic engineLogic;
@@ -244,10 +244,10 @@ public class EttController {
         elitismSizeTextFiled.textProperty().set(String.valueOf(evolutionConfig.getSelection().getElitismCount()));
         //crossover
         cuttingPointsTextFiled.textProperty().set(String.valueOf(evolutionConfig.getCrossover().getCuttingPoints()));
-        if(crossoverOrientations.contains(evolutionConfig.getCrossover().getName().name)) {
+        if(evolutionConfig.getCrossover().getName().toString().equals("AspectOriented")) {
             crossoverCBox.setValue("AspectOriented");
             isCrossoverAspectOriented.set(true);
-            crossoverOrientationCBox.setValue(evolutionConfig.getCrossover().getName().name);
+            crossoverOrientationCBox.setValue(evolutionConfig.getCrossover().getConfiguration());
         }else{
             crossoverCBox.setValue(evolutionConfig.getCrossover().getName().name);
             isCrossoverAspectOriented.set(false);
@@ -340,10 +340,9 @@ public class EttController {
 
             Crossover crossover = new Crossover();
             String crossoverName = crossoverCBox.getValue();
+            crossover.setName(crossoverName);
             if(crossoverName.equals("AspectOriented")){
-                crossover.setName(crossoverOrientationCBox.getValue());
-            }else{
-                crossover.setName(crossoverCBox.getValue());
+                crossover.setConfiguration(crossoverOrientationCBox.getValue());
             }
             Integer cuttingPoints = Utils.tryParse(cuttingPointsTextFiled.getText());
             if(cuttingPoints == null){
@@ -490,7 +489,7 @@ public class EttController {
     private void showRawSolution() {
         VBox vbox = new VBox();
         tableScrollPane.setContent(vbox);
-        Solution<Lesson> timeTableSolution = engineLogic.getTimeTableDataSet().sort(engineLogic.getGlobalBestSolution().getSolution(), LessonSortType.DayTimeOriented.name);
+        Solution<Lesson> timeTableSolution = engineLogic.getTimeTableDataSet().sort(engineLogic.getGlobalBestSolution().getSolution(), LessonSortType.DayTimeOriented.toString(),null);
 
         for (int i = 0; i < timeTableSolution.getList().size(); i++) {
             int classId = timeTableSolution.getList().get(i).getClassId();

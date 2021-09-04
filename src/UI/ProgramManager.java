@@ -151,27 +151,27 @@ public class ProgramManager {
 
     public void printSolution() throws ValidationException {
         
-        if(checkIfFileLoaded()){
-            printBestSolutionDetails();
-            if(UserMenu.Commands.PRINT_RAW.getStatus()){
-                UserMenu.Commands.PRINT_RAW.setStatus(false);
-                Solution<Lesson> timeTableSolution = timeTable.sort(globalBestSolution.getSolution(),LessonSortType.DayTimeOriented.name);
-                printRaw(timeTableSolution);
-            }
-            else if(UserMenu.Commands.PRINT_PER_CLASS.getStatus()){
-                UserMenu.Commands.PRINT_PER_CLASS.setStatus(false);
-                Solution<Lesson> timeTableSolution = timeTable.sort(globalBestSolution.getSolution(),LessonSortType.CLASS_ORIENTED.name);
-                printPerClass(timeTableSolution);
-            }
-            else if (UserMenu.Commands.PRINT_PER_TEACHER.getStatus()){
-                UserMenu.Commands.PRINT_PER_TEACHER.setStatus(false);
-                Solution<Lesson> timeTableSolution = timeTable.sort(globalBestSolution.getSolution(),LessonSortType.TEACHER_ORIENTED.name);
-                printPerTeacher(timeTableSolution);
-            }
-            else{
-                System.out.println("unknown printing type");
-            }
-        }
+//        if(checkIfFileLoaded()){
+//            printBestSolutionDetails();
+//            if(UserMenu.Commands.PRINT_RAW.getStatus()){
+//                UserMenu.Commands.PRINT_RAW.setStatus(false);
+//                Solution<Lesson> timeTableSolution = timeTable.sort(globalBestSolution.getSolution(),LessonSortType.DayTimeOriented.name);
+//                printRaw(timeTableSolution);
+//            }
+//            else if(UserMenu.Commands.PRINT_PER_CLASS.getStatus()){
+//                UserMenu.Commands.PRINT_PER_CLASS.setStatus(false);
+//                Solution<Lesson> timeTableSolution = timeTable.sort(globalBestSolution.getSolution(),LessonSortType.CLASS_ORIENTED.name);
+//                printPerClass(timeTableSolution);
+//            }
+//            else if (UserMenu.Commands.PRINT_PER_TEACHER.getStatus()){
+//                UserMenu.Commands.PRINT_PER_TEACHER.setStatus(false);
+//                Solution<Lesson> timeTableSolution = timeTable.sort(globalBestSolution.getSolution(),LessonSortType.TEACHER_ORIENTED.name);
+//                printPerTeacher(timeTableSolution);
+//            }
+//            else{
+//                System.out.println("unknown printing type");
+//            }
+//        }
 
     }
 

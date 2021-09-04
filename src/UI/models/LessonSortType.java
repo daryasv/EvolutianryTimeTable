@@ -1,7 +1,7 @@
 package UI.models;
 
 public enum LessonSortType {
-    DayTimeOriented("DayTimeOriented"),CLASS_ORIENTED("ClassOriented"), TEACHER_ORIENTED("TeacherOriented"),AspectOriented("AspectOriented");
+    DayTimeOriented("DayTimeOriented"),AspectOriented("AspectOriented");
 
     public String name;
     LessonSortType(String name) {

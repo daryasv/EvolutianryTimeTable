@@ -2,14 +2,17 @@ package UI.models;
 
 import UI.models.Lesson;
 import UI.models.LessonSortType;
+import UI.models.evolution.CrossoverConfigurationType;
 
 import java.util.Comparator;
 
 public class LessonComparator implements Comparator<Lesson> {
 
     LessonSortType sortType;
-    public LessonComparator(LessonSortType sortType) {
+    CrossoverConfigurationType configurationType;
+    public LessonComparator(LessonSortType sortType,CrossoverConfigurationType configurationType) {
         this.sortType = sortType;
+        this.configurationType = configurationType;
     }
 
     @Override
@@ -29,14 +32,13 @@ public class LessonComparator implements Comparator<Lesson> {
                 }
                 break;
 
-            case CLASS_ORIENTED:
-                compare = lesson1.getClassId() - lesson2.getClassId();
+            case AspectOriented:
+                if (configurationType == CrossoverConfigurationType.CLASS) {
+                    compare = lesson1.getClassId() - lesson2.getClassId();
+                } else if (configurationType == CrossoverConfigurationType.TEACHER) {
+                    compare = lesson1.getTeacherId() - lesson2.getTeacherId();
+                }
                 break;
-
-            case TEACHER_ORIENTED:
-                compare = lesson1.getTeacherId() - lesson2.getTeacherId();
-                break;
-
             default:
                 break;
         }

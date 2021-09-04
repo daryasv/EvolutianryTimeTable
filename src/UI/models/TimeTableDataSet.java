@@ -317,11 +317,11 @@ public class TimeTableDataSet implements EvolutionDataSet<Lesson>, Serializable 
         return 0;
     }
 
-    public Solution<Lesson> sort(Solution<Lesson> solution, String operator) {
+    public Solution<Lesson> sort(Solution<Lesson> solution, String operator,String configuration) {
         LessonSortType sortType = LessonSortType.valueOfLabel(operator);
         Solution<Lesson> sorted = new Solution<Lesson>();
         sorted.setList(new ArrayList<>(solution.getList())); //duplicate the solution
-        sorted.getList().sort(new LessonComparator(sortType));
+        sorted.getList().sort(new LessonComparator(sortType,CrossoverConfigurationType.valueOf(configuration)));
 
         return sorted;
     }

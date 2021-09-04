@@ -3,11 +3,15 @@ package gui.components.main;
 import UI.ValidationException;
 import UI.models.Lesson;
 import UI.models.LessonSortType;
+import UI.models.evolution.Crossover;
 import UI.models.evolution.EvolutionConfig;
+import UI.models.evolution.Mutation;
+import UI.models.evolution.Selection;
 import UI.models.timeTable.Grade;
 import UI.models.timeTable.Teacher;
 import UI.models.timeTable.TimeTableMembers;
 import engine.models.IRule;
+import engine.models.SelectionType;
 import engine.models.Solution;
 import gui.common.EttResourcesConstants;
 import gui.common.Utils;
@@ -28,9 +32,14 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.RowConstraints;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.scene.layout.VBox;
@@ -85,6 +94,8 @@ public class EttController {
     @FXML Button stopBtn;
     @FXML Label currentGenerationLabel;
     @FXML Label bestFitnessLabel;
+    @FXML GridPane mutationsGridPane;
+    @FXML TextField selectionPrecentTF;
 
     //dar's addition
     @FXML private MenuButton idsMenu;
@@ -116,12 +127,11 @@ public class EttController {
 
     public static final ObservableList<String> endConditions = FXCollections.observableArrayList("Generations","Fitness","Time");
     public static final ObservableList<String> selectionMethods = FXCollections.observableArrayList("Truncation","RouletteWheel");
-    public static final ObservableList<String> crossoverMethods = FXCollections.observableArrayList("DayTimeOriented","AspectOreiented");
-    public static final ObservableList<String> crossoverOrientations = FXCollections.observableArrayList("Teacher","Grade");
-    public static final ObservableList<String> mutationComponents = FXCollections.observableArrayList("D","H", "T", "S", "G");
+    public static final ObservableList<String> crossoverMethods = FXCollections.observableArrayList("DayTimeOriented","AspectOriented");
+    public static final ObservableList<String> crossoverOrientations = FXCollections.observableArrayList("TeacherOriented","ClassOriented");
+    public static final ObservableList<String> mutationComponents = FXCollections.observableArrayList("D","H", "T", "S", "C");
 
     private EngineLogic engineLogic;
-    private BusinessLogic businessLogic;
     private Stage primaryStage;
 
     public EttController() {
@@ -168,9 +178,6 @@ public class EttController {
         selectionCBox.setItems(selectionMethods);
         crossoverCBox.setItems(crossoverMethods);
         crossoverOrientationCBox.setItems(crossoverOrientations);
-        //todo: create mutations only if needed (can be q or 2 or 0)
-        mutation1ComponentCBox.setItems(mutationComponents);
-        mutation2ComponentCBox.setItems(mutationComponents);
 
         timeTableSettingsTextArea.textProperty().bind(timeTableSettings);
         generationsJumpTextField.textProperty().addListener(new ChangeListener<String>() {
@@ -231,29 +238,59 @@ public class EttController {
     private void setEvolutionConfig(EvolutionConfig evolutionConfig)
     {
         initPopulationTextField.textProperty().set(String.valueOf(evolutionConfig.getInitialPopulation()));
+        //selection
         selectionCBox.setValue(evolutionConfig.getSelection().getType().name);
-        elitismSizeTextFiled.textProperty().set(String.valueOf(evolutionConfig.getSelection().getElitismCount()));
-        crossoverCBox.setValue(evolutionConfig.getCrossover().getName().name);
-        cuttingPointsTextFiled.textProperty().set(String.valueOf(evolutionConfig.getCrossover().getCuttingPoints()));
-        if(Objects.equals(crossoverCBox.getValue(), "AspectOreiented"))
-        {
-            isCrossoverAspectOriented.set(true);
-            crossoverOrientationCBox.setValue(evolutionConfig.getCrossover().getSortOperator());
+        if(evolutionConfig.getSelection().getType() == SelectionType.Truncation){
+            selectionPrecentTF.setText(String.valueOf(evolutionConfig.getSelection().getValue()));
+            selectionPrecentTF.setDisable(false);
+        }else{
+            selectionPrecentTF.setDisable(true);
         }
-        else
-        {
+        elitismSizeTextFiled.textProperty().set(String.valueOf(evolutionConfig.getSelection().getElitismCount()));
+        //crossover
+        cuttingPointsTextFiled.textProperty().set(String.valueOf(evolutionConfig.getCrossover().getCuttingPoints()));
+        if(crossoverOrientations.contains(evolutionConfig.getCrossover().getName().name)) {
+            crossoverCBox.setValue("AspectOriented");
+            isCrossoverAspectOriented.set(true);
+            crossoverOrientationCBox.setValue(evolutionConfig.getCrossover().getName().name);
+        }else{
+            crossoverCBox.setValue(evolutionConfig.getCrossover().getName().name);
             isCrossoverAspectOriented.set(false);
             crossoverOrientationCBox.disableProperty().bind(isCrossoverAspectOriented.not());
+        }
+
+        for (Mutation mutation : evolutionConfig.getMutations()) {
+            addNewMutation(mutation);
+        }
+    }
+
+    private void addNewMutation(Mutation mutation){
+        RowConstraints rowConstraints = new RowConstraints();
+        mutationsGridPane.getRowConstraints().add(rowConstraints);
+        int rows = mutationsGridPane.getRowConstraints().size();
+        Label typeLabel = new Label("Type: " + mutation.getName());
+        Label probabilityLabel = new Label("probability");
+        probabilityLabel.setContentDisplay(ContentDisplay.CENTER);
+        TextField probabilityTF = new TextField();
+        probabilityTF.textProperty().set(String.valueOf(mutation.getProbability()));
+        Label tupplesLabel = new Label("Max Tupples");
+        tupplesLabel.setContentDisplay(ContentDisplay.CENTER);
+        tupplesLabel.setPadding(new Insets(0,5,0,5));
+        TextField tupplesTF = new TextField(String.valueOf(mutation.getMaxTupples()));
+        if(mutation.getName().equals("Flipping")) {
+            Label componentLabel = new Label("Component");
+            componentLabel.setPadding(new Insets(0,5,0,5));
+            ChoiceBox<String> choiceBox = new ChoiceBox<>();
+            choiceBox.setItems(mutationComponents);
+            choiceBox.setValue(String.valueOf(mutation.getComponent()));
+            mutationsGridPane.addRow(rows,typeLabel,probabilityLabel,probabilityTF,tupplesLabel,tupplesTF,componentLabel,choiceBox);
+        }else{
+            mutationsGridPane.addRow(rows,typeLabel,probabilityLabel,probabilityTF,tupplesLabel,tupplesTF);
         }
     }
 
     @FXML
     public void clearButtonAction(){
-
-    }
-
-    @FXML
-    public void showXmlSettingsButtonAction(){
 
     }
 
@@ -286,6 +323,55 @@ public class EttController {
         Integer interval = Utils.tryParse(generationsJumpTextField.textProperty().getValue());
         if(interval == null){
             showError("Invalid interval time");
+            return;
+        }
+
+        try {
+            String selectionType = selectionCBox.getValue();
+            Integer elitism = Utils.tryParse(elitismSizeTextFiled.getText());
+            Integer selectionPercent;
+            if(selectionPrecentTF.isDisable()){
+                selectionPercent = 0;
+            }else{
+                selectionPercent = Utils.tryParse(selectionPrecentTF.getText());
+            }
+            if(selectionPercent == null){
+                throw new ValidationException("Invalid selection percent");
+            }
+            if(elitism == null){
+                throw new ValidationException("Invalid elitism value");
+            }
+            Selection selection = new Selection(selectionType,selectionPercent,elitism);
+
+            Crossover crossover = new Crossover();
+            String crossoverName = crossoverCBox.getValue();
+            if(crossoverName.equals("AspectOriented")){
+                crossover.setName(crossoverOrientationCBox.getValue());
+            }else{
+                crossover.setName(crossoverCBox.getValue());
+            }
+            Integer cuttingPoints = Utils.tryParse(cuttingPointsTextFiled.getText());
+            if(cuttingPoints == null){
+                throw new ValidationException("Invalid cutting points");
+            }
+            crossover.setCuttingPoints(cuttingPoints);
+
+            List<Mutation> mutations = new ArrayList<>();
+            for(int i=0;i < mutationsGridPane.getRowConstraints().size()-1;i++){
+                String type = ((Label) mutationsGridPane.getChildren().get(i*7)).getText().replace("Type: ","");
+                String probability = ((TextField) mutationsGridPane.getChildren().get(i*7 + 2)).getText();
+                String maxTupples = ((TextField) mutationsGridPane.getChildren().get(i*7 + 4)).getText();
+                String component = "";
+                if(type.equals("Flipping")){
+                    component = (String) ((ChoiceBox) mutationsGridPane.getChildren().get(i*7+6)).getValue();
+                }
+                Mutation mutation = new Mutation(type,probability,maxTupples,component);
+                mutations.add(mutation);
+            }
+
+            engineLogic.setEvolutinaryConfig(initPopulationTextField.getText(),selection,crossover,mutations);
+        } catch (ValidationException e) {
+            showError(e.getMessage());
             return;
         }
 
@@ -479,4 +565,13 @@ public class EttController {
         engineLogic.getCurrentGeneration(currentGenerationProperty::set);
     }
 
+    @FXML
+    public void onSelectionChanged(ActionEvent actionEvent) {
+        selectionPrecentTF.setDisable(!selectionCBox.getValue().equals("Truncation"));
+    }
+
+    @FXML
+    public void onCrossoverChanged(ActionEvent actionEvent) {
+        isCrossoverAspectOriented.set(crossoverCBox.getValue().equals("AspectOriented"));
+    }
 }

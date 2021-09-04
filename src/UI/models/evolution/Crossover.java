@@ -12,6 +12,9 @@ public class Crossover implements ICrossoverData , Serializable
     private LessonSortType name;
     private int cuttingPoints;
 
+    public Crossover(){
+
+    }
     public Crossover(ETTCrossover ettCrossover) throws ValidationException {
         setName(ettCrossover);
         setCuttingPoints(ettCrossover);
@@ -22,9 +25,13 @@ public class Crossover implements ICrossoverData , Serializable
     }
 
     public void setName(ETTCrossover ettCrossover) throws ValidationException {
-        this.name = LessonSortType.valueOfLabel(ettCrossover.getName());
+        setName(ettCrossover.getName());
+    }
+
+    public void setName(String name) throws ValidationException{
+        this.name = LessonSortType.valueOfLabel(name);
         if(this.name == null){
-            throw new ValidationException("Invalid crossover name: " + ettCrossover.getName());
+            throw new ValidationException("Invalid crossover name: " + name);
         }
     }
 
@@ -37,10 +44,16 @@ public class Crossover implements ICrossoverData , Serializable
         return name.toString();
     }
 
+
     public void setCuttingPoints(ETTCrossover ettCrossover) throws ValidationException {
-        this.cuttingPoints = ettCrossover.getCuttingPoints();
+        setCuttingPoints(ettCrossover.getCuttingPoints());
+    }
+
+    public void setCuttingPoints(int cuttingPoints) throws ValidationException {
+        this.cuttingPoints = cuttingPoints;
         if(this.cuttingPoints < 1){
             throw new ValidationException("Crossover cutting points can't be lower then 1");
         }
     }
+
 }

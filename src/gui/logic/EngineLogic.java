@@ -1,9 +1,13 @@
 package gui.logic;
 
+import UI.Utils;
 import UI.ValidationException;
 import UI.models.Lesson;
 import UI.models.TimeTableDataSet;
+import UI.models.evolution.Crossover;
 import UI.models.evolution.EvolutionConfig;
+import UI.models.evolution.Mutation;
+import UI.models.evolution.Selection;
 import UI.models.timeTable.Grade;
 import UI.models.timeTable.Rule;
 import UI.models.timeTable.Subject;
@@ -35,8 +39,6 @@ public class EngineLogic {
     private SimpleBooleanProperty isPaused;
     private EttController controller;
 
-    //todo: remove
-    private long totalWords;
     private RunEvolutionaryTask currentRunningTask;
 
 
@@ -45,7 +47,6 @@ public class EngineLogic {
         this.fileName = new SimpleStringProperty();
         this.isPaused = new SimpleBooleanProperty(false);
         this.controller = controller;
-        totalWords = -1;
         evolutionaryMembers = new EvolutionaryTaskMembers();
     }
 
@@ -229,5 +230,16 @@ public class EngineLogic {
             });
 
         }
+    }
+
+    public void setEvolutinaryConfig(String initPopulation, Selection selection, Crossover crossover, List<Mutation> mutations) throws ValidationException {
+        Integer population = Utils.tryParse(initPopulation);
+        if(population == null){
+            throw new ValidationException("Invalid initial population");
+        }
+        evolutionaryMembers.getTimeTable().getEvolutionConfig().setInitialPopulation(population);
+        evolutionaryMembers.getTimeTable().getEvolutionConfig().setSelection(selection);
+        evolutionaryMembers.getTimeTable().getEvolutionConfig().setCrossover(crossover);
+        evolutionaryMembers.getTimeTable().getEvolutionConfig().setMutationsList(mutations);
     }
 }

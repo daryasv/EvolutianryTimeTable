@@ -9,6 +9,7 @@ import engine.models.Solution;
 import schema.models.ETTMutation;
 
 import java.io.Serializable;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -50,6 +51,13 @@ public class Mutation implements IMutation<Lesson> , Serializable
         }
     }
 
+    public Mutation(String name, String probability, String maxTupples,String component) throws ValidationException {
+        setName(name);
+        setProbability(probability);
+        setMaxTupples(maxTupples);
+        setComponent(component);
+    }
+
     public Mutation(ETTMutation ettMutation) throws ValidationException {
         setName(ettMutation);
         setProbability(ettMutation);
@@ -61,12 +69,15 @@ public class Mutation implements IMutation<Lesson> , Serializable
         return name;
     }
 
-    //TODO : validation
     public void setName(ETTMutation ettMutation) throws ValidationException {
-        if(ettMutation.getName()==null || ettMutation.getName().isEmpty()){
+       setName(ettMutation.getName());
+    }
+
+    public void setName(String name) throws ValidationException {
+        if(name==null || name.isEmpty()){
             throw new ValidationException("Mutation name can't be empty");
         }
-        this.name = ettMutation.getName();
+        this.name = name;
     }
 
     @Override
@@ -74,11 +85,21 @@ public class Mutation implements IMutation<Lesson> , Serializable
         return probability;
     }
 
+    public void setProbability(String probability) throws ValidationException{
+        try{
+            Double.parseDouble(probability);
+        }catch (NumberFormatException exception){
+            throw new ValidationException("Invalid Probability");
+        }
+    }
 
-    //TODO : validation
     public void setProbability(ETTMutation ettMutation) throws ValidationException {
-        if(ettMutation.getProbability() > 0) {
-            this.probability = ettMutation.getProbability();
+        setProbability(ettMutation.getProbability());
+    }
+
+    public void setProbability(double probability) throws ValidationException{
+        if(probability > 0) {
+            this.probability = probability;
         }else{
             throw new ValidationException("Probability cant be under 0");
         }
@@ -107,6 +128,18 @@ public class Mutation implements IMutation<Lesson> , Serializable
         this.maxTupples = tupple;
     }
 
+    public void setMaxTupples(String maxTupples) throws ValidationException {
+        try {
+            int tupples = Integer.parseInt(maxTupples);
+            if(tupples <= 0){
+                throw new ValidationException("invalid max tupples");
+            }
+            this.maxTupples = tupples;
+        }catch (NumberFormatException e){
+            throw new ValidationException("Invalid max tupples");
+        }
+    }
+
     public char getComponent() {
         return component;
     }
@@ -118,6 +151,22 @@ public class Mutation implements IMutation<Lesson> , Serializable
             if(!ALLOWED_COMPONENTS.contains(component)) {
                 throw new ValidationException("Invalid mutation component - " + this.component);
             }
+        }
+    }
+
+    public void setComponent(String component) throws ValidationException {
+        if(this.name.equals("Flipping")){
+            return;
+        }
+        if(component.length() > 0){
+            char newComponent = component.charAt(0);
+            if(!ALLOWED_COMPONENTS.contains(component)) {
+                throw new ValidationException("Invalid mutation component - " + newComponent);
+            }else{
+                this.component = newComponent;
+            }
+        }else{
+            throw  new ValidationException("Invalid mutation component - " + this.component);
         }
     }
 

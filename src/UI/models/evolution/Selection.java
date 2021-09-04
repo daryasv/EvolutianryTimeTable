@@ -13,13 +13,19 @@ public class Selection implements ISelectionData , Serializable
     private int value;
     private int elitism;
 
+    public Selection(String type,int value,int elitism) throws ValidationException {
+        setType(type);
+        setTopPercent(value);
+        setElitism(elitism);
+    }
+
     public Selection(ETTSelection ettSelection) throws ValidationException {
         setType(ettSelection.getType());
         setValue(ettSelection.getConfiguration());
         setElitism(ettSelection.getETTElitism());
     }
 
-    private void setElitism(Integer ettElitism) {
+    public void setElitism(Integer ettElitism) {
         //TODO: check elitism not more then poplulation
         if(ettElitism == null){
             elitism = 0;
@@ -65,9 +71,10 @@ public class Selection implements ISelectionData , Serializable
     }
 
     public void setTopPercent(int value) throws ValidationException {
-        if(value < 1){
+        if(value < 1 && type == SelectionType.Truncation){
             throw new ValidationException("Invalid selection config");
         }
         this.value = value;
     }
+
 }

@@ -25,18 +25,28 @@ public class EvolutionConfig implements Serializable
         return initialPopulation;
     }
 
-    //TODO : validation
-    public void setInitialPopulation(ETTInitialPopulation ettInitialPopulation) {
-        this.initialPopulation = ettInitialPopulation.getSize();
+
+    public void setInitialPopulation(ETTInitialPopulation ettInitialPopulation) throws ValidationException {
+        setInitialPopulation(ettInitialPopulation.getSize());
+    }
+
+    public void setInitialPopulation(int initialPopulation) throws ValidationException {
+        if(initialPopulation <= 0) {
+            throw new ValidationException("Invalid initial population");
+        }
+        this.initialPopulation = initialPopulation;
     }
 
     public Selection getSelection() {
         return selection;
     }
 
-    //TODO : validation
     public void setSelection(ETTSelection ettSelection) throws ValidationException {
         this.selection = new Selection(ettSelection);
+    }
+
+    public void setSelection(Selection selection){
+        this.selection = selection;
     }
 
     public Crossover getCrossover() {
@@ -45,6 +55,10 @@ public class EvolutionConfig implements Serializable
 
     public void setCrossover(ETTCrossover ettCrossover) throws ValidationException {
         this.crossover = new Crossover(ettCrossover);
+    }
+
+    public void setCrossover(Crossover crossover){
+        this.crossover = crossover;
     }
 
     public List<Mutation> getMutations() {
@@ -56,5 +70,9 @@ public class EvolutionConfig implements Serializable
         for (ETTMutation ettMutation: ettMutations) {
             mutations.add(new Mutation(ettMutation));
         }
+    }
+
+    public void setMutationsList(List<Mutation> mutations){
+        this.mutations = mutations;
     }
 }

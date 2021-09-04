@@ -235,7 +235,6 @@ public class EngineController {
         }
     }
 
-    //todo complete
     private void setEvolutionConfig(EvolutionConfig evolutionConfig)
     {
         initPopulationTextField.textProperty().set(String.valueOf(evolutionConfig.getInitialPopulation()));
@@ -311,23 +310,37 @@ public class EngineController {
     }
 
     private void runEvolution(){
-        String endCondition = endConditionBox.getValue();
-        if(endConditionBox.getValue() == null){
-            showError("Please choose end condition");
-            return;
-        }
-        Double limit = Utils.tryParseDouble(endConditionLimitTextField.textProperty().getValue());
-        if(limit == null){
-            showError("Please add end condition limit");
-            return;
-        }
-        Integer interval = Utils.tryParse(generationsJumpTextField.textProperty().getValue());
-        if(interval == null){
-            showError("Invalid interval time");
-            return;
-        }
-
         try {
+            String endCondition = endConditionBox.getValue();
+            if(endConditionBox.getValue() == null){
+                throw new ValidationException("Please choose end condition");
+            }
+            Double limit = Utils.tryParseDouble(endConditionLimitTextField.textProperty().getValue());
+            if(limit == null){
+                throw new ValidationException("Please add valid end condition limit");
+            }
+            Integer interval = Utils.tryParse(generationsJumpTextField.textProperty().getValue());
+            if(interval == null){
+                throw new ValidationException("Invalid interval time");
+            }
+            if(endCondition.equals("Generations")){
+                if(limit <= 0){
+                    throw new ValidationException("Invalid generations limit");
+                }
+                if(interval > limit){
+                    throw new ValidationException("Interval more then limit generations");
+                }
+            }else if(endCondition.equals("Fitness")){
+                if(limit <0 || limit > 100){
+                    throw new ValidationException("Interval fitness limitation");
+                }
+            }else if(endCondition.equals("Time")){
+                if(limit <0){
+                    throw new ValidationException("Interval time limitation");
+                }
+            }
+
+
             String selectionType = selectionCBox.getValue();
             Integer elitism = Utils.tryParse(elitismSizeTextFiled.getText());
             Integer selectionPercent;
@@ -370,17 +383,15 @@ public class EngineController {
             }
 
             engineLogic.setEvolutinaryConfig(initPopulationTextField.getText(),selection,crossover,mutations);
+            engineLogic.runEvolutionary(endCondition,limit,interval, () -> {
+                isEvolutionRunning.set(false);
+            });
+
+            isEvolutionRunning.set(true);
+            isPaused.set(false);
         } catch (ValidationException e) {
             showError(e.getMessage());
-            return;
         }
-
-        engineLogic.runEvolutionary(endCondition,limit,interval, () -> {
-            isEvolutionRunning.set(false);
-        });
-
-        isEvolutionRunning.set(true);
-        isPaused.set(false);
     }
 
     private void pauseEvolution()
@@ -423,15 +434,6 @@ public class EngineController {
                 progressPercentLabel.textProperty().set("");
             }
         });
-//        progressPercentLabel.textProperty().bind(
-//                Bindings.concat(
-//                        Bindings.format(
-//                                "%.0f",
-//                                Bindings.multiply(
-//                                        aTask.progressProperty(),
-//                                        100)),
-//                        " %"));
-
         // task cleanup upon finish
         aTask.valueProperty().addListener((observable, oldValue, newValue) -> {
             onTaskFinished(Optional.ofNullable(onFinish));

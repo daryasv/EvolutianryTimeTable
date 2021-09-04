@@ -67,9 +67,9 @@
                                        <panes>
                                           <TitledPane fx:id="timeTableSettingsTPane" animated="false" prefHeight="210.0" prefWidth="721.0" text="Time Table Settings">
                                              <content>
-                                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="226.0" prefWidth="1154.0">
+                                                <AnchorPane>
                                                    <children>
-                                                      <TextArea fx:id="timeTableSettingsTextArea" layoutX="-1.0" prefHeight="255.0" prefWidth="1155.0">
+                                                      <TextArea fx:id="timeTableSettingsTextArea" layoutX="28.4" layoutY="28.4" minWidth="200.0" prefHeight="200.0" prefWidth="1156.0" AnchorPane.leftAnchor="28.4" AnchorPane.rightAnchor="15.200000000000045">
                                                          <font>
                                                             <Font name="Verdana" size="13.0" />
                                                          </font>

@@ -43,9 +43,9 @@ public class Evolutionary<T> {
         final List<IRule> rules = dataSet.getRules();
         final int hardRulesWeight = dataSet.getHardRulesWeight();
         final int generationInterval = dataSet.getGenerationInterval();
-        long startTime = System.currentTimeMillis() - ((long) lastTime * TIME_INTERVAL);
+        long startTime = System.currentTimeMillis() - lastTime;
         long endTime   = System.currentTimeMillis();
-        long totalTime = (endTime - startTime) / TIME_INTERVAL ;
+        long totalTime = (endTime - startTime);
 
         isStopped = false;
 
@@ -126,7 +126,7 @@ public class Evolutionary<T> {
                         ", Best Fitness On Generation: " + (f.format(bestGenSolution.getFitness())));
             }
             endTime = System.currentTimeMillis();
-            totalTime = (endTime - startTime) / TIME_INTERVAL;
+            totalTime = endTime - startTime;
             if (engineProgress != null) {
                 switch (endCondition.getEndCondition()) {
                     case Generations:
@@ -136,13 +136,13 @@ public class Evolutionary<T> {
                         engineProgress.update(-1,0);
                         break;
                     case Time:
-                        engineProgress.update((int) totalTime, (int)endCondition.getLimit());
+                        engineProgress.update((int) (totalTime), ((int)endCondition.getLimit() * TIME_INTERVAL));
                         break;
                 }
             }
         }
         if(isStopped){
-            lastTime = (int) ((endTime - startTime) / TIME_INTERVAL);
+            lastTime = (int) (endTime - startTime);
         }
     }
 
@@ -299,7 +299,7 @@ public class Evolutionary<T> {
             case Fitness:
                 return fitness >= limit;
             case Time:
-                return totalTime >= limit;
+                return totalTime >= limit * TIME_INTERVAL;
         }
         return true;
     }

@@ -1,17 +1,12 @@
 package gui.tasks.evolutinary;
 
-import UI.models.Lesson;
-import UI.models.TimeTableDataSet;
-import UI.models.evolution.EvolutionConfig;
-import UI.models.timeTable.Grade;
-import UI.models.timeTable.Rule;
-import UI.models.timeTable.Subject;
-import UI.models.timeTable.Teacher;
+import gui.models.Lesson;
+import gui.models.TimeTableDataSet;
+import gui.models.evolution.EvolutionConfig;
 import engine.Evolutionary;
 import engine.models.SolutionFitness;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class EvolutionaryTaskMembers {

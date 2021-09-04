@@ -1,7 +1,5 @@
 package engine.models;
 
-import UI.models.timeTable.RuleType;
-
 import java.io.Serializable;
 
 public enum SelectionType implements Serializable {

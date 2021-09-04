@@ -1,19 +1,19 @@
 package gui.logic;
 
-import UI.Utils;
-import UI.ValidationException;
-import UI.models.Lesson;
-import UI.models.TimeTableDataSet;
-import UI.models.evolution.Crossover;
-import UI.models.evolution.EvolutionConfig;
-import UI.models.evolution.Mutation;
-import UI.models.evolution.Selection;
-import UI.models.timeTable.Grade;
-import UI.models.timeTable.Rule;
-import UI.models.timeTable.Subject;
-import UI.models.timeTable.Teacher;
+import gui.Utils;
+import gui.exception.ValidationException;
+import gui.models.Lesson;
+import gui.models.TimeTableDataSet;
+import gui.models.evolution.Crossover;
+import gui.models.evolution.EvolutionConfig;
+import gui.models.evolution.Mutation;
+import gui.models.evolution.Selection;
+import gui.models.timeTable.Grade;
+import gui.models.timeTable.Rule;
+import gui.models.timeTable.Subject;
+import gui.models.timeTable.Teacher;
 import engine.models.SolutionFitness;
-import gui.components.main.EttController;
+import gui.components.main.EngineController;
 import gui.tasks.evolutinary.EvolutionaryTaskMembers;
 import gui.tasks.evolutinary.RunEvolutionaryTask;
 import javafx.application.Platform;
@@ -37,13 +37,13 @@ public class EngineLogic {
 
     private SimpleStringProperty fileName;
     private SimpleBooleanProperty isPaused;
-    private EttController controller;
+    private EngineController controller;
 
     private RunEvolutionaryTask currentRunningTask;
 
 
 
-    public EngineLogic(EttController controller) {
+    public EngineLogic(EngineController controller) {
         this.fileName = new SimpleStringProperty();
         this.isPaused = new SimpleBooleanProperty(false);
         this.controller = controller;

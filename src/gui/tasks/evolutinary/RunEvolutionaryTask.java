@@ -1,24 +1,7 @@
 package gui.tasks.evolutinary;
 
-import UI.models.Lesson;
-import UI.models.TimeTableDataSet;
-import UI.models.evolution.EvolutionConfig;
-import engine.Evolutionary;
 import engine.models.EndCondition;
-import engine.models.EngineProgressInterface;
-import engine.models.SolutionFitness;
-import gui.common.HistogramsUtils;
-import gui.components.main.UIAdapter;
-import javafx.application.Platform;
 import javafx.concurrent.Task;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.List;
-import java.util.function.Consumer;
 
 public class RunEvolutionaryTask extends Task<Boolean> {
 

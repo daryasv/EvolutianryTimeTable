@@ -1,10 +1,7 @@
 package gui;
 
 import gui.common.EttResourcesConstants;
-import gui.components.main.EttController;
-import gui.components.main.HistogramController;
-import gui.common.HistogramResourcesConstants;
-import gui.logic.BusinessLogic;
+import gui.components.main.EngineController;
 import gui.logic.EngineLogic;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -35,7 +32,7 @@ public class EttMain extends Application {
         BorderPane root = loader.load();
 
         // wire up controller
-        EttController ettController = loader.getController();
+        EngineController ettController = loader.getController();
         EngineLogic businessLogic = new EngineLogic(ettController);
         ettController.setPrimaryStage(primaryStage);
         ettController.setEngineLogic(businessLogic);

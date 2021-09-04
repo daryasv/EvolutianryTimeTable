@@ -1,15 +1,11 @@
 package gui.components.table;
 
-import UI.models.Lesson;
-import UI.models.timeTable.TimeTableMembers;
-import engine.models.IRule;
+import gui.models.Lesson;
+import gui.models.timeTable.TimeTableMembers;
 import engine.models.Solution;
 import engine.models.SolutionFitness;
-import gui.logic.EngineLogic;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
@@ -18,7 +14,6 @@ import javafx.scene.layout.VBox;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 public class TableController {

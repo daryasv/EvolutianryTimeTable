@@ -1,10 +1,7 @@
 package gui.tasks.evolutinary;
 
 import javafx.event.Event;
-import javafx.event.EventTarget;
 import javafx.event.EventType;
-
-import java.awt.*;
 
 public class EvolutionaryTaskEvent extends Event {
 

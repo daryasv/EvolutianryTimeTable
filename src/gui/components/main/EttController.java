@@ -260,6 +260,8 @@ public class EttController {
     public void runEvolutionaryButton(){
         if(!isEvolutionRunning.getValue() || isPaused.getValue()){
             runEvolution();
+            RulesDetailsScrollPane.setVisible(false);
+            solutionViewVbox.setVisible(false);
         }else{
             pauseEvolution();
         }

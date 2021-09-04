@@ -13,7 +13,6 @@ import gui.components.table.TableController;
 import gui.logic.BusinessLogic;
 import gui.logic.EngineLogic;
 import javafx.beans.binding.Bindings;
-import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -29,7 +28,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -39,7 +37,6 @@ import java.io.File;
 import java.util.Objects;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Optional;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.RadioButton;
@@ -216,7 +213,7 @@ public class EttController {
             setEvolutionConfig(engineLogic.getEvolutionEngineDataSet());
             isFileLoaded.set(true);
         } catch (ValidationException e) {
-            ShowError(e.getMessage());
+            showError(e.getMessage());
         }
     }
 
@@ -268,17 +265,17 @@ public class EttController {
     private void runEvolution(){
         String endCondition = endConditionBox.getValue();
         if(endConditionBox.getValue() == null){
-            ShowError("Please choose end condition");
+            showError("Please choose end condition");
             return;
         }
         Double limit = Utils.tryParseDouble(endConditionLimitTextField.textProperty().getValue());
         if(limit == null){
-            ShowError("Please add end condition limit");
+            showError("Please add end condition limit");
             return;
         }
         Integer interval = Utils.tryParse(generationsJumpTextField.textProperty().getValue());
         if(interval == null){
-            ShowError("Invalid interval time");
+            showError("Invalid interval time");
             return;
         }
 
@@ -306,7 +303,7 @@ public class EttController {
         runEvolutionBtn.setText("Start");
     }
 
-    private void ShowError(String message){
+    private void showError(String message){
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle("Something went wrong");
         alert.setHeaderText(message);
@@ -340,10 +337,14 @@ public class EttController {
 
     @FXML
     void showBestSolution() {
-        //need to change to check if algorithm finished
-        solutionViewVbox.setVisible(true);
-       // rawRadioBtn.setSelected(true);
-        showRawSolution();
+        if(engineLogic.getGlobalBestSolution()!=null) {
+            //need to change to check if algorithm finished
+            solutionViewVbox.setVisible(true);
+            // rawRadioBtn.setSelected(true);
+            showRawSolution();
+        }else{
+            showError("No solution found");
+        }
     }
 
     void IDSelected(MenuItem chosenId, String tableType, int totalDays, int totalHours){

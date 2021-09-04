@@ -1,16 +1,24 @@
 package gui.components.table;
 
 import UI.models.Lesson;
+import UI.models.timeTable.TimeTableMembers;
+import engine.models.IRule;
 import engine.models.Solution;
+import engine.models.SolutionFitness;
+import gui.logic.EngineLogic;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.RowConstraints;
+import javafx.scene.layout.VBox;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class TableController {
@@ -18,6 +26,7 @@ public class TableController {
     @FXML private Label tableTitle;
     @FXML private GridPane gridTable;
     @FXML private Label ValidTableLable;
+    @FXML private VBox tableDetailsVbox;
 
     private boolean isValidTable;
 
@@ -27,21 +36,17 @@ public class TableController {
     }
 
     private void initializeTable(int totalDays, int totalHours){
-        gridTable.setMinSize(100,100);
-        gridTable.setMaxSize(100,100);
-
-        for(int i=0; i<2; i++){
-            for(int j=0; j<2; j++){
-                Label label=new Label("dar eini");
-                TextField txt =new TextField("dar eini");
-                txt.setMinSize(300,300);
-                label.setMinWidth(300);
-              //  label.setPrefWidth(1000);
-            //    label.setPrefHeight(1000);
-                label.setMinHeight(300);
-                gridTable.add(txt, i, j);
-            }
+        for (int i = 0; i < totalDays; i++) {
+            ColumnConstraints colConst = new ColumnConstraints();
+            colConst.setPercentWidth(100.0 / totalDays-5);
+            gridTable.getColumnConstraints().add(colConst);
         }
+        for (int i = 0; i < totalHours; i++) {
+            RowConstraints rowConst = new RowConstraints();
+            rowConst.setPercentHeight(100.0 / totalHours-5);
+            gridTable.getRowConstraints().add(rowConst);
+        }
+
 
     }
 
@@ -61,33 +66,70 @@ public class TableController {
             }
     }
 
-    private void buildTable(String typeTitle, int typeIdTitle,HashMap<Integer,List<String>> tableContentLst , int totalDays, int totalHours) {
-        int contentLstIndex=0;
+
+    private void buildTable(String typeTitle, int typeIdTitle,HashMap<Integer,List<String>> tableContentLst , int totalDays, int totalHours, SolutionFitness solutionDetails) {
+        initializeTable(totalDays,totalHours);
         createDaysInTable(totalDays);
         createHoursInTable(totalHours);
         tableTitle.setText(typeTitle + "ID: " + typeIdTitle);
+       // showSolutionDetails(solutionDetails);
         for(int day=1; day<=totalDays;day++){
           List <String> lessonsInADay= tableContentLst.get(day);
           for(int i =0; i<lessonsInADay.size(); i++){
               insetDataToTable(lessonsInADay.get(i),i+1, day);
           }
 }
+        String validword= isValidTable? "":"not";
+        String validMsg= String.format("This table is %s valid",validword);
+        ValidTableLable.setText(validMsg);
+
         }
 
+        private void showSolutionDetails(SolutionFitness solutionDetails){
+            double fitnessValue = solutionDetails.getFitness();
+            double softRulesAVG = solutionDetails.getSoftRulesAvg();
+            double hardRulesAVG = solutionDetails.getHardRulesAvg();
+            Label solutionDetailsLabel = new Label("\nSolution's Details:\n");
+            tableDetailsVbox.getChildren().add(solutionDetailsLabel);
+            Label fitnessValLabel = new Label(String.format("The fitness value of this solution is: %,.2f", fitnessValue));
+            tableDetailsVbox.getChildren().add(fitnessValLabel);
+            reviewRules(solutionDetails);
+            Label softRulesAvgLabel = new Label(String.format("The soft rules avg is: %,.1f", softRulesAVG));
+            tableDetailsVbox.getChildren().add(softRulesAvgLabel);
+            Label HardRulesAvgLabel = new Label(String.format("The hard rules avg is: %,.1f\n", hardRulesAVG));
+            tableDetailsVbox.getChildren().add(HardRulesAvgLabel);
+        }
+    private void reviewRules(SolutionFitness globalBestSolution){
+        System.out.println("\nRule's:\n");
+        HashMap<IRule, Double> rulesFitness = globalBestSolution.getRulesFitness();
+        for (Map.Entry<IRule, Double> entry : rulesFitness.entrySet()){
+            System.out.println(String.format("Rule name: %s ", entry.getKey().getName()));
+            if(entry.getKey().isHard())
+                System.out.println("Rule type: hard");
+            else{
+                System.out.println("Rule type: soft");
+            }
+            System.out.println(String.format("Rule grade: %,.1f ", entry.getValue()));
+        }
+    }
 
-    public void showTable(String objectType, int objectId, Solution bestSolution, int totalDays, int totalHours){
+    public void showTable(String objectType, int objectId, Solution bestSolution, int totalDays, int totalHours, SolutionFitness globalSolution, TimeTableMembers solMembersDetails){
         HashMap<Integer,List<String>> lessonsToAdd = new HashMap<>();
         if(objectType.equals("Teacher")){
-            lessonsToAdd= getLessonsContent("Class", objectId, bestSolution, totalDays, totalHours);
+            lessonsToAdd= getLessonsContent("Class", objectId, bestSolution, totalDays, totalHours, solMembersDetails);
         }
         else if (objectType.equals("Class")){
-            lessonsToAdd= getLessonsContent("Teacher", objectId, bestSolution, totalDays, totalHours);
+            lessonsToAdd= getLessonsContent("Teacher", objectId, bestSolution, totalDays, totalHours, solMembersDetails);
         }
-        buildTable(objectType, objectId,lessonsToAdd,totalDays,totalHours);
+        buildTable(objectType, objectId,lessonsToAdd,totalDays,totalHours,globalSolution );
         }
 
 
-    private HashMap<Integer, List<String>> getLessonsContent(String objectType, int typeTableId, Solution <Lesson> allLessons, int totalDays, int totalHours){
+
+
+
+
+    private HashMap<Integer, List<String>> getLessonsContent(String objectType, int typeTableId, Solution <Lesson> allLessons, int totalDays, int totalHours, TimeTableMembers solMembersDetails){
         isValidTable=true;
         String lessonsContent="";
         String lesson;
@@ -112,10 +154,10 @@ public class TableController {
                 else if (dayHourSolution.size() > 1) isValidTable = false;
                 for (int i = 0; i < dayHourSolution.size(); i++) {
                     if (objectType.equals("Teacher")) {
-                        lesson = String.format("%s: %d Subject: %d ", objectType, dayHourSolution.get(i).getTeacherId(), dayHourSolution.get(i).getSubjectId());
+                        lesson = String.format("%s %d %s, Subject %d %s", objectType, dayHourSolution.get(i).getTeacherId(),solMembersDetails.getTeachers().get(dayHourSolution.get(i).getTeacherId()).getName(), dayHourSolution.get(i).getSubjectId(),solMembersDetails.getSubjects().get(dayHourSolution.get(i).getSubjectId()).getName());
 
                     } else if (objectType.equals("Class")) {
-                        lesson = String.format("%s: %d Subject: %d ", objectType, dayHourSolution.get(i).getClassId(), dayHourSolution.get(i).getSubjectId());
+                        lesson = String.format("%s %d %s, Subject %d %s ", objectType, dayHourSolution.get(i).getClassId(),solMembersDetails.getGrades().get(dayHourSolution.get(i).getClassId()).getName(), dayHourSolution.get(i).getSubjectId(),solMembersDetails.getSubjects().get(dayHourSolution.get(i).getSubjectId()).getName());
 
                     }
                     if(i>=1) lessonsContent+="\n";

@@ -5,6 +5,7 @@ import UI.models.Lesson;
 import UI.models.evolution.EvolutionConfig;
 import UI.models.timeTable.Grade;
 import UI.models.timeTable.Teacher;
+import UI.models.timeTable.TimeTableMembers;
 import engine.models.Solution;
 import gui.common.EttResourcesConstants;
 import gui.common.Utils;
@@ -147,7 +148,6 @@ public class EttController {
 
     @FXML
     private void initialize() {
-
         evolutionSettingsPane.disableProperty().bind(isFileLoaded.not());
         timeTableSettingsTPane.disableProperty().bind(isFileLoaded.not());
         clearXmlBtn.disableProperty().bind(isFileLoaded.not());
@@ -339,13 +339,14 @@ public class EttController {
     void showBestSolutionBtn() {
         //need to change to check if algorithm finished
         solutionViewVbox.setVisible(true);
+       // rawRadioBtn.setSelected(true);
+        showRawSolution();
     }
 
-    void IDSelected(MenuItem chosenId, String tableType){
+    void IDSelected(MenuItem chosenId, String tableType, int totalDays, int totalHours){
         chosenId.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent t) {
-                int totalDays=engineLogic.getTimeTableDataSet().getTimeTableMembers().getDays();
-                int totalHours=engineLogic.getTimeTableDataSet().getTimeTableMembers().getHours();
+                idsMenu.setText(String.format("%s:%s", tableType, chosenId.getText()));
                createTable(tableType, chosenId.getText(),totalDays,totalHours);
             }
         });
@@ -353,29 +354,59 @@ public class EttController {
     @FXML
     void teacherSolutionSelected() {
         isTableViewSelected.setValue(true);
+        int totalDays=engineLogic.getTimeTableDataSet().getTimeTableMembers().getDays();
+        int totalHours=engineLogic.getTimeTableDataSet().getTimeTableMembers().getHours();
+        String tableType="Teacher";
         HashMap<Integer, Teacher> teachers =engineLogic.getTimeTableDataSet().getTimeTableMembers().getTeachers();
         idsMenu.getItems().clear();
         for (Integer teacherID : teachers.keySet()){
             MenuItem menuItem = new MenuItem(teacherID.toString());
-            IDSelected(menuItem, "Teacher");
+            IDSelected(menuItem, tableType, totalDays, totalHours);
             idsMenu.getItems().add(menuItem);
         }
+        idsMenu.setText(String.format("%s:%s", tableType,"1"));
+        createTable(tableType, "1",totalDays,totalHours);
     }
 
     @FXML
     void rawSolutionSelected(ActionEvent event) {
         isTableViewSelected.setValue(false);
+        showRawSolution();
     }
 
     @FXML
     void classSolutionSelected() {
         isTableViewSelected.setValue(true);
+        String tableType="Class";
+        int totalDays=engineLogic.getTimeTableDataSet().getTimeTableMembers().getDays();
+        int totalHours=engineLogic.getTimeTableDataSet().getTimeTableMembers().getHours();
         HashMap<Integer, Grade> grades = engineLogic.getTimeTableDataSet().getTimeTableMembers().getGrades();
         idsMenu.getItems().clear();
         for (Integer classID : grades.keySet()){
             MenuItem menuItem = new MenuItem(classID.toString());
-            IDSelected(menuItem, "Class");
+            IDSelected(menuItem, tableType, totalDays,totalHours);
             idsMenu.getItems().add(menuItem);
+        }
+        idsMenu.setText(String.format("%s:%s", tableType,"1"));
+        createTable(tableType, "1",totalDays,totalHours);
+    }
+
+
+    private void showRawSolution() {
+        VBox vbox = new VBox();
+        tableScrollPane.setContent(vbox);
+        Solution<Lesson> timeTableSolution = engineLogic.getGlobalBestSolution().getSolution();
+        for (int i = 0; i < timeTableSolution.getList().size(); i++) {
+            int classId = timeTableSolution.getList().get(i).getClassId();
+            int teacher = timeTableSolution.getList().get(i).getTeacherId();
+            int subject = timeTableSolution.getList().get(i).getSubjectId();
+            int day = timeTableSolution.getList().get(i).getDay();
+            int hour = timeTableSolution.getList().get(i).getHour();
+            if (teacher != -1 && subject != -1) {
+                String detailsInfo = String.format("Day:%d, hour:%d, classID:%d, teacherID:%d, subject:%d", day, hour, classId, teacher, subject);
+                Label detailsLabel = new Label(detailsInfo);
+                vbox.getChildren().add(detailsLabel);
+            }
         }
     }
 
@@ -387,9 +418,10 @@ public class EttController {
             TableController tableController = loader.getController();
 
             Solution<Lesson> bestSolution= engineLogic.getGlobalBestSolution().getSolution();
+            TimeTableMembers solMembersDetails= engineLogic.getTimeTableDataSet().getTimeTableMembers();
             //add to scroll pane
             tableScrollPane.setContent(table);
-            tableController.showTable(typeTitle,Integer.parseInt(typeIdTitle), bestSolution, totalDays, totalHours);
+            tableController.showTable(typeTitle,Integer.parseInt(typeIdTitle), bestSolution, totalDays, totalHours,engineLogic.getGlobalBestSolution(), solMembersDetails);
 
         } catch (IOException e) {
             e.printStackTrace();

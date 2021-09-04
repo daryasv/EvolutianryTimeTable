@@ -346,6 +346,7 @@ public class EttController {
         solutionViewVbox.setVisible(true);
         RulesDetailsScrollPane.setVisible(true);
         showRulesDetails();
+        rawRadioBtn.setSelected(true);
         showRawSolution();
     }
 

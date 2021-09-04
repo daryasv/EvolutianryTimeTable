@@ -195,7 +195,6 @@ public class EngineController {
             }
         });
 
-        showSolutionBtn.disableProperty().bind(isEvolutionRunning.or(isPaused));
         RulesDetailsScrollPane.visibleProperty().bind(showResults);
         solutionViewVbox.visibleProperty().bind(showResults);
         evolutoinPane.disableProperty().bind(isEvolutionRunning);
@@ -204,10 +203,15 @@ public class EngineController {
             if(newValue){
                 progressPercentLabel.textProperty().unbind();
                 taskProgressBar.progressProperty().unbind();
-                progressPercentLabel.setText("");
+                progressPercentLabel.setText("Finished");
                 taskProgressBar.setProgress(0);
+                showSolutionBtn.setDisable(false);
+            }else{
+                showSolutionBtn.setDisable(true);
             }
         });
+
+        showSolutionBtn.setDisable(true);
     }
 
     @FXML

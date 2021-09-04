@@ -4,7 +4,7 @@ import java.net.URL;
 
 public class EttResourcesConstants {
 
-    private static final String BASE_PACKAGE = "/gui/";
+    private static final String BASE_PACKAGE = "/gui";
 
     public static final String MAIN_FXML_RESOURCE_IDENTIFIER = BASE_PACKAGE + "/components/main/ett.fxml";
 

@@ -2,6 +2,7 @@ package gui.components.main;
 
 import UI.ValidationException;
 import UI.models.Lesson;
+import UI.models.LessonSortType;
 import UI.models.evolution.EvolutionConfig;
 import UI.models.timeTable.Grade;
 import UI.models.timeTable.Teacher;
@@ -400,7 +401,8 @@ public class EttController {
     private void showRawSolution() {
         VBox vbox = new VBox();
         tableScrollPane.setContent(vbox);
-        Solution<Lesson> timeTableSolution = engineLogic.getGlobalBestSolution().getSolution();
+        Solution<Lesson> timeTableSolution = engineLogic.getTimeTableDataSet().sort(engineLogic.getGlobalBestSolution().getSolution(), LessonSortType.DayTimeOriented.name);
+
         for (int i = 0; i < timeTableSolution.getList().size(); i++) {
             int classId = timeTableSolution.getList().get(i).getClassId();
             int teacher = timeTableSolution.getList().get(i).getTeacherId();

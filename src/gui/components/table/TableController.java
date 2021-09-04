@@ -72,7 +72,6 @@ public class TableController {
         createDaysInTable(totalDays);
         createHoursInTable(totalHours);
         tableTitle.setText(typeTitle + "ID: " + typeIdTitle);
-       // showSolutionDetails(solutionDetails);
         for(int day=1; day<=totalDays;day++){
           List <String> lessonsInADay= tableContentLst.get(day);
           for(int i =0; i<lessonsInADay.size(); i++){
@@ -85,33 +84,6 @@ public class TableController {
 
         }
 
-        private void showSolutionDetails(SolutionFitness solutionDetails){
-            double fitnessValue = solutionDetails.getFitness();
-            double softRulesAVG = solutionDetails.getSoftRulesAvg();
-            double hardRulesAVG = solutionDetails.getHardRulesAvg();
-            Label solutionDetailsLabel = new Label("\nSolution's Details:\n");
-            tableDetailsVbox.getChildren().add(solutionDetailsLabel);
-            Label fitnessValLabel = new Label(String.format("The fitness value of this solution is: %,.2f", fitnessValue));
-            tableDetailsVbox.getChildren().add(fitnessValLabel);
-            reviewRules(solutionDetails);
-            Label softRulesAvgLabel = new Label(String.format("The soft rules avg is: %,.1f", softRulesAVG));
-            tableDetailsVbox.getChildren().add(softRulesAvgLabel);
-            Label HardRulesAvgLabel = new Label(String.format("The hard rules avg is: %,.1f\n", hardRulesAVG));
-            tableDetailsVbox.getChildren().add(HardRulesAvgLabel);
-        }
-    private void reviewRules(SolutionFitness globalBestSolution){
-        System.out.println("\nRule's:\n");
-        HashMap<IRule, Double> rulesFitness = globalBestSolution.getRulesFitness();
-        for (Map.Entry<IRule, Double> entry : rulesFitness.entrySet()){
-            System.out.println(String.format("Rule name: %s ", entry.getKey().getName()));
-            if(entry.getKey().isHard())
-                System.out.println("Rule type: hard");
-            else{
-                System.out.println("Rule type: soft");
-            }
-            System.out.println(String.format("Rule grade: %,.1f ", entry.getValue()));
-        }
-    }
 
     public void showTable(String objectType, int objectId, Solution bestSolution, int totalDays, int totalHours, SolutionFitness globalSolution, TimeTableMembers solMembersDetails){
         HashMap<Integer,List<String>> lessonsToAdd = new HashMap<>();

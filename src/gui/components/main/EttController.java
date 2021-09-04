@@ -115,7 +115,7 @@ public class EttController {
     private SimpleBooleanProperty isViewTypeSelected;
 
     public static final ObservableList<String> endConditions = FXCollections.observableArrayList("Generations","Fitness","Time");
-    public static final ObservableList<String> selectionMethods = FXCollections.observableArrayList("Truncation","Roulete Wheel");
+    public static final ObservableList<String> selectionMethods = FXCollections.observableArrayList("Truncation","RouletteWheel");
     public static final ObservableList<String> crossoverMethods = FXCollections.observableArrayList("DayTimeOriented","AspectOreiented");
     public static final ObservableList<String> crossoverOrientations = FXCollections.observableArrayList("Teacher","Grade");
     public static final ObservableList<String> mutationComponents = FXCollections.observableArrayList("D","H", "T", "S", "G");

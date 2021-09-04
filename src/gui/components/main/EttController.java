@@ -283,6 +283,7 @@ public class EttController {
         }
 
         engineLogic.runEvolutionary(endCondition,limit,interval, () -> {
+            isEvolutionRunning.set(false);
         });
 
         isEvolutionRunning.set(true);

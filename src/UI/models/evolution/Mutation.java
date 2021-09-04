@@ -87,7 +87,7 @@ public class Mutation implements IMutation<Lesson> , Serializable
 
     public void setProbability(String probability) throws ValidationException{
         try{
-            Double.parseDouble(probability);
+            this.probability = Double.parseDouble(probability);
         }catch (NumberFormatException exception){
             throw new ValidationException("Invalid Probability");
         }
@@ -155,12 +155,12 @@ public class Mutation implements IMutation<Lesson> , Serializable
     }
 
     public void setComponent(String component) throws ValidationException {
-        if(this.name.equals("Flipping")){
+        if(!this.name.equals("Flipping")){
             return;
         }
         if(component.length() > 0){
             char newComponent = component.charAt(0);
-            if(!ALLOWED_COMPONENTS.contains(component)) {
+            if(!ALLOWED_COMPONENTS.contains(newComponent)) {
                 throw new ValidationException("Invalid mutation component - " + newComponent);
             }else{
                 this.component = newComponent;

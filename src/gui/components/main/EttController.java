@@ -12,6 +12,7 @@ import gui.components.table.TableController;
 import gui.logic.BusinessLogic;
 import gui.logic.EngineLogic;
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -79,7 +80,7 @@ public class EttController {
     @FXML TextField generationsJumpTextField;
     @FXML ProgressBar taskProgressBar;
     @FXML Label progressPercentLabel;
-    @FXML Button pauseBtn;
+    @FXML Button stopBtn;
     @FXML Label currentGenerationLabel;
     @FXML Label bestFitnessLabel;
 
@@ -178,6 +179,18 @@ public class EttController {
                 }
             }
         });
+
+        stopBtn.disableProperty().bind(isEvolutionRunning.not().and(isPaused.not()));
+        isEvolutionRunning.addListener((observable, oldValue, newValue) -> {
+            if(newValue) {
+                runEvolutionBtn.setText("Pause");
+            }
+            else if(isPaused.getValue()) {
+                runEvolutionBtn.setText("Resume");
+            }else{
+                runEvolutionBtn.setText("Start");
+            }
+        });
     }
 
     @FXML
@@ -243,6 +256,14 @@ public class EttController {
 
     @FXML
     public void runEvolutionaryButton(){
+        if(!isEvolutionRunning.getValue() || isPaused.getValue()){
+            runEvolution();
+        }else{
+            pauseEvolution();
+        }
+    }
+
+    private void runEvolution(){
         String endCondition = endConditionBox.getValue();
         if(endConditionBox.getValue() == null){
             ShowError("Please choose end condition");
@@ -264,21 +285,22 @@ public class EttController {
 
         isEvolutionRunning.set(true);
         isPaused.set(false);
-        runEvolutionBtn.disableProperty().bind(isPaused.not());
-
     }
 
-    @FXML
-    public void pauseEvolution()
+    private void pauseEvolution()
     {
         engineLogic.stop();
         isPaused.set(true);
+        isEvolutionRunning.set(false);
     }
 
     @FXML
     public void stopEvolution()
     {
         engineLogic.stop();
+        isPaused.set(false);
+        isEvolutionRunning.set(false);
+        runEvolutionBtn.setText("Start");
     }
 
     private void ShowError(String message){

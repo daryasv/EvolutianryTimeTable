@@ -228,7 +228,7 @@
                                              </font>
                                           </Label>
                                           <TextField fx:id="endConditionLimitTextField" layoutX="381.0" layoutY="3.0" prefHeight="27.0" prefWidth="45.0" />
-                                          <Button fx:id="runEvolutionBtn" alignment="CENTER" contentDisplay="CENTER" layoutX="520.0" layoutY="23.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#runEvolutionaryButton" pickOnBounds="false" prefHeight="54.0" prefWidth="168.0" text="Run Evolution" textAlignment="CENTER" textFill="#0f5712">
+                                          <Button fx:id="runEvolutionBtn" alignment="CENTER" contentDisplay="CENTER" layoutX="520.0" layoutY="23.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#runEvolutionaryButton" pickOnBounds="false" prefHeight="54.0" prefWidth="117.0" text="Start" textAlignment="CENTER" textFill="#0f5712">
                                              <font>
                                                 <Font size="18.0" />
                                              </font>
@@ -239,7 +239,7 @@
                                                 <Glow />
                                              </effect>
                                           </Button>
-                                          <Button fx:id="pauseBtn" layoutX="705.0" layoutY="23.0" mnemonicParsing="false" onAction="#pauseEvolution" prefHeight="54.0" prefWidth="133.0" text="Pause" textFill="#dd0e0e">
+                                          <Button fx:id="stopBtn" layoutX="641.0" layoutY="23.0" mnemonicParsing="false" onAction="#stopEvolution" prefHeight="54.0" prefWidth="122.0" text="Stop" textFill="#dd0e0e">
                                              <font>
                                                 <Font size="18.0" />
                                              </font>

@@ -2,10 +2,12 @@ package gui.components.main;
 
 import UI.ValidationException;
 import UI.models.Lesson;
+import UI.models.LessonSortType;
 import UI.models.evolution.EvolutionConfig;
 import UI.models.timeTable.Grade;
 import UI.models.timeTable.Teacher;
 import UI.models.timeTable.TimeTableMembers;
+import engine.models.IRule;
 import engine.models.Solution;
 import gui.common.EttResourcesConstants;
 import gui.common.Utils;
@@ -34,10 +36,12 @@ import javafx.stage.Stage;
 import javafx.scene.layout.VBox;
 
 import java.io.File;
-import java.util.Objects;
+import java.util.*;
 import java.io.IOException;
+
 import java.util.HashMap;
 import java.util.Optional;
+
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
@@ -87,6 +91,7 @@ public class EttController {
     @FXML private Button showSolutionBtn;
     @FXML private VBox solutionViewVbox;
     @FXML private ScrollPane tableScrollPane;
+    @FXML private ScrollPane RulesDetailsScrollPane;
     @FXML private RadioButton rawRadioBtn;
     @FXML private ToggleGroup viewSolutionOption;
     @FXML private RadioButton teacherViewRadioBtn;
@@ -105,6 +110,7 @@ public class EttController {
     private SimpleBooleanProperty isPaused;
     private SimpleBooleanProperty isCrossoverAspectOriented;
     private SimpleBooleanProperty isTableViewSelected;
+    private SimpleBooleanProperty showResults;
 
     private SimpleBooleanProperty isViewTypeSelected;
 
@@ -131,6 +137,7 @@ public class EttController {
         isTableViewSelected= new SimpleBooleanProperty(false);
         currentGenerationProperty = new SimpleIntegerProperty(0);
         bestFitnessProperty = new SimpleDoubleProperty(0);
+        showResults = new SimpleBooleanProperty(false);
     }
 
     public void setEngineLogic(EngineLogic engineLogic) {
@@ -190,6 +197,9 @@ public class EttController {
         });
 
         showSolutionBtn.disableProperty().bind(isEvolutionRunning.or(isPaused));
+        RulesDetailsScrollPane.visibleProperty().bind(showResults);
+        solutionViewVbox.visibleProperty().bind(showResults);
+
     }
 
     @FXML
@@ -257,6 +267,7 @@ public class EttController {
     public void runEvolutionaryButton(){
         if(!isEvolutionRunning.getValue() || isPaused.getValue()){
             runEvolution();
+            showResults.set(false);
         }else{
             pauseEvolution();
         }
@@ -338,9 +349,9 @@ public class EttController {
     @FXML
     void showBestSolution() {
         if(engineLogic.getGlobalBestSolution()!=null) {
-            //need to change to check if algorithm finished
-            solutionViewVbox.setVisible(true);
-            // rawRadioBtn.setSelected(true);
+            showResults.set(true);
+            showRulesDetails();
+            rawRadioBtn.setSelected(true);
             showRawSolution();
         }else{
             showError("No solution found");
@@ -399,7 +410,8 @@ public class EttController {
     private void showRawSolution() {
         VBox vbox = new VBox();
         tableScrollPane.setContent(vbox);
-        Solution<Lesson> timeTableSolution = engineLogic.getGlobalBestSolution().getSolution();
+        Solution<Lesson> timeTableSolution = engineLogic.getTimeTableDataSet().sort(engineLogic.getGlobalBestSolution().getSolution(), LessonSortType.DayTimeOriented.name);
+
         for (int i = 0; i < timeTableSolution.getList().size(); i++) {
             int classId = timeTableSolution.getList().get(i).getClassId();
             int teacher = timeTableSolution.getList().get(i).getTeacherId();
@@ -411,6 +423,29 @@ public class EttController {
                 Label detailsLabel = new Label(detailsInfo);
                 vbox.getChildren().add(detailsLabel);
             }
+        }
+    }
+    private void showRulesDetails(){
+        VBox RulesDetailsVbox = new VBox();
+        RulesDetailsScrollPane.setContent(RulesDetailsVbox);
+        HashMap<IRule, Double> rulesFitness = engineLogic.getGlobalBestSolution().getRulesFitness();
+        Label title = new Label("Rules Details:");
+        RulesDetailsVbox.getChildren().add(title);
+        RulesDetailsVbox.getChildren().add(new Label(""));
+        Label ruleTypeLabel;
+        for (Map.Entry<IRule, Double> entry : rulesFitness.entrySet()){
+            Label ruleNameLabel = new Label(String.format("Rule: %s ", entry.getKey().getName()));
+            if(entry.getKey().isHard()){
+                ruleTypeLabel = new Label("Rule type: hard");
+            }
+            else{
+                ruleTypeLabel = new Label("Rule type: soft");
+            }
+            Label ruleGrade = new Label(String.format("Rule grade: %,.1f ", entry.getValue()));
+            RulesDetailsVbox.getChildren().add(ruleNameLabel);
+            RulesDetailsVbox.getChildren().add(ruleTypeLabel);
+            RulesDetailsVbox.getChildren().add(ruleGrade);
+            RulesDetailsVbox.getChildren().add(new Label(""));
         }
     }
 

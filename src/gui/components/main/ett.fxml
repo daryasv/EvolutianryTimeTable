@@ -17,7 +17,6 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
@@ -98,7 +97,7 @@
                                                                   <Font size="15.0" />
                                                                </font>
                                                             </Label>
-                                                            <ChoiceBox fx:id="selectionCBox" layoutX="130.0" layoutY="50.0" onAction="#onEndConditionSelect" prefHeight="27.0" prefWidth="102.0" />
+                                                            <ChoiceBox fx:id="selectionCBox" layoutX="130.0" layoutY="50.0" onAction="#onEndConditionSelect" prefHeight="29.0" prefWidth="148.0" />
                                                             <Label layoutX="14.0" layoutY="91.0" prefHeight="19.0" prefWidth="107.0" text="Elitism Size">
                                                                <font>
                                                                   <Font size="15.0" />
@@ -109,12 +108,12 @@
                                                                   <Font size="15.0" />
                                                                </font>
                                                             </Label>
-                                                            <ChoiceBox fx:id="crossoverCBox" layoutX="130.0" layoutY="124.0" onAction="#onEndConditionSelect" prefHeight="27.0" prefWidth="100.0" />
-                                                            <TextField fx:id="elitismSizeTextFiled" layoutX="130.0" layoutY="87.0" prefHeight="27.0" prefWidth="101.0" />
-                                                            <Label layoutX="247.0" layoutY="127.0" prefHeight="19.0" prefWidth="88.0" text="Cutting Points" />
-                                                            <TextField fx:id="cuttingPointsTextFiled" layoutX="335.0" layoutY="124.0" prefHeight="25.0" prefWidth="45.0" />
-                                                            <Label layoutX="403.0" layoutY="126.0" prefHeight="19.0" prefWidth="86.0" text="Orientation" />
-                                                            <ChoiceBox fx:id="crossoverOrientationCBox" layoutX="481.0" layoutY="122.0" onAction="#onEndConditionSelect" prefHeight="27.0" prefWidth="103.0" />
+                                                            <ChoiceBox fx:id="crossoverCBox" layoutX="130.0" layoutY="124.0" onAction="#onEndConditionSelect" prefHeight="29.0" prefWidth="150.0" />
+                                                            <TextField fx:id="elitismSizeTextFiled" layoutX="130.0" layoutY="87.0" prefHeight="29.0" prefWidth="149.0" />
+                                                            <Label layoutX="294.0" layoutY="128.0" prefHeight="19.0" prefWidth="88.0" text="Cutting Points" />
+                                                            <TextField fx:id="cuttingPointsTextFiled" layoutX="382.0" layoutY="125.0" prefHeight="25.0" prefWidth="45.0" />
+                                                            <Label layoutX="450.0" layoutY="127.0" prefHeight="19.0" prefWidth="86.0" text="Orientation" />
+                                                            <ChoiceBox fx:id="crossoverOrientationCBox" layoutX="528.0" layoutY="123.0" onAction="#onEndConditionSelect" prefHeight="27.0" prefWidth="103.0" />
                                                             <Label layoutX="16.0" layoutY="163.0" prefHeight="19.0" prefWidth="107.0" text="Mutations">
                                                                <font>
                                                                   <Font size="15.0" />
@@ -192,7 +191,7 @@
                                                                   <ChoiceBox fx:id="mutation2ComponentCBox" onAction="#onEndConditionSelect" prefHeight="27.0" prefWidth="82.0" GridPane.columnIndex="6" GridPane.rowIndex="1" />
                                                                </children>
                                                             </GridPane>
-                                                            <TextField fx:id="initPopulationTextField" layoutX="130.0" layoutY="13.0" prefHeight="27.0" prefWidth="103.0" />
+                                                            <TextField fx:id="initPopulationTextField" layoutX="130.0" layoutY="13.0" prefHeight="29.0" prefWidth="147.0" />
                                                          </children>
                                                       </Pane>
                                                    </children>
@@ -208,7 +207,7 @@
                               </AnchorPane>
                               <AnchorPane>
                                  <children>
-                                    <Pane fx:id="evolutionConditionsPane" blendMode="SRC_ATOP" prefHeight="77.0" prefWidth="1156.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                    <Pane fx:id="evolutionConditionsPane" blendMode="SRC_ATOP" AnchorPane.topAnchor="15.0">
                                        <children>
                                           <Label layoutX="14.0" layoutY="7.0" prefHeight="19.0" prefWidth="107.0" text="End Condition">
                                              <font>
@@ -245,34 +244,32 @@
                                              </font>
                                           </Button>
                                        </children>
+                                       <padding>
+                                          <Insets bottom="10.0" top="15.0" />
+                                       </padding>
                                     </Pane>
                                  </children>
                               </AnchorPane>
                               <AnchorPane>
                                  <children>
-                                    <Pane fx:id="evolutionProgressPane" prefHeight="186.0" prefWidth="1156.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                    <Pane fx:id="evolutionProgressPane">
                                        <children>
-                                          <Label alignment="CENTER" contentDisplay="CENTER" layoutX="282.0" layoutY="14.0" prefHeight="18.0" prefWidth="230.0" text="Evolution Prosress" textAlignment="CENTER">
+                                          <Label alignment="TOP_LEFT" contentDisplay="CENTER" layoutX="13.0" layoutY="14.0" prefHeight="26.0" prefWidth="172.0" text="Evolution Progress" textAlignment="CENTER">
                                              <font>
                                                 <Font size="17.0" />
                                              </font>
                                           </Label>
-                                          <Label layoutX="73.0" layoutY="53.0" text="Progress Bar " />
-                                          <ProgressBar fx:id="taskProgressBar" layoutX="152.0" layoutY="49.0" prefHeight="25.0" prefWidth="509.0" progress="0.0" />
-                                          <Button fx:id="showSolutionBtn" layoutX="502.0" layoutY="145.0" mnemonicParsing="false" onAction="#showBestSolution" prefHeight="27.0" prefWidth="209.0" text="SHOW BEST SOLUTION" textFill="#2314cd" />
-                                          <Label alignment="CENTER" contentDisplay="CENTER" layoutX="499.0" layoutY="88.0" text="Current Best Fitness " textAlignment="CENTER" />
-                                          <Label fx:id="bestFitnessLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="617.0" layoutY="88.0" prefHeight="17.0" prefWidth="88.0" textAlignment="CENTER" textFill="#3509e8" />
-                                          <Label fx:id="currentGenerationLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="419.0" layoutY="88.0" prefHeight="17.0" prefWidth="57.0" textAlignment="CENTER" textFill="#3509e8" />
-                                          <Label alignment="CENTER" contentDisplay="CENTER" layoutX="316.0" layoutY="88.0" text="Curret Generation" textAlignment="CENTER" />
-                                          <Label fx:id="progressPercentLabel" layoutX="672.0" layoutY="53.0" prefHeight="17.0" prefWidth="96.0" text="0%" />
-                                          <Button layoutX="73.0" layoutY="84.0" mnemonicParsing="false" onAction="#showCurrentData" prefHeight="25.0" prefWidth="205.0" text="Show current data" />
+                                          <Label layoutX="14.0" layoutY="60.0" text="Progress Bar " />
+                                          <ProgressBar fx:id="taskProgressBar" layoutX="93.0" layoutY="56.0" prefHeight="25.0" prefWidth="509.0" progress="0.0" />
+                                          <Button fx:id="showSolutionBtn" layoutX="14.0" layoutY="145.0" mnemonicParsing="false" onAction="#showBestSolution" prefHeight="32.0" prefWidth="205.0" text="SHOW BEST SOLUTION" textFill="#2314cd" />
+                                          <Label alignment="CENTER" contentDisplay="CENTER" layoutX="440.0" layoutY="95.0" text="Current Best Fitness " textAlignment="CENTER" />
+                                          <Label fx:id="bestFitnessLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="558.0" layoutY="95.0" prefHeight="17.0" prefWidth="88.0" textAlignment="CENTER" textFill="#3509e8" />
+                                          <Label fx:id="currentGenerationLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="360.0" layoutY="95.0" prefHeight="17.0" prefWidth="57.0" textAlignment="CENTER" textFill="#3509e8" />
+                                          <Label alignment="CENTER" contentDisplay="CENTER" layoutX="257.0" layoutY="95.0" text="Curret Generation" textAlignment="CENTER" />
+                                          <Label fx:id="progressPercentLabel" layoutX="613.0" layoutY="60.0" prefHeight="17.0" prefWidth="96.0" text="0%" />
+                                          <Button layoutX="14.0" layoutY="91.0" mnemonicParsing="false" onAction="#showCurrentData" prefHeight="25.0" prefWidth="205.0" text="Show current data" />
                                        </children>
                                     </Pane>
-                                 </children>
-                              </AnchorPane>
-                              <AnchorPane>
-                                 <children>
-                                    <FlowPane prefHeight="57.0" prefWidth="1156.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                                  </children>
                               </AnchorPane>
                               <AnchorPane>
@@ -298,6 +295,11 @@
                                        <ScrollPane fx:id="tableScrollPane" prefHeight="366.0" prefWidth="843.0" />
                                     </children>
                                  </VBox>
+                                 <ScrollPane fx:id="RulesDetailsScrollPane" layoutX="852.0" layoutY="77.0" prefHeight="366.0" prefWidth="225.0" visible="false">
+                                   <content>
+                                     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0" />
+                                   </content>
+                                 </ScrollPane>
                               </AnchorPane>
                            </children>
                         </VBox>

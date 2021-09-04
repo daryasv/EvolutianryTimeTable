@@ -174,7 +174,7 @@
                                                 <Font size="13.0" />
                                              </font>
                                           </Label>
-                                          <TextField fx:id="endConditionLimitTextField" layoutX="381.0" layoutY="3.0" prefHeight="27.0" prefWidth="45.0" />
+                                          <TextField fx:id="endConditionLimitTextField" layoutX="381.0" layoutY="3.0" prefHeight="27.0" prefWidth="99.0" />
                                           <Button fx:id="runEvolutionBtn" alignment="CENTER" contentDisplay="CENTER" layoutX="520.0" layoutY="23.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#runEvolutionaryButton" pickOnBounds="false" prefHeight="54.0" prefWidth="117.0" text="Start" textAlignment="CENTER" textFill="#0f5712">
                                              <font>
                                                 <Font size="18.0" />

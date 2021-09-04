@@ -232,7 +232,7 @@ public class EttController {
     {
         initPopulationTextField.textProperty().set(String.valueOf(evolutionConfig.getInitialPopulation()));
         selectionCBox.setValue(evolutionConfig.getSelection().getType().name);
-        //elitismSizeTextFiled.textProperty().set(String.valueOf(evolutionConfig.)); //todo: add to evolution config get elitism
+        elitismSizeTextFiled.textProperty().set(String.valueOf(evolutionConfig.getSelection().getElitismCount()));
         crossoverCBox.setValue(evolutionConfig.getCrossover().getName().name);
         cuttingPointsTextFiled.textProperty().set(String.valueOf(evolutionConfig.getCrossover().getCuttingPoints()));
         if(Objects.equals(crossoverCBox.getValue(), "AspectOreiented"))
@@ -259,7 +259,6 @@ public class EttController {
 
     @FXML
     public void onEndConditionSelect(){
-        System.out.println(endConditionBox.getValue());
         isEndConditionSelected.set(true);
     }
 
@@ -479,4 +478,5 @@ public class EttController {
         engineLogic.getBestSolutionFitness(bestFitnessProperty::set);
         engineLogic.getCurrentGeneration(currentGenerationProperty::set);
     }
+
 }

@@ -97,7 +97,7 @@
                                                                   <Font size="15.0" />
                                                                </font>
                                                             </Label>
-                                                            <ChoiceBox fx:id="selectionCBox" layoutX="130.0" layoutY="50.0" onAction="#onEndConditionSelect" prefHeight="29.0" prefWidth="148.0" />
+                                                            <ChoiceBox fx:id="selectionCBox" layoutX="130.0" layoutY="50.0" prefHeight="29.0" prefWidth="148.0" />
                                                             <Label layoutX="14.0" layoutY="91.0" prefHeight="19.0" prefWidth="107.0" text="Elitism Size">
                                                                <font>
                                                                   <Font size="15.0" />
@@ -108,12 +108,12 @@
                                                                   <Font size="15.0" />
                                                                </font>
                                                             </Label>
-                                                            <ChoiceBox fx:id="crossoverCBox" layoutX="130.0" layoutY="124.0" onAction="#onEndConditionSelect" prefHeight="29.0" prefWidth="150.0" />
+                                                            <ChoiceBox fx:id="crossoverCBox" layoutX="130.0" layoutY="124.0" prefHeight="29.0" prefWidth="150.0" />
                                                             <TextField fx:id="elitismSizeTextFiled" layoutX="130.0" layoutY="87.0" prefHeight="29.0" prefWidth="149.0" />
                                                             <Label layoutX="294.0" layoutY="128.0" prefHeight="19.0" prefWidth="88.0" text="Cutting Points" />
                                                             <TextField fx:id="cuttingPointsTextFiled" layoutX="382.0" layoutY="125.0" prefHeight="25.0" prefWidth="45.0" />
                                                             <Label layoutX="450.0" layoutY="127.0" prefHeight="19.0" prefWidth="86.0" text="Orientation" />
-                                                            <ChoiceBox fx:id="crossoverOrientationCBox" layoutX="528.0" layoutY="123.0" onAction="#onEndConditionSelect" prefHeight="27.0" prefWidth="103.0" />
+                                                            <ChoiceBox fx:id="crossoverOrientationCBox" layoutX="528.0" layoutY="123.0" prefHeight="27.0" prefWidth="103.0" />
                                                             <Label layoutX="16.0" layoutY="163.0" prefHeight="19.0" prefWidth="107.0" text="Mutations">
                                                                <font>
                                                                   <Font size="15.0" />
@@ -187,8 +187,8 @@
                                                                         <Insets left="10.0" right="10.0" />
                                                                      </GridPane.margin>
                                                                   </Label>
-                                                                  <ChoiceBox fx:id="mutation1ComponentCBox" onAction="#onEndConditionSelect" prefHeight="27.0" prefWidth="82.0" GridPane.columnIndex="6" />
-                                                                  <ChoiceBox fx:id="mutation2ComponentCBox" onAction="#onEndConditionSelect" prefHeight="27.0" prefWidth="82.0" GridPane.columnIndex="6" GridPane.rowIndex="1" />
+                                                                  <ChoiceBox fx:id="mutation1ComponentCBox" prefHeight="27.0" prefWidth="82.0" GridPane.columnIndex="6" />
+                                                                  <ChoiceBox fx:id="mutation2ComponentCBox" prefHeight="27.0" prefWidth="82.0" GridPane.columnIndex="6" GridPane.rowIndex="1" />
                                                                </children>
                                                             </GridPane>
                                                             <TextField fx:id="initPopulationTextField" layoutX="130.0" layoutY="13.0" prefHeight="29.0" prefWidth="147.0" />
@@ -220,7 +220,7 @@
                                              </font>
                                           </Label>
                                           <TextField fx:id="generationsJumpTextField" layoutX="148.0" layoutY="50.0" prefHeight="27.0" prefWidth="151.0" />
-                                          <ChoiceBox fx:id="endConditionBox" layoutX="149.0" layoutY="3.0" onAction="#onEndConditionSelect" prefWidth="150.0" />
+                                          <ChoiceBox fx:id="endConditionBox" onAction="#onEndConditionSelect" layoutX="149.0" layoutY="3.0" prefWidth="150.0" />
                                           <Label layoutX="343.0" layoutY="7.0" prefHeight="19.0" prefWidth="40.0" text="Limit">
                                              <font>
                                                 <Font size="13.0" />

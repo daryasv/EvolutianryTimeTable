@@ -191,6 +191,8 @@ public class EttController {
                 runEvolutionBtn.setText("Start");
             }
         });
+
+        showSolutionBtn.disableProperty().bind(isEvolutionRunning.or(isPaused));
     }
 
     @FXML
@@ -336,7 +338,7 @@ public class EttController {
     }
 
     @FXML
-    void showBestSolutionBtn() {
+    void showBestSolution() {
         //need to change to check if algorithm finished
         solutionViewVbox.setVisible(true);
        // rawRadioBtn.setSelected(true);

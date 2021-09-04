@@ -6,6 +6,7 @@ import UI.models.evolution.EvolutionConfig;
 import UI.models.timeTable.Grade;
 import UI.models.timeTable.Teacher;
 import UI.models.timeTable.TimeTableMembers;
+import engine.models.IRule;
 import engine.models.Solution;
 import gui.common.EttResourcesConstants;
 import gui.common.Utils;
@@ -36,11 +37,9 @@ import javafx.stage.Stage;
 import javafx.scene.layout.VBox;
 
 import java.io.File;
-import java.util.Objects;
+import java.util.*;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
@@ -90,6 +89,7 @@ public class EttController {
     @FXML private Button showSolutionBtn;
     @FXML private VBox solutionViewVbox;
     @FXML private ScrollPane tableScrollPane;
+    @FXML private ScrollPane RulesDetailsScrollPane;
     @FXML private RadioButton rawRadioBtn;
     @FXML private ToggleGroup viewSolutionOption;
     @FXML private RadioButton teacherViewRadioBtn;
@@ -340,9 +340,9 @@ public class EttController {
 
     @FXML
     void showBestSolution() {
-        //need to change to check if algorithm finished
         solutionViewVbox.setVisible(true);
-       // rawRadioBtn.setSelected(true);
+        RulesDetailsScrollPane.setVisible(true);
+        showRulesDetails();
         showRawSolution();
     }
 
@@ -410,6 +410,29 @@ public class EttController {
                 Label detailsLabel = new Label(detailsInfo);
                 vbox.getChildren().add(detailsLabel);
             }
+        }
+    }
+    private void showRulesDetails(){
+        VBox RulesDetailsVbox = new VBox();
+        RulesDetailsScrollPane.setContent(RulesDetailsVbox);
+        HashMap<IRule, Double> rulesFitness = engineLogic.getGlobalBestSolution().getRulesFitness();
+        Label title = new Label("Rules Details:");
+        RulesDetailsVbox.getChildren().add(title);
+        RulesDetailsVbox.getChildren().add(new Label(""));
+        Label ruleTypeLabel;
+        for (Map.Entry<IRule, Double> entry : rulesFitness.entrySet()){
+            Label ruleNameLabel = new Label(String.format("Rule: %s ", entry.getKey().getName()));
+            if(entry.getKey().isHard()){
+                ruleTypeLabel = new Label("Rule type: hard");
+            }
+            else{
+                ruleTypeLabel = new Label("Rule type: soft");
+            }
+            Label ruleGrade = new Label(String.format("Rule grade: %,.1f ", entry.getValue()));
+            RulesDetailsVbox.getChildren().add(ruleNameLabel);
+            RulesDetailsVbox.getChildren().add(ruleTypeLabel);
+            RulesDetailsVbox.getChildren().add(ruleGrade);
+            RulesDetailsVbox.getChildren().add(new Label(""));
         }
     }
 

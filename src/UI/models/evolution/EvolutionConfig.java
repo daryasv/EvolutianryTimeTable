@@ -43,10 +43,16 @@ public class EvolutionConfig implements Serializable
 
     public void setSelection(ETTSelection ettSelection) throws ValidationException {
         this.selection = new Selection(ettSelection);
+        if(selection.getElitismCount() > initialPopulation){
+            throw new ValidationException("Elitism can't be more then initial population");
+        }
     }
 
-    public void setSelection(Selection selection){
+    public void setSelection(Selection selection) throws ValidationException {
         this.selection = selection;
+        if(selection.getElitismCount() > initialPopulation){
+            throw new ValidationException("Elitism can't be more then initial population");
+        }
     }
 
     public Crossover getCrossover() {

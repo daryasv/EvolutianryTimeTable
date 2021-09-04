@@ -26,7 +26,6 @@ public class Selection implements ISelectionData , Serializable
     }
 
     public void setElitism(Integer ettElitism) {
-        //TODO: check elitism not more then poplulation
         if(ettElitism == null){
             elitism = 0;
         }else{

@@ -19,6 +19,7 @@ import gui.components.table.TableController;
 import gui.logic.BusinessLogic;
 import gui.logic.EngineLogic;
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -118,6 +119,7 @@ public class EttController {
     private SimpleBooleanProperty isCrossoverAspectOriented;
     private SimpleBooleanProperty isTableViewSelected;
     private SimpleBooleanProperty showResults;
+    private BooleanBinding isRunning;
 
     private SimpleBooleanProperty isViewTypeSelected;
 
@@ -202,6 +204,15 @@ public class EttController {
         RulesDetailsScrollPane.visibleProperty().bind(showResults);
         solutionViewVbox.visibleProperty().bind(showResults);
         evolutoinPane.disableProperty().bind(isEvolutionRunning);
+        isRunning = isEvolutionRunning.not().and(isPaused.not());
+        isRunning.addListener((a,b,newValue)->{
+            if(newValue){
+                progressPercentLabel.textProperty().unbind();
+                taskProgressBar.progressProperty().unbind();
+                progressPercentLabel.setText("");
+                taskProgressBar.setProgress(0);
+            }
+        });
     }
 
     @FXML
@@ -410,14 +421,21 @@ public class EttController {
         taskProgressBar.progressProperty().bind(aTask.progressProperty());
 
         // task percent label
-        progressPercentLabel.textProperty().bind(
-                Bindings.concat(
-                        Bindings.format(
-                                "%.0f",
-                                Bindings.multiply(
-                                        aTask.progressProperty(),
-                                        100)),
-                        " %"));
+        aTask.progressProperty().addListener((observable, oldValue, newValue)->{
+            if(newValue.doubleValue() >0){
+                progressPercentLabel.textProperty().set(String.format("%.0f",newValue.doubleValue() * 100) + "%");
+            }else{
+                progressPercentLabel.textProperty().set("");
+            }
+        });
+//        progressPercentLabel.textProperty().bind(
+//                Bindings.concat(
+//                        Bindings.format(
+//                                "%.0f",
+//                                Bindings.multiply(
+//                                        aTask.progressProperty(),
+//                                        100)),
+//                        " %"));
 
         // task cleanup upon finish
         aTask.valueProperty().addListener((observable, oldValue, newValue) -> {

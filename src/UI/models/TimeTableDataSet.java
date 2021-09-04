@@ -321,7 +321,7 @@ public class TimeTableDataSet implements EvolutionDataSet<Lesson>, Serializable 
         LessonSortType sortType = LessonSortType.valueOfLabel(operator);
         Solution<Lesson> sorted = new Solution<Lesson>();
         sorted.setList(new ArrayList<>(solution.getList())); //duplicate the solution
-        sorted.getList().sort(new LessonComparator(sortType,CrossoverConfigurationType.valueOf(configuration)));
+        sorted.getList().sort(new LessonComparator(sortType,CrossoverConfigurationType.valueOfLabel(configuration)));
 
         return sorted;
     }

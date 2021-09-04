@@ -60,12 +60,14 @@ public class Crossover implements ICrossoverData , Serializable
     }
 
     public String getConfiguration() {
+        if(configuration==null)
+            return "";
         return configuration.toString();
     }
 
     public void setConfiguration(ETTCrossover ettCrossover) throws ValidationException {
         String configuration = null;
-        if(ettCrossover.getConfiguration().contains("Orientation=")) {
+        if(ettCrossover.getConfiguration() != null && ettCrossover.getConfiguration().contains("Orientation=")) {
             configuration = ettCrossover.getConfiguration().replace("Orientation=","");
         }
         setConfiguration(configuration);

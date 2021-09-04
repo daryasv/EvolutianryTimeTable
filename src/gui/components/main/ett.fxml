@@ -295,7 +295,7 @@
                                              <MenuButton fx:id="idsMenu" alignment="CENTER" mnemonicParsing="false" popupSide="TOP" text="select ID" />
                                           </children>
                                        </HBox>
-                                       <ScrollPane fx:id="tableScrollPane" prefHeight="200.0" prefWidth="200.0" />
+                                       <ScrollPane fx:id="tableScrollPane" prefHeight="366.0" prefWidth="843.0" />
                                     </children>
                                  </VBox>
                               </AnchorPane>

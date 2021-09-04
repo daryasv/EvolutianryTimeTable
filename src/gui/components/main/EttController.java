@@ -45,7 +45,7 @@ import javafx.scene.control.ToggleGroup;
 
 public class EttController {
 
-    @FXML Pane evolutionSettingsPane;
+    @FXML TitledPane evolutionSettingsPane;
     @FXML Pane evolutionProgressPane;
     @FXML Pane evolutionConditionsPane;
     @FXML TitledPane timeTableSettingsTPane;

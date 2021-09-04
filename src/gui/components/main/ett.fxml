@@ -82,11 +82,11 @@
                                                 <Font size="18.0" />
                                              </font>
                                           </TitledPane>
-                                          <TitledPane animated="false" prefHeight="324.0" prefWidth="1156.0" text="Evolution Settings">
+                                          <TitledPane fx:id="evolutionSettingsPane" animated="false" prefHeight="324.0" prefWidth="1156.0" text="Evolution Settings">
                                              <content>
                                                 <AnchorPane>
                                                    <children>
-                                                      <Pane fx:id="evolutionSettingsPane" layoutX="3.0" layoutY="1.0" prefHeight="283.0" prefWidth="1153.0">
+                                                      <Pane layoutX="3.0" layoutY="1.0" prefHeight="283.0" prefWidth="1153.0">
                                                          <children>
                                                             <Label layoutX="14.0" layoutY="17.0" prefHeight="19.0" prefWidth="121.0" text="Initial Population">
                                                                <font>
